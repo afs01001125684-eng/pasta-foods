@@ -1,195 +1,63 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>متاح التوصيل في انحاء الجيزه 
-    01001125684
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>باستا فود - Pasta Food</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --talabat-main: #FF5A00; /* لون طلبات البرتقالي الرسمي */
-            --text-dark: #191919; 
-            --text-muted: #767676;
-            --light-bg: #f5f5f5; 
-            --border-color: #efefef;
-        }
-
+        :root { --talabat-main: #FF5A00; --text-dark: #191919; --text-muted: #767676; --light-bg: #f5f5f5; --border-color: #efefef; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        
         body { background: #fff; color: var(--text-dark); padding-bottom: 80px; }
-        
-        /* رأس الصفحة (الهيدر) */
-        header { 
-            padding: 15px 20px; 
-            background: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-            text-align: center;
-        }
-        header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; color: var(--text-dark); }
-        header p { font-size: 0.9rem; color: var(--text-muted); }
-
-        /* شريط التصنيفات (التمرير الأفقي) */
-        .categories-slider {
-            display: flex;
-            overflow-x: auto;
-            gap: 12px;
-            padding: 15px 20px;
-            background: white;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color);
-            scrollbar-width: none; /* إخفاء شريط التمرير في فايرفوكس */
-        }
-        .categories-slider::-webkit-scrollbar { display: none; } /* إخفاء شريط التمرير في كروم */
-        
-        .cat-btn {
-            background: #fff;
-            border: 1px solid var(--border-color);
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-        }
-        .cat-btn.active {
-            background: var(--talabat-main);
-            color: white;
-            border-color: var(--talabat-main);
-        }
-
-        /* شبكة المنتجات (List View) */
+        header { padding: 15px 20px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.04); text-align: center; }
+        header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; }
+        .categories-slider { display: flex; overflow-x: auto; gap: 12px; padding: 15px 20px; border-bottom: 1px solid var(--border-color); scrollbar-width: none; }
+        .categories-slider::-webkit-scrollbar { display: none; }
+        .cat-btn { background: #fff; border: 1px solid var(--border-color); padding: 8px 18px; border-radius: 20px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .cat-btn.active { background: var(--talabat-main); color: white; border-color: var(--talabat-main); }
         .menu-container { max-width: 800px; margin: 0 auto; padding: 0 15px; }
-        
-        .item-card { 
-            display: flex; 
-            align-items: center; 
-            padding: 15px 0; 
-            border-bottom: 1px solid var(--border-color);
-            transition: background 0.2s;
-        }
-        .item-card:hover { background: #fafafa; }
-        
+        .item-card { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
         .item-info { flex-grow: 1; padding-left: 15px; }
-        .item-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; font-weight: 700; }
-        .item-info .price { color: var(--talabat-main); font-weight: 800; font-size: 1.05rem; }
-        
-        .item-image {
-            width: 90px; height: 90px;
-            border-radius: 12px;
-            object-fit: cover;
-            margin-left: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .add-btn { 
-            background: rgba(255, 90, 0, 0.1); 
-            border: none; 
-            color: var(--talabat-main);
-            padding: 8px 15px; 
-            border-radius: 8px; 
-            font-weight: 800; 
-            font-size: 0.9rem;
-            cursor: pointer; 
-            transition: 0.2s;
-        }
-        .add-btn:hover { background: var(--talabat-main); color: #fff; }
-
-        /* شريط السلة السفلي */
-        #cart-bar { 
-            position: fixed; 
-            bottom: 0; left: 0; width: 100%; 
-            background: var(--talabat-main);
-            color: #fff; 
-            padding: 18px 20px; 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700; 
-            font-size: 1.1rem;
-            cursor: pointer; 
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-
-        /* نافذة السلة (Modal) */
-        .modal { 
-            display: none; position: fixed; top: 0; left: 0; 
-            width: 100%; height: 100%; background: rgba(0,0,0,0.6); 
-            z-index: 2000; overflow-y: auto; 
-        }
-        .modal-content { 
-            background: white; width: 100%; max-width: 500px; 
-            margin: auto; min-height: 100vh; padding: 25px; 
-            display: flex; flex-direction: column;
-        }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
-        }
-        .close-btn { font-size: 1.8rem; cursor: pointer; color: var(--text-dark); line-height: 1; }
-        
-        .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 600; }
-        
-        .form-group input { 
-            width: 100%; padding: 12px 15px; margin-bottom: 15px; 
-            border: 1px solid #ddd; border-radius: 10px; font-size: 0.95rem;
-            background: var(--light-bg);
-        }
-        .form-group input:focus { outline: none; border-color: var(--talabat-main); background: #fff; }
-        
-        .submit-btn {
-            background: var(--talabat-main); color: white; border: none; 
-            padding: 15px; border-radius: 10px; font-weight: 700; font-size: 1.1rem;
-            cursor: pointer; width: 100%; margin-top: auto;
-        }
+        .item-image { width: 90px; height: 90px; border-radius: 12px; object-fit: cover; margin-left: 15px; }
+        .add-btn { background: rgba(255, 90, 0, 0.1); border: none; color: var(--talabat-main); padding: 8px 15px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        #cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--talabat-main); color: #fff; padding: 18px 20px; display: flex; justify-content: space-between; font-weight: 700; cursor: pointer; z-index: 1000; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; overflow-y: auto; }
+        .modal-content { background: white; width: 100%; max-width: 500px; margin: auto; min-height: 100vh; padding: 25px; display: flex; flex-direction: column; }
+        .form-group input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; background: var(--light-bg); }
+        .submit-btn { background: var(--talabat-main); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: 700; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>باستا فود 🍝</h1>
-    <p>🍜أسرع دليفري 🏍 للأكل المظبوط</p>
-</header>
+<header><h1>باستا فود 🍝</h1><p>أسرع دليفري 🏍</p></header>
 
-<!-- شريط التصنيفات -->
-<div class="categories-slider" id="categories-container">
-    <!-- سيتم تعبئتها بالجافاسكريبت -->
-</div>
-
-<!-- المنيو -->
+<div class="categories-slider" id="categories-container"></div>
 <div class="menu-container" id="menu"></div>
 
-<!-- السلة -->
 <div id="cart-bar" onclick="toggleCart()">
     <span>السلة (<span id="count">0</span>)</span>
-    <span>الإجمالي: <span id="total">0</span> ج.م</span>
+    <span>الإجمالي: <span id="totalPrice">0</span> ج.م</span>
 </div>
 
-<!-- نافذة إتمام الطلب -->
 <div id="modal" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h2>تأكيد الطلب</h2>
-            <span class="close-btn" onclick="toggleCart()">×</span>
-        </div>
-        
+        <h2>تأكيد الطلب</h2>
         <div id="cart-items" style="flex-grow: 1; overflow-y: auto; margin-bottom: 20px;"></div>
-        
         <div class="form-group">
             <input type="text" id="name" placeholder="الاسم الكريم">
             <input type="tel" id="phone" placeholder="رقم الهاتف للتواصل">
+            <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للفاتورة">
             <input type="text" id="address" placeholder="عنوان التوصيل بالتفصيل">
         </div>
-        <button class="submit-btn" onclick="sendWhatsApp()">تأكيد وإرسال عبر الواتساب</button>
+        <button class="submit-btn" onclick="processOrder()">تأكيد الطلب وإرسال الفاتورة</button>
+        <button class="submit-btn" style="background:#666" onclick="toggleCart()">إغلاق</button>
     </div>
 </div>
 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
+    (function(){ emailjs.init("BV7OIpSk4gMWrTJCy"); })();
+
     const menuItems = [
         {"id": 1, "name": "ثلاثة سندويشات كبدة بالرده", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
         {"id": 2, "name": "3 ساندوتش استربس", "price": 180, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/93c5d7af-05d1-4ab1-8d55-b7b7a8a08eb9.jpg"},
@@ -243,125 +111,43 @@
         {"id": 50, "name": "مياه معدنية", "price": 7, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"}
     ];
 
-    // دالة ذكية لتصنيف الوجبات تلقائياً من أسمائها
-    function getCategory(name) {
-        if (name.includes('مكرونة') || name.includes('إسباجيتي') || name.includes('سباغيتي') || name.includes('بشاميل')) return 'مكرونات';
-        if (name.includes('ساندوتش') || name.includes('سندويش') || name.includes('برجر') || name.includes('حواوشي') || name.includes('هوت دوج')) return 'ساندوتشات';
-        if (name.includes('أرز') || name.includes('فتة') || name.includes('وجبة')) return 'وجبات';
-        if (name.includes('بطاطس')) return 'أطباق جانبية';
-        if (name.includes('كوكاكولا') || name.includes('بيبسي') || name.includes('مياه')) return 'مشروبات';
-        return 'أخرى';
-    }
-
-    // إضافة التصنيف لكل وجبة
-    const menu = menuItems.map(item => ({ ...item, category: getCategory(item.name) }));
-
     let cart = [];
-    let currentCategory = 'الكل';
-    const categories = ['الكل', 'مكرونات', 'ساندوتشات', 'وجبات', 'أطباق جانبية', 'مشروبات'];
+    const menuItemsWithCat = menuItems.map(item => ({
+        ...item,
+        category: item.name.includes('مكرونة') || item.name.includes('إسباجيتي') || item.name.includes('بشاميل') ? 'مكرونات' :
+                  item.name.includes('ساندوتش') || item.name.includes('برجر') || item.name.includes('حواوشي') ? 'ساندوتشات' :
+                  item.name.includes('أرز') || item.name.includes('فتة') ? 'وجبات' :
+                  item.name.includes('بطاطس') ? 'جانبي' : 'مشروبات'
+    }));
 
-    // رسم شريط التصنيفات
-    function renderCategories() {
-        const container = document.getElementById("categories-container");
-        container.innerHTML = categories.map(cat => `
-            <button class="cat-btn ${cat === currentCategory ? 'active' : ''}" 
-                    onclick="filterMenu('${cat}')">${cat}</button>
-        `).join('');
-    }
-
-    // رسم المنيو (مع الفلترة)
     function renderMenu() {
         const container = document.getElementById("menu");
-        const filteredMenu = currentCategory === 'الكل' 
-            ? menu 
-            : menu.filter(item => item.category === currentCategory);
-
-        container.innerHTML = filteredMenu.map(item => `
+        container.innerHTML = menuItemsWithCat.map(item => `
             <div class="item-card">
                 <img src="${item.img}" class="item-image" loading="lazy">
-                <div class="item-info">
-                    <h3>${item.name}</h3>
-                    <div class="price">${item.price} ج.م</div>
-                </div>
+                <div class="item-info"><h3>${item.name}</h3><p>${item.price} ج.م</p></div>
                 <button class="add-btn" onclick="addToCart(${item.id})">إضافة +</button>
             </div>
         `).join('');
     }
 
-    // فلترة المنيو
-    function filterMenu(cat) {
-        currentCategory = cat;
-        renderCategories(); // لتحديث لون الزر النشط
-        renderMenu(); // لتحديث المنتجات
-    }
-
-    // وظائف السلة
     function addToCart(id) {
-        cart.push(menu.find(i => i.id === id));
+        cart.push(menuItems.find(i => i.id === id));
         document.getElementById("count").innerText = cart.length;
-        document.getElementById("total").innerText = cart.reduce((sum, item) => sum + item.price, 0);
+        document.getElementById("totalPrice").innerText = cart.reduce((sum, i) => sum + i.price, 0);
     }
 
-    function toggleCart() {
-        const modal = document.getElementById("modal");
-        modal.style.display = modal.style.display === "block" ? "none" : "block";
-        
-        const itemsContainer = document.getElementById("cart-items");
-        if(cart.length === 0) {
-            itemsContainer.innerHTML = "<p style='text-align:center; color:#777; margin-top:20px;'>سلتك فارغة حالياً!</p>";
-        } else {
-            itemsContainer.innerHTML = cart.map((i, index) => `
-                <div class="cart-item">
-                    <span>${index + 1}. ${i.name}</span>
-                    <span style="color:var(--talabat-main)">${i.price} ج.م</span>
-                </div>
-            `).join('');
-        }
+    function toggleCart() { document.getElementById("modal").style.display = document.getElementById("modal").style.display === "block" ? "none" : "block"; }
+
+    function processOrder() {
+        const total = document.getElementById("totalPrice").innerText;
+        const email = document.getElementById("customerEmail").value;
+        emailjs.send('service_a1b2c3d', 'template_8yhqwxa', { to_email: email, total_amount: total, message: "شكراً لطلبك!" });
+        window.open(`https://wa.me/201001125684?text=${encodeURIComponent('طلب جديد - الإجمالي: ' + total + ' ج.م')}`, '_blank');
+        alert("تم الإرسال!");
     }
 
-    function sendWhatsApp() {
-        const name = document.getElementById("name").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const address = document.getElementById("address").value.trim();
-        
-        if(!name || !phone || !address) return alert("يرجى ملء جميع البيانات!");
-        if(cart.length === 0) return alert("السلة فارغة!");
-
-        const deliveryFee = 50; // رسوم التوصيل الثابتة
-        const subtotal = cart.reduce((sum, i) => sum + i.price, 0); // مجموع الوجبات
-        const total = subtotal + deliveryFee; // المجموع الكلي
-        
-        const orderList = cart.map(i => `- ${i.name}`).join('\n');
-        
-        const message = `*طلب جديد من باستا فود* 🛵\n\nالاسم: ${name}\nرقم الهاتف: ${phone}\nالعنوان: ${address}\n\n*الطلبات:*\n${orderList}\n\n*مجموع الطلبات:* ${subtotal} ج.م\n*رسوم التوصيل:* ${deliveryFee} ج.م\n\n*الإجمالي المطلوب:* ${total} ج.م`;
-        
-        window.open(`https://wa.me/201001125684?text=${encodeURIComponent(message)}`, '_blank');
-    }
-
-    // تشغيل الدوال عند تحميل الصفحة
-    renderCategories();
     renderMenu();
-</script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script type="text/javascript">
-  (function(){
-    emailjs.init("BV7OIpSk4gMWrTJCy"); 
-  })();
-
-  function sendOrder() {
-    var templateParams = {
-      to_email: document.getElementById('customerEmail').value,
-      total_amount: document.getElementById('totalPrice').innerText,
-      message: "شكراً لطلبك من باستا فود، طلبك في الطريق إليك!"
-    };
-
-    emailjs.send('service_xxxxx', 'template_8yhqwxa', templateParams)
-      .then(function(response) {
-         alert('تم إرسال الفاتورة إلى إيميل العميل بنجاح!');
-      }, function(error) {
-         alert('حدث خطأ في الإرسال: ' + JSON.stringify(error));
-      });
-  }
 </script>
 </body>
 </html>
