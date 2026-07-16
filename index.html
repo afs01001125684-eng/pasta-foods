@@ -2,38 +2,46 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pasta Food</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #ff3e6c; }
-        body { font-family: 'Cairo', sans-serif; background: #f9f9f9; margin: 0; padding-bottom: 80px; }
-        header { background: #fff; padding: 20px; text-align: center; border-bottom: 2px solid #eee; }
-        header h1 { margin: 0; color: var(--accent); font-size: 1.5rem; }
+        :root { --talabat-orange: #ff782c; --light: #f5f5f5; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--light); margin: 0; padding-bottom: 80px; }
         
-        .cat-header { padding: 15px 20px; font-weight: bold; color: #555; }
+        /* هيدر بسيط */
+        header { background: white; padding: 15px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 10; }
+        header h1 { margin: 0; color: var(--talabat-orange); font-size: 1.3rem; }
         
-        .product { background: white; margin: 0 15px 10px 15px; padding: 15px; border-radius: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .product img { width: 60px; height: 60px; border-radius: 10px; margin-left: 15px; object-fit: cover; }
-        .info { flex-grow: 1; }
-        .name { font-weight: bold; }
-        .price { color: var(--accent); font-size: 0.9rem; }
+        /* الأقسام */
+        .cat-title { padding: 15px 20px; font-size: 1.1rem; font-weight: 800; color: #333; }
         
-        .qty-box { display: flex; align-items: center; gap: 10px; border: 1px solid #eee; padding: 5px; border-radius: 20px; }
-        .btn-qty { border: none; background: #eee; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        /* كارت المنتج */
+        .product-card { background: white; display: flex; align-items: center; padding: 12px; margin: 0 15px 10px 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .product-img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; margin-left: 15px; }
+        .product-info { flex-grow: 1; }
+        .product-name { font-weight: 700; font-size: 1rem; }
+        .product-price { color: #666; font-size: 0.9rem; margin-top: 4px; }
         
-        #footer { position: fixed; bottom: 0; width: 100%; background: var(--accent); color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; }
+        /* أزرار التحكم */
+        .qty-control { display: flex; align-items: center; gap: 12px; }
+        .btn-qty { background: var(--talabat-orange); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .qty-num { font-weight: 700; font-size: 1.1rem; min-width: 20px; text-align: center; }
+        
+        /* الفوتر العائم */
+        .footer-bar { position: fixed; bottom: 0; width: 100%; background: var(--talabat-orange); color: white; padding: 18px; text-align: center; font-weight: 800; cursor: pointer; border-top-left-radius: 15px; border-top-right-radius: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
 <header><h1>PASTA FOOD</h1></header>
 
-<div id="menu"></div>
+<div id="menu-container"></div>
 
-<div id="footer" onclick="sendOrder()">إتمام الطلب (الإجمالي: <span id="total">0</span> ج.م)</div>
+<div class="footer-bar" onclick="placeOrder()">إتمام الطلب | الإجمالي: <span id="total-price">0</span> ج.م</div>
 
 <script>
-    const data = {
+    const menuData = {
         "المكرونات": [
             {id: 1, name: "مكرونة موتزاريلا", price: 135, img: "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"},
             {id: 2, name: "مكرونة بالسجق", price: 95, img: "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"}
@@ -46,22 +54,22 @@
 
     let cart = {};
 
-    function render() {
-        const menu = document.getElementById('menu');
-        for(let cat in data) {
-            menu.innerHTML += `<div class="cat-header">${cat}</div>`;
-            data[cat].forEach(item => {
-                menu.innerHTML += `
-                    <div class="product">
-                        <img src="${item.img}">
-                        <div class="info">
-                            <div class="name">${item.name}</div>
-                            <div class="price">${item.price} ج.م</div>
+    function renderMenu() {
+        const container = document.getElementById('menu-container');
+        for (let cat in menuData) {
+            container.innerHTML += `<div class="cat-title">${cat}</div>`;
+            menuData[cat].forEach(item => {
+                container.innerHTML += `
+                    <div class="product-card">
+                        <img class="product-img" src="${item.img}">
+                        <div class="product-info">
+                            <div class="product-name">${item.name}</div>
+                            <div class="product-price">${item.price} ج.م</div>
                         </div>
-                        <div class="qty-box">
-                            <button class="btn-qty" onclick="changeQty(${item.id}, -1)">-</button>
-                            <span id="qty-${item.id}">0</span>
-                            <button class="btn-qty" onclick="changeQty(${item.id}, 1)">+</button>
+                        <div class="qty-control">
+                            <button class="btn-qty" onclick="updateQty(${item.id}, -1)">-</button>
+                            <span class="qty-num" id="qty-${item.id}">0</span>
+                            <button class="btn-qty" onclick="updateQty(${item.id}, 1)">+</button>
                         </div>
                     </div>
                 `;
@@ -69,28 +77,25 @@
         }
     }
 
-    function changeQty(id, val) {
-        if(!cart[id]) cart[id] = 0;
-        cart[id] = Math.max(0, cart[id] + val);
+    function updateQty(id, change) {
+        if (!cart[id]) cart[id] = 0;
+        cart[id] = Math.max(0, cart[id] + change);
         document.getElementById(`qty-${id}`).innerText = cart[id];
-        calculateTotal();
-    }
-
-    function calculateTotal() {
+        
+        // حساب الإجمالي
         let total = 0;
-        Object.keys(cart).forEach(id => {
-            let item = Object.values(data).flat().find(i => i.id == id);
-            total += item.price * cart[id];
+        Object.keys(cart).forEach(itemId => {
+            let item = Object.values(menuData).flat().find(i => i.id == itemId);
+            total += (item.price * cart[itemId]);
         });
-        document.getElementById('total').innerText = total;
+        document.getElementById('total-price').innerText = total;
     }
 
-    function sendOrder() {
-        alert("سيتم إرسال طلبك عبر واتساب...");
-        // يمكنك إضافة كود الربط بالواتساب هنا
+    function placeOrder() {
+        alert("سيتم توجيهك الآن لإتمام الطلب عبر واتساب");
     }
 
-    render();
+    renderMenu();
 </script>
 </body>
 </html>
