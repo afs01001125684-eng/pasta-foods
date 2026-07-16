@@ -2,69 +2,86 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Pasta Food - أسطول التوصيل</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasta Food | باستا فود</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #e41e26; }
-        body { font-family: 'Cairo', sans-serif; background: #fdfdfd; margin: 0; padding-bottom: 80px; }
+        :root { --primary: #e41e26; --dark: #1a1a1a; --accent: #25D366; }
+        body { font-family: 'Cairo', sans-serif; background: #f8f9fa; margin: 0; padding-bottom: 100px; }
         
-        .neon-bar { background: #000; color: #fff; padding: 10px; text-align: center; font-weight: 800; border-bottom: 3px solid #25D366; }
+        /* الأسطول الملون */
+        .road { background: #000; height: 80px; position: relative; overflow: hidden; }
+        .bike { position: absolute; font-size: 1.5rem; animation: drive linear infinite; }
+        @keyframes drive { from { right: -50px; } to { right: 100%; } }
 
-        /* منطقة السكوترات */
-        .road-container { background: #eee; height: 120px; position: relative; overflow: hidden; border-bottom: 2px solid #ddd; }
-        
-        .scooter-wrapper { position: absolute; font-size: 1.8rem; animation: moveScooter linear infinite; right: -100px; }
-        @keyframes moveScooter { 0% { right: -100px; } 100% { right: 100%; } }
-        
-        .smoke { position: absolute; width: 8px; height: 8px; background: #bbb; border-radius: 50%; opacity: 0.6; animation: smokeAni 1.5s linear infinite; }
-        @keyframes smokeAni { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.5); opacity: 0; } }
-
-        .menu-container { padding: 20px; max-width: 800px; margin: auto; }
-        .item-card { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        button { background: var(--main); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
-        .cart-bar { position: fixed; bottom: 0; width: 100%; background: var(--main); color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; z-index: 999; }
+        /* التصميم */
+        .header { text-align: center; padding: 20px; background: white; }
+        .section-title { text-align: center; margin: 30px 0 15px; color: var(--primary); font-weight: 800; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 15px; max-width: 1000px; margin: auto; }
+        .item-card { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; }
+        .item-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 15px; }
+        .price { color: var(--primary); font-weight: 900; font-size: 1.2rem; }
+        .btn-add { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        .sticky-cart { position: fixed; bottom: 0; width: 100%; background: var(--dark); color: white; padding: 15px; text-align: center; font-weight: 800; font-size: 1.3rem; z-index: 1000; }
     </style>
 </head>
 <body>
 
-<div class="neon-bar">✨ باستا فود - التوصيل متاح في جميع أنحاء الجيزة ✨</div>
-
-<div class="road-container">
-    <!-- 8 سكوترات بألوان وتوقيتات مختلفة -->
-    <div class="scooter-wrapper" style="top: 10px; animation-duration: 6s; color: red;">🛵<div class="smoke"></div></div>
-    <div class="scooter-wrapper" style="top: 35px; animation-duration: 9s; color: blue;">🛵<div class="smoke"></div></div>
-    <div class="scooter-wrapper" style="top: 60px; animation-duration: 7s; color: green;">🛵<div class="smoke"></div></div>
-    <div class="scooter-wrapper" style="top: 85px; animation-duration: 10s; color: orange;">🛵<div class="smoke"></div></div>
-    <div class="scooter-wrapper" style="top: 20px; animation-duration: 8s; color: purple;">🛵<div class="smoke"></div></div>
-    <div class="scooter-wrapper" style="top: 45px; animation-duration: 11s; color: darkcyan;">🛵<div class="smoke"></div></div>
-    <div class="scooter-wrapper" style="top: 70px; animation-duration: 7.5s; color: brown;">🛵<div class="smoke"></div></div>
-    <div class="scooter-wrapper" style="top: 95px; animation-duration: 9.5s; color: magenta;">🛵<div class="smoke"></div></div>
+<div class="road">
+    <div class="bike" style="top: 5px; color: red; animation-duration: 6s;">🛵</div>
+    <div class="bike" style="top: 40px; color: yellow; animation-duration: 9s;">🛵</div>
+    <div class="bike" style="top: 10px; color: cyan; animation-duration: 7s;">🛵</div>
 </div>
 
-<div class="menu-container">
-    <h2>🍝 المكرونات</h2>
-    <div class="item-card"><span>مكرونة موتزاريلا</span><button onclick="addToCart('مكرونة موتزاريلا', 135)">إضافة (135 ج.م)</button></div>
-    <div class="item-card"><span>مكرونة باللحم</span><button onclick="addToCart('مكرونة باللحم', 120)">إضافة (120 ج.م)</button></div>
+<div class="header"><h1>🍝 باستا فود</h1></div>
 
-    <h2>🥪 السندوتشات</h2>
-    <div class="item-card"><span>سندوتش كبدة</span><button onclick="addToCart('سندوتش كبدة', 45)">إضافة (45 ج.م)</button></div>
-    <div class="item-card"><span>سندوتش كفتة</span><button onclick="addToCart('سندوتش كفتة', 70)">إضافة (70 ج.م)</button></div>
+<!-- السندوتشات -->
+<h2 class="section-title">🥪 السندوتشات</h2>
+<div class="grid">
+    <div class="item-card">
+        <img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg">
+        <h3>فرنساوي كبدة / سجق</h3>
+        <p>سندوتش كبدة أو سجق مجهز بالطريقة الفرنسية</p>
+        <p class="price">50 ج.م</p>
+        <button class="btn-add" onclick="add(50)">إضافة للطلب</button>
+    </div>
+    <div class="item-card">
+        <img src="https://images.unsplash.com/photo-1603048588665-791ca8aea617">
+        <h3>كفتة بالخلطة</h3>
+        <p>كفتة بلدي مشوية بخلطة باستا فود السرية</p>
+        <p class="price">60 ج.م</p>
+        <button class="btn-add" onclick="add(60)">إضافة للطلب</button>
+    </div>
 </div>
 
-<div class="cart-bar" onclick="showCart()">🛒 السلة (<span id="cart-count">0</span>) - إجمالي: <span id="cart-total">0</span> ج.م</div>
+<!-- المكرونات -->
+<h2 class="section-title">🍝 المكرونات</h2>
+<div class="grid">
+    <div class="item-card">
+        <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8">
+        <h3>مكرونة سجق شرقي</h3>
+        <p>مكرونة فرن مع السجق الشرقي المتبل</p>
+        <p class="price">80 ج.م</p>
+        <button class="btn-add" onclick="add(80)">إضافة للطلب</button>
+    </div>
+    <div class="item-card">
+        <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8">
+        <h3>مكرونة كبدة إسكندراني</h3>
+        <p>مكرونة بصلصة الطماطم الغنية مع الكبدة</p>
+        <p class="price">80 ج.م</p>
+        <button class="btn-add" onclick="add(80)">إضافة للطلب</button>
+    </div>
+</div>
+
+<div class="sticky-cart" id="cart">🛒 الإجمالي: 0 ج.م</div>
 
 <script>
-    let cart = [];
     let total = 0;
-    function addToCart(name, price) {
-        cart.push({name, price});
+    function add(price) {
         total += price;
-        document.getElementById('cart-count').innerText = cart.length;
-        document.getElementById('cart-total').innerText = total;
-    }
-    function showCart() {
-        if(cart.length === 0) alert("السلة فارغة!");
-        else alert("طلباتك هي: " + cart.map(i => i.name).join(", "));
+        document.getElementById('cart').innerText = "🛒 الإجمالي: " + total + " ج.م";
+        document.getElementById('cart').style.backgroundColor = "#25D366";
+        setTimeout(() => document.getElementById('cart').style.backgroundColor = "#1a1a1a", 200);
     }
 </script>
 
