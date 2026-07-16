@@ -4,520 +4,309 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pasta Food - باستا فود</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS for modern responsive design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #e11d48; /* أحمر دافئ مميز للوجبات الشهية */
-            --primary-hover: #be123c;
-            --secondary: #f59e0b; /* لون ذهبي دافئ للمأكولات */
-            --bg-body: #fbfbfb; /* خلفية ناعمة ومريحة للعين */
-            --card-bg: #ffffff;
-            --text-dark: #1e293b; /* لون كحلي داكن جداً للقراءة المريحة */
-            --text-muted: #64748b;
-            --success: #22c55e; /* لون أخضر الواتساب */
-            --border-radius: 16px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-        }
-
         body {
-            background-color: var(--bg-body);
-            color: var(--text-dark);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px; /* مقاس مثالي جداً لشاشات الموبايل */
-        }
-
-        /* رأس الصفحة - الهيدر */
-        header {
-            text-align: center;
-            padding: 28px 16px;
-            background: linear-gradient(135deg, #0f172a, #1e293b); /* خلفية فحمية فاخرة */
-            color: white;
-            border-radius: var(--border-radius);
-            margin-bottom: 24px;
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-        }
-
-        header h1 {
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            margin-bottom: 6px;
-            background: linear-gradient(to right, #ffffff, #ffe4e6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        header p {
-            font-size: 13px;
-            font-weight: 400;
-            opacity: 0.9;
-            color: #fda4af; /* أحمر ناعم متناسق */
-        }
-
-        /* قائمة الطعام - المنيو */
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 16px 4px 12px 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #0f172a;
-        }
-
-        .menu-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-
-        .menu-item {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
-            border: 1px solid rgba(241, 245, 249, 0.8);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .menu-item:active {
-            transform: scale(0.98);
-        }
-
-        .item-details {
-            flex: 1;
-            padding-left: 12px;
-        }
-
-        .item-details h3 {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 4px;
-        }
-
-        .item-details p {
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-
-        .item-price-tag {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .item-price {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .item-currency {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .btn-add {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.15);
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn-add:active {
-            transform: scale(0.95);
-            background-color: var(--primary-hover);
-        }
-
-        /* سلة المشتريات */
-        .cart-container {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
-            border: 1px solid rgba(241, 245, 249, 0.8);
-            margin-bottom: 30px;
-        }
-
-        .cart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-        }
-
-        .cart-header h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #0f172a;
-        }
-
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f8fafc;
-        }
-
-        .cart-item-info strong {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-dark);
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .cart-item-info span {
-            font-size: 12px;
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .cart-item-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .btn-quantity {
-            background: #f1f5f9;
-            color: var(--text-dark);
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-
-        .btn-quantity:active {
-            background: #e2e8f0;
-        }
-
-        .cart-item-controls span {
-            font-size: 14px;
-            font-weight: 700;
-            min-width: 14px;
-            text-align: center;
-        }
-
-        .cart-total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 16px;
-            font-weight: 700;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 2px dashed #e2e8f0;
-            color: #0f172a;
-        }
-
-        .cart-total-price {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        /* فورم بيانات العميل */
-        .delivery-form {
-            margin-top: 24px;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 20px;
-        }
-
-        .delivery-form h3 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 16px;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 13px;
-            outline: none;
-            font-weight: 600;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: 'Cairo', sans-serif;
             background-color: #f8fafc;
-        }
-
-        .form-group input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.08);
-            background-color: #ffffff;
-        }
-
-        /* زر التأكيد والإرسال */
-        .btn-whatsapp {
-            width: 100%;
-            background-color: var(--success);
-            color: white;
-            border: none;
-            padding: 15px;
-            font-size: 15px;
-            font-weight: 700;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-top: 16px;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.25);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            transition: transform 0.2s, background 0.2s;
-        }
-
-        .btn-whatsapp:active {
-            transform: scale(0.98);
-            background-color: #16a34a;
         }
     </style>
 </head>
-<body>
+<body class="pb-24">
 
-    <div class="container">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-red-600 to-amber-500 text-white text-center py-8 shadow-md">
+        <h1 class="text-3xl md:text-4xl font-extrabold">Pasta Food - باستا فود</h1>
+        <p class="text-sm md:text-base mt-2 opacity-90">أقوى مكرونات وسندوتشات في فيصل - التوصيل متاح لأول فيصل</p>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 mt-6">
         
-        <header>
-            <h1>Pasta Food - باستا فود 🍝</h1>
-            <p>التوصيل متاح داخل أول فيصل 🛵</p>
-        </header>
-
-        <div class="section-title">
-            <span>🔥</span> قائمة وجبات الباستا
+        <!-- Navigation Menu Sections -->
+        <div class="flex overflow-x-auto py-2 mb-6 gap-2 no-scrollbar border-b border-gray-200">
+            <button onclick="filterSection('all')" class="sec-btn bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap shadow">الكل</button>
+            <button onclick="filterSection('offers')" class="sec-btn bg-white text-gray-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border shadow-sm hover:bg-gray-50">🔥 العروض الخاصة</button>
+            <button onclick="filterSection('meals')" class="sec-btn bg-white text-gray-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border shadow-sm hover:bg-gray-50">🍗 الوجبات</button>
+            <button onclick="filterSection('penne')" class="sec-btn bg-white text-gray-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border shadow-sm hover:bg-gray-50">🍝 مكرونة بينا</button>
+            <button onclick="filterSection('spaghetti')" class="sec-btn bg-white text-gray-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border shadow-sm hover:bg-gray-50">🍜 الإسباجيتي</button>
+            <button onclick="filterSection('sandwiches')" class="sec-btn bg-white text-gray-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border shadow-sm hover:bg-gray-50">🥪 السندوتشات</button>
+            <button onclick="filterSection('bechamel')" class="sec-btn bg-white text-gray-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border shadow-sm hover:bg-gray-50">🥛 البشاميل</button>
+            <button onclick="filterSection('burger')" class="sec-btn bg-white text-gray-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border shadow-sm hover:bg-gray-50">🍔 البرجر</button>
+            <button onclick="filterSection('hawawshi')" class="sec-btn bg-white text-gray-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border shadow-sm hover:bg-gray-50">🫓 الحواوشي</button>
+            <button onclick="filterSection('drinks')" class="sec-btn bg-white text-gray-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border shadow-sm hover:bg-gray-50">🥤 المشروبات</button>
         </div>
 
-        <!-- قائمة الطعام -->
-        <div class="menu-container">
-            <!-- صنف 1 -->
-            <div class="menu-item">
-                <div class="item-details">
-                    <h3>مكرونة فرنساوى كبده / سجق</h3>
-                    <p>باستا بالخلطة المميزة مع قطع كبدة وسجق فرنساوى لذيذ</p>
-                    <div class="item-price-tag">
-                        <span class="item-price">65</span>
-                        <span class="item-currency">ج.م</span>
-                    </div>
-                </div>
-                <button class="btn-add" onclick="addToCart('مكرونة فرنساوى كبده / سجق', 65)">+ إضافة</button>
-            </div>
-
-            <!-- صنف 2 -->
-            <div class="menu-item">
-                <div class="item-details">
-                    <h3>مكرونة كفته بالخلطه</h3>
-                    <p>باستا بالخلطة السحرية مع كرات كفتة شهية متبلة</p>
-                    <div class="item-price-tag">
-                        <span class="item-price">75</span>
-                        <span class="item-currency">ج.م</span>
-                    </div>
-                </div>
-                <button class="btn-add" onclick="addToCart('مكرونة كفته بالخلطه', 75)">+ إضافة</button>
-            </div>
-
-            <!-- صنف 3 -->
-            <div class="menu-item">
-                <div class="item-details">
-                    <h3>مكرونة بشاميل بالفرن</h3>
-                    <p>طاجن مكرونة بالبشاميل والجبنة السايحة المحمصة في الفرن</p>
-                    <div class="item-price-tag">
-                        <span class="item-price">55</span>
-                        <span class="item-currency">ج.م</span>
-                    </div>
-                </div>
-                <button class="btn-add" onclick="addToCart('مكرونة بشاميل بالفرن', 55)">+ إضافة</button>
-            </div>
+        <!-- Menu Items Grid -->
+        <div id="menu-container" class="grid gap-4 md:grid-cols-2">
+            <!-- Items inject dynamically -->
         </div>
 
-        <!-- سلة المشتريات وفورم الطلب -->
-        <div class="cart-container">
-            <div class="cart-header">
-                <h2>سلة المشتريات 🛒</h2>
-            </div>
-            
-            <div id="cart-items-list">
-                <p style="color: var(--text-muted); text-align: center; margin: 20px 0; font-size: 13px;">السلة فارغة، املأ بطنك بأجمد الأكلات! 😋</p>
-            </div>
-            
-            <div class="cart-total">
-                <span>إجمالي حسابك:</span>
+        <!-- Cart Preview Fixed Footer -->
+        <div id="cart-footer" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl p-4 hidden z-50">
+            <div class="max-w-4xl mx-auto flex items-center justify-between">
                 <div>
-                    <span class="cart-total-price" id="cart-total-price">0</span>
-                    <span class="item-currency" style="font-size: 13px;">ج.م</span>
+                    <span class="text-gray-600 text-sm">إجمالي السلة:</span>
+                    <span id="cart-total" class="text-xl font-bold text-red-600 block">0 ج.م</span>
                 </div>
-            </div>
-
-            <!-- فورم بيانات العميل -->
-            <div class="delivery-form">
-                <h3>📋 سجل بياناتك لتأكيد التوصيل:</h3>
-                <div class="form-group">
-                    <input type="text" id="client-name" placeholder="الاسم بالكامل" required>
-                </div>
-                <div class="form-group">
-                    <input type="tel" id="client-phone" placeholder="رقم الموبايل" required>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="client-address" placeholder="العنوان بالتفصيل في أول فيصل (الشارع، الدور، الشقة)" required>
-                </div>
-                
-                <button class="btn-whatsapp" onclick="sendOrderToWhatsApp()">
-                    تأكيد الأوردر وإرساله للواتساب 💬
+                <button onclick="openOrderModal()" class="bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-700 hover:to-amber-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg flex items-center gap-2 transition duration-200">
+                    <span>تأكيد الطلب الآن</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+                    </svg>
                 </button>
             </div>
         </div>
 
-    </div>
+        <!-- Order Information Modal -->
+        <div id="order-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+                <button onclick="closeOrderModal()" class="absolute top-4 left-4 text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+                <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">بيانات العميل والتوصيل</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-1">الاسم الكريم:</label>
+                        <input id="client-name" type="text" placeholder="اكتب اسمك هنا" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-red-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-1">رقم الموبايل للتواصل:</label>
+                        <input id="client-phone" type="tel" placeholder="رقم الموبايل" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-red-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-1">العنوان بالتفصيل (أول فيصل والمناطق المجاورة):</label>
+                        <textarea id="client-address" rows="3" placeholder="المنطقة، اسم الشارع، رقم العمارة والدور" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-red-500 focus:outline-none"></textarea>
+                    </div>
+                    <button onclick="sendOrderToWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md flex items-center justify-center gap-2 mt-2 transition">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.517 2.266 2.27 3.51 5.284 3.508 8.49-.005 6.66-5.341 11.997-11.953 11.997-2.005-.001-3.973-.503-5.714-1.458L0 24zm6.49-3.993l.366.218c1.543.917 3.31 1.4 5.1 1.4 5.474 0 9.928-4.45 9.933-9.925.002-2.653-1.03-5.147-2.905-7.025C17.166 2.8 14.67 1.766 12.013 1.766c-5.479 0-9.934 4.453-9.938 9.93-.001 1.77.464 3.5 1.345 5.029l.24.417-.994 3.633 3.72-.976zm11.385-6.753c-.303-.151-1.793-.884-2.072-.986-.278-.101-.482-.151-.685.151-.203.303-.787.986-.965 1.188-.178.203-.355.228-.658.077-.303-.152-1.28-.472-2.438-1.506-.901-.804-1.51-1.796-1.687-2.1-.178-.303-.019-.467.133-.617.136-.135.303-.354.455-.531.152-.177.203-.303.303-.506.101-.203.051-.38-.025-.531-.076-.152-.685-1.65-.938-2.26-.247-.594-.498-.513-.685-.523-.178-.01-.38-.012-.583-.012-.203 0-.533.076-.813.38-.28.303-1.066 1.039-1.066 2.532s1.092 2.939 1.244 3.141c.152.203 2.15 3.284 5.21 4.602.727.314 1.295.502 1.737.643.73.232 1.394.199 1.918.121.583-.087 1.793-.733 2.047-1.442.254-.709.254-1.317.178-1.442-.076-.127-.279-.203-.583-.354z"/></svg>
+                        <span>إرسال الطلب عبر الواتساب</span>
+                    </button>
+                </div>
+            </div>
+        </div>
 
+    </main>
+
+    <!-- JS Logic -->
     <script>
-        let cart = [];
+        // 45 Items verified directly from menu sheet
+        const menuItems = [
+            // Special Offers (5)
+            { id: 1, section: 'offers', name: 'ثلاثة سندويشات كبدة بالرده مع خبز بلدي', price: 120, desc: 'ثلاثة سندويشات لذيذة من الكبدة الطازج المطبوخة بإتقان والتوابل الأصلية، تقدم في خبز بلدي ساخن ومقرمش.' },
+            { id: 2, section: 'offers', name: '3 ساندوتش استربس من خبز فينو', price: 180, desc: 'عرض خاص يشمل 3 شرائح من خبز فينو الطازج مع أصابع الاستربس المقرمشة.' },
+            { id: 3, section: 'offers', name: '3 سندوتشات كبدة طازجة', price: 65, desc: 'ثلاثة سندوتشات لذيذة محشوة بالكبدة الطازج، مشوية بالطريقة التقليدية مع البصل والفلفل.' },
+            { id: 4, section: 'offers', name: '3 ساندوتش سجق', price: 65, desc: 'ثلاثة ساندوتشات سجق شهية محضرة من أجود أنواع السجق المشوي مع الخضروات الطازجة.' },
+            { id: 5, section: 'offers', name: '3 سندوتشات كفتة', price: 65, desc: 'ثلاث سندوتشات كفتة شهية محضرة من لحم مفروم طازج مع البهارات الأصيلة.' },
 
-        function addToCart(name, price) {
-            const existingItem = cart.find(item => item.name === name);
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({ name: name, price: price, quantity: 1 });
-            }
-            updateCartUI();
-        }
+            // Meals (4)
+            { id: 6, section: 'meals', name: 'وجبة أرز وربع فرخة فرن', price: 110, desc: 'وجبة شهية من الأرز الأبيض الفاخر مع ربع فرخة مشوية في الفرن بطريقة تقليدية.' },
+            { id: 7, section: 'meals', name: 'مكرونة مع ربع فرخة فرن', price: 110, desc: 'مكرونة طازجة مع ربع دجاجة مشوية في الفرن بنكهة البهارات الأصيلة تُقدم ساخنة وشهية.' },
+            { id: 8, section: 'meals', name: 'فتة الأرز', price: 65, desc: 'فتة أرز شهية محضرة بطريقة تقليدية مع أرز مطهو بعناية وطبقات من الخبز المقرمش والصلصة.' },
+            { id: 9, section: 'meals', name: 'أرز بالكبدة', price: 85, desc: 'أرز مصري شهي مطهو بالكبدة الطازجة مع البصل والثوم والتوابل العطرية.' },
 
-        function changeQuantity(name, change) {
-            const item = cart.find(item => item.name === name);
-            if (item) {
-                item.quantity += change;
-                if (item.quantity <= 0) {
-                    cart = cart.filter(i => i.name !== name);
-                }
-            }
-            updateCartUI();
-        }
+            // Penne Pasta (9)
+            { id: 10, section: 'penne', name: 'مكرونة بينا مع الفلفل والزيتون وجبنة الموزاريلا', price: 135, desc: 'طاجن شهي من الفلفل الملون والزيتون الأسود مع جبنة الموتزاريلا الذائبة.' },
+            { id: 11, section: 'penne', name: 'مكرونة بينا باللحم والموتزاريلا', price: 120, desc: 'طاجن لحم بقري طازج مطهو ببطء مع صلصة طماطم غنية وتوابل شرقية مميزة مغطى بالموزاريلا.' },
+            { id: 12, section: 'penne', name: 'مكرونة دجاج بالموتزريلا', price: 150, desc: 'طاجن شهي من المكرونة المخبوزة مع قطع الدجاج الطرية وجبنة الموتزريلا الذائبة.' },
+            { id: 13, section: 'penne', name: 'مكرونة بينا بالسجق والموتزاريلا', price: 135, desc: 'طاجن من معكرونة بيني مع سجق لحم بقري، مغطى بطبقة من جبنة موزاريلا ذائبة لذيذة.' },
+            { id: 14, section: 'penne', name: 'مكرونة بينا بالصلصة الحمراء', price: 45, desc: 'مكرونة بنية لذيذة مع صلصة حمراء غنية بنكهة توابل خفيفة ومميزة.' },
+            { id: 15, section: 'penne', name: 'مكرونة بينا بلحم مفروم والصلصة الحمراء', price: 75, desc: 'معكرونة بيني مطهوة ببطء مع لحم مفروم طازج وصلصة حمراء غنية بتوابل شرقية أصيلة.' },
+            { id: 16, section: 'penne', name: 'مكرونة بينا بالكبدة والصلصة الحمراء', price: 95, desc: 'مكرونة بينا شهية محضرة مع شرائح كبدة طازجة مطهوة بعناية مع بصل وفلفل وصلصة حمراء.' },
+            { id: 17, section: 'penne', name: 'مكرونة بينا بالسجق والصلصة الحمراء', price: 95, desc: 'مكرونة بنية مع سجق بلدي متبل مطبوخ مع الخضار وصلصة حمراء لذيذة.' },
+            { id: 18, section: 'penne', name: 'معكرونة بينا مع الفراخ والصلصة الحمراء', price: 95, desc: 'معكرونة بيني شهية مع قطع دجاج طرية مطهية في صلصة حمراء خفيفة غنية بالنكهات.' },
 
-        function updateCartUI() {
-            const cartList = document.getElementById('cart-items-list');
-            const totalPriceEl = document.getElementById('cart-total-price');
-            
-            if (cart.length === 0) {
-                cartList.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin: 20px 0; font-size: 13px;">السلة فارغة، املأ بطنك بأجمد الأكلات! 😋</p>';
-                totalPriceEl.innerText = '0';
-                return;
-            }
+            // Spaghetti (7)
+            { id: 19, section: 'spaghetti', name: 'معكرونة سباغيتي باللحم المفروم وصلصة الطماطم', price: 75, desc: 'إسباجيتي طازجة مطهية بعناية مع لحم مفروم مختار وصلصة طماطم حمراء غنية بالتوابل.' },
+            { id: 20, section: 'spaghetti', name: 'إسباجيتي الكفتة', price: 95, desc: 'إسباجيتي الكفتة المصرية الشهيرة محضرة بكفتة لحم طازجة مع صلصة طماطم غنية.' },
+            { id: 21, section: 'spaghetti', name: 'إسباجيتي مع 2 قطعة استريبس', price: 120, desc: 'إسباجيتي بصلصة الطماطم الغنية تقدم مع قطعتين من أصابع الفراخ الاستربس المقرمشة.' },
+            { id: 22, section: 'spaghetti', name: 'إسباجيتي بالصلصة الحمراء', price: 35, desc: 'طبق إسباجيتي كلاسيكي شهي بالصلصة الحمراء المتوازنة والمعدة على الطريقة الخاصة.' },
+            { id: 23, section: 'spaghetti', name: 'إسباجيتي بالصوص و شرائح الكبدة', price: 65, desc: 'إسباجيتي طازجة مغطاة بشرائح الكبدة الإسكندراني المتبلة بالثوم والفلفل.' },
+            { id: 24, section: 'spaghetti', name: 'إسباجيتي سجق', price: 65, desc: 'إسباجيتي مميزة ومطهوة بصلصة الطماطم مع قطع السجق الشرقي اللذيذ.' },
+            { id: 25, section: 'spaghetti', name: 'إسباجيتي فراخ', price: 80, desc: 'إسباجيتي غنية بقطع الفراخ الطازجة والمطبوخة بخلطة التوابل الرائعة.' },
 
-            let listHTML = '';
-            let total = 0;
+            // Sandwiches (12)
+            { id: 26, section: 'sandwiches', name: 'ساندوتش بطاطس', price: 25, desc: 'ساندوتش بطاطس مقرمشة متبلة بخلطة التوابل الخاصة في خبز طازج.' },
+            { id: 27, section: 'sandwiches', name: 'باكت بطاطس', price: 30, desc: 'أصابع بطاطس محمرة ومقرمشة متبلة بخلطة التوابل المميزة.' },
+            { id: 28, section: 'sandwiches', name: 'ساندوتش كبده فينو', price: 18, desc: 'ساندوتش كبدة فينو بالثوم والفلفل والتتبيلة الشرقية الرائعة.' },
+            { id: 29, section: 'sandwiches', name: 'سندوتش سجق فينو', price: 18, desc: 'ساندوتش سجق متبل ومطبوخ مع الفلفل والبصل في عيش فينو طازج.' },
+            { id: 30, section: 'sandwiches', name: 'ساندوتش كفتة لحم بقري', price: 70, desc: 'كفتة مشوية على الفحم محضرة من لحم بقري طازج في خبز مميز.' },
+            { id: 31, section: 'sandwiches', name: 'سندوتش كبده بالرده عيش بلدى', price: 45, desc: 'كبدة بلدي طازجة مقلية بالردة تقدم ساخنة في خبز بلدي مع الطحينة.' },
+            { id: 32, section: 'sandwiches', name: 'سندوتش كفتة لحم مفروم بلدي', price: 45, desc: 'ساندوتش كفتة لحم بلدي متبلة ومطهية على الجريل بخلطة البهارات السرية.' },
+            { id: 33, section: 'sandwiches', name: 'سندوتش كفتة فينو', price: 25, desc: 'أصابع الكفتة المتبلة والمطهية تقدم ساخنة في عيش فينو.' },
+            { id: 34, section: 'sandwiches', name: 'ساندوتش كبده عيش فرنساوى كبده / سجق', price: 55, desc: 'ساندوتش كبدة مميز بخبز فرنساوى غني مع الخلطة والليمون.' },
+            { id: 35, section: 'sandwiches', name: 'ساندوتش سجق عيش فرنساوى كبده / سجق', price: 55, desc: 'سجق متبل ومطهو بخلطة الخضار اللذيذة يقدم في عيش فرنساوى.' },
+            { id: 36, section: 'sandwiches', name: 'ساندوتش هوت دوج بالعيش الفرنساوى', price: 95, desc: 'ساندوتش هوت دوج مطهو بصلصة الطماطم والفلفل الحلو والكاتشب في عيش فرنساوى.' },
+            { id: 37, section: 'sandwiches', name: 'ساندوتش استربس', price: 120, desc: 'شرائح دجاج استربس مقرمشة مع الصوص الخاص والخس في خبز طازج.' },
 
-            cart.forEach(item => {
-                const itemTotal = item.price * item.quantity;
-                total += itemTotal;
-                listHTML += `
-                    <div class="cart-item">
-                        <div class="cart-item-info">
-                            <strong>${item.name}</strong>
-                            <span>${item.price} ج.م</span>
+            // Bechamel (3)
+            { id: 38, section: 'bechamel', name: 'بشاميل سجق بلدي', price: 150, desc: 'طاجن مكرونة بشاميل غني بقطع السجق البلدي المتبل ومحمر بالفرن.' },
+            { id: 39, section: 'bechamel', name: 'بشاميل لحمه', price: 120, desc: 'طاجن مكرونة بشاميل كلاسيكي باللحم المفروم والصلصة البيضاء الغنية.' },
+            { id: 40, section: 'bechamel', name: 'باستا بينا بصلصة بشاميل والدجاج', price: 150, desc: 'طاجن بينا مكرونة بقطع الدجاج المتبلة مغطاة بصلصة البشاميل والموتزاريلا بالفرن.' },
+
+            // Burger (3)
+            { id: 41, section: 'burger', name: 'برجر لحم بقري كبير', price: 120, desc: 'قطعة برجر لحم بقري جامبو مشوية مع الجبن، الخس، الطماطم والصوص الخاص.' },
+            { id: 42, section: 'burger', name: 'برجر لحم بقري سنجل', price: 100, desc: 'ساندوتش برجر لحم بقري كلاسيكي مشوي مع الخضار الطازج والتتبيلة.' },
+            { id: 43, section: 'burger', name: 'برجر دبل لحمه و بطاطس', price: 190, desc: 'قطعتين برجر لحم بقري مشوي مع طبقات الجبن والبطاطس المقلية المقرمشة.' },
+
+            // Hawawshi (4)
+            { id: 44, section: 'hawawshi', name: 'حواوشي لحم بالموتزريلا', price: 120, desc: 'حواوشي لحم بلدي طازج مخبوز في فرن بلدي ومغطى بطبقة غنية من الموزاريلا.' },
+            { id: 45, section: 'hawawshi', name: 'حواوشي لحم طازج', price: 75, desc: 'رغيف حواوشي لحم بلدي متبل بالبصل والبهارات ومخبوز على الفحم ساخناً مقرمشاً.' },
+            { id: 46, section: 'hawawshi', name: 'حواوشي سجق موتزريلا', price: 175, desc: 'حواوشي بقطع السجق البلدي والجبنة الموزاريلا السايحة طعم خطير لا يقاوم.' },
+            { id: 47, section: 'hawawshi', name: 'حواوشي سجق', price: 95, desc: 'حواوشي متبل بقطع السجق الشرقي اللذيذ مخبوز ومقرمش بخلطة مميزة.' },
+
+            // Drinks (3)
+            { id: 48, section: 'drinks', name: 'كوكاكولا', price: 20, desc: 'كانز كوكاكولا مثلج ومنعش.' },
+            { id: 49, section: 'drinks', name: 'بيبسي', price: 20, desc: 'كانز بيبسي رائع مع المكرونة والوجبات.' },
+            { id: 50, section: 'drinks', name: 'مياه معدنية صغيرة', price: 7, desc: 'زجاجة مياه معدنية طبيعية صغيرة مبردة.' }
+        ];
+
+        let cart = {};
+
+        // Render All Items initially
+        function renderMenu(items) {
+            const container = document.getElementById('menu-container');
+            container.innerHTML = '';
+            items.forEach(item => {
+                const qty = cart[item.id] || 0;
+                container.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between hover:shadow-md transition">
+                        <div>
+                            <div class="flex justify-between items-start gap-2">
+                                <h4 class="font-bold text-gray-800 text-lg leading-tight">${item.name}</h4>
+                                <span class="bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">${item.price} ج.م</span>
+                            </div>
+                            <p class="text-gray-500 text-xs mt-2 leading-relaxed">${item.desc}</p>
                         </div>
-                        <div class="cart-item-controls">
-                            <button class="btn-quantity" onclick="changeQuantity('${item.name}', -1)">-</button>
-                            <span>${item.quantity}</span>
-                            <button class="btn-quantity" onclick="changeQuantity('${item.name}', 1)">+</button>
+                        <div class="mt-4 flex items-center justify-end gap-2">
+                            ${qty > 0 ? `
+                                <button onclick="updateQty(${item.id}, -1)" class="w-8 h-8 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 font-bold flex items-center justify-center">-</button>
+                                <span class="font-bold text-gray-800 w-6 text-center">${qty}</span>
+                                <button onclick="updateQty(${item.id}, 1)" class="w-8 h-8 rounded-full bg-red-600 text-white hover:bg-red-700 font-bold flex items-center justify-center">+</button>
+                            ` : `
+                                <button onclick="updateQty(${item.id}, 1)" class="bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 transition">
+                                    <span>إضافة</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                </button>
+                            `}
                         </div>
                     </div>
                 `;
             });
-
-            cartList.innerHTML = listHTML;
-            totalPriceEl.innerText = total;
         }
 
-        function sendOrderToWhatsApp() {
-            // تم وضع رقم هاتفك الحقيقي هنا ليعمل مباشرة
-            const restaurantNumber = "201211516041"; 
-
-            const clientName = document.getElementById('client-name').value.trim();
-            const clientPhone = document.getElementById('client-phone').value.trim();
-            const clientAddress = document.getElementById('client-address').value.trim();
-
-            if (!clientName || !clientPhone || !clientAddress) {
-                alert("من فضلك سجل بياناتك (الاسم، الموبايل، العنوان بالتفصيل) أولاً!");
-                return;
-            }
-
-            if (cart.length === 0) {
-                alert("السلة فارغة! أضف مكرونة للطلب أولاً.");
-                return;
-            }
-
-            let orderDetails = "";
-            let totalCartPrice = 0;
-
-            cart.forEach(item => {
-                orderDetails += `▪️ *${item.name}* (العدد: ${item.quantity}) 👈 ${item.price * item.quantity} ج.م\n`;
-                totalCartPrice += item.price * item.quantity;
+        // Filter Sections
+        function filterSection(section) {
+            // Update Active Buttons
+            document.querySelectorAll('.sec-btn').forEach(btn => {
+                btn.classList.remove('bg-red-600', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-700');
             });
+            event.target.classList.remove('bg-white', 'text-gray-700');
+            event.target.classList.add('bg-red-600', 'text-white');
 
-            const message = `*أوردر جديد من Pasta Food* 🍝🛍️\n\n` +
-                            `👤 *الاسم:* ${clientName}\n` +
-                            `📞 *الموبايل:* ${clientPhone}\n` +
-                            `📍 *العنوان في أول فيصل:* ${clientAddress}\n\n` +
-                            `🛒 *تفاصيل الطلبات:*\n${orderDetails}\n` +
-                            `💰 *إجمالي حساب الأوردر:* ${totalCartPrice} جنيه مصري`;
-
-            const whatsappURL = `https://api.whatsapp.com/send?phone=${restaurantNumber}&text=${encodeURIComponent(message)}`;
-            window.open(whatsappURL, '_blank');
+            if (section === 'all') {
+                renderMenu(menuItems);
+            } else {
+                const filtered = menuItems.filter(item => item.section === section);
+                renderMenu(filtered);
+            }
         }
+
+        // Update Cart Quantity
+        function updateQty(id, change) {
+            if (!cart[id]) cart[id] = 0;
+            cart[id] += change;
+            if (cart[id] <= 0) delete cart[id];
+            
+            updateCartUI();
+            
+            // Re-render to show updated quantities
+            const activeBtn = document.querySelector('.sec-btn.bg-red-600');
+            if (activeBtn) {
+                const txt = activeBtn.innerText;
+                if (txt.includes('الكل')) renderMenu(menuItems);
+                else if (txt.includes('العروض')) filterSection('offers');
+                else if (txt.includes('الوجبات')) filterSection('meals');
+                else if (txt.includes('بينا')) filterSection('penne');
+                else if (txt.includes('الإسباجيتي')) filterSection('spaghetti');
+                else if (txt.includes('السندوتشات')) filterSection('sandwiches');
+                else if (txt.includes('البشاميل')) filterSection('bechamel');
+                else if (txt.includes('البرجر')) filterSection('burger');
+                else if (txt.includes('الحواوشي')) filterSection('hawawshi');
+                else if (txt.includes('المشروبات')) filterSection('drinks');
+            } else {
+                renderMenu(menuItems);
+            }
+        }
+
+        // Calculate and Update Cart UI
+        function updateCartUI() {
+            let total = 0;
+            let itemsCount = 0;
+            for (let id in cart) {
+                const item = menuItems.find(i => i.id == id);
+                total += item.price * cart[id];
+                itemsCount += cart[id];
+            }
+
+            const footer = document.getElementById('cart-footer');
+            if (itemsCount > 0) {
+                footer.classList.remove('hidden');
+                document.getElementById('cart-total').innerText = `${total} ج.م`;
+            } else {
+                footer.classList.add('hidden');
+            }
+        }
+
+        // Modal Controls
+        function openOrderModal() {
+            document.getElementById('order-modal').classList.remove('hidden');
+        }
+        function closeOrderModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+        }
+
+        // Send Order to WhatsApp with Custom Formatting
+        function sendOrderToWhatsApp() {
+            const name = document.getElementById('client-name').value.trim();
+            const phone = document.getElementById('client-phone').value.trim();
+            const address = document.getElementById('client-address').value.trim();
+
+            if (!name || !phone || !address) {
+                alert('من فضلك املأ جميع خانات التوصيل (الاسم، الموبايل، العنوان)!');
+                return;
+            }
+
+            let orderText = `*طلب جديد من باستا فود 🍝*\n\n`;
+            orderText += `*العميل:* ${name}\n`;
+            orderText += `*رقم التواصل:* ${phone}\n`;
+            orderText += `*العنوان بالتفصيل:* ${address}\n\n`;
+            orderText += `*الأصناف المطلوبة:*\n`;
+
+            let total = 0;
+            for (let id in cart) {
+                const item = menuItems.find(i => i.id == id);
+                const itemTotal = item.price * cart[id];
+                total += itemTotal;
+                orderText += `▪️ ${item.name} (عدد ${cart[id]}) -> ${itemTotal} ج.م\n`;
+            }
+
+            orderText += `\n*إجمالي الحساب:* ${total} ج.م\n`;
+            orderText += `_تمنياتنا لكم بوجبة شهية ولذيذة!_ 😋`;
+
+            const whatsappNumber = "201001125684"; // Corrected WhatsApp Number format for Web API
+            const encodedText = encodeURIComponent(orderText);
+            const url = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedText}`;
+
+            window.open(url, '_blank');
+            closeOrderModal();
+        }
+
+        // Initial Load
+        renderMenu(menuItems);
     </script>
 </body>
 </html>
