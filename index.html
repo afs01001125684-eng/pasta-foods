@@ -3,87 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>باستا فود | Pasta Food</title>
+    <title>Pasta Food - باستا فود</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #e41e26; --secondary: #ffcc00; --accent: #25D366; --dark: #1a1a1a; }
-        body { font-family: 'Cairo', sans-serif; background: #f8f9fa; margin: 0; padding-bottom: 50px; }
-
-        /* الشريط المضيء */
-        .neon-bar { 
-            background: #000; color: #fff; padding: 12px; overflow: hidden; 
-            border-bottom: 4px solid transparent; 
-            animation: borderAni 3s infinite;
-        }
-        @keyframes borderAni { 
-            0% {border-color: #25D366;} 33% {border-color: #ffcc00;} 66% {border-color: #e41e26;} 
-        }
-        .marquee { white-space: nowrap; animation: scroll 12s linear infinite; font-weight: 900; font-size: 1.3rem; letter-spacing: 2px; }
+        :root { --main: #e41e26; --accent: #25D366; }
+        body { font-family: 'Cairo', sans-serif; background: #fdfdfd; margin: 0; }
+        
+        /* الشريط العلوي */
+        .neon-bar { background: #000; color: #fff; padding: 10px; overflow: hidden; border-bottom: 3px solid var(--accent); }
+        .marquee { white-space: nowrap; animation: scroll 10s linear infinite; font-weight: 800; }
         @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
-        /* الشعار والتوصيل */
-        .header-section { text-align: center; padding: 20px; background: white; }
-        .logo { width: 150px; height: auto; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
-        .delivery-bar { 
-            background: white; padding: 15px; margin: 10px auto; width: 90%; max-width: 500px;
-            border-radius: 50px; text-align: center; font-weight: 800; font-size: 1.1rem;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 2px solid var(--secondary);
-        }
-        .scooter { font-size: 1.8rem; animation: drive 2s linear infinite; }
-        @keyframes drive { 0% { transform: translateX(0); } 50% { transform: translateX(15px); } 100% { transform: translateX(0); } }
+        /* حركة السكوتر بعرض الشاشة */
+        .road-container { background: #eee; height: 60px; position: relative; overflow: hidden; border-bottom: 2px solid #ddd; }
+        .scooter-run { position: absolute; font-size: 2rem; animation: moveScooter 8s linear infinite; top: 10px; }
+        @keyframes moveScooter { from { left: -50px; } to { left: 100%; } }
+        .delivery-text { text-align: center; font-weight: 700; padding-top: 20px; }
 
-        /* أقسام المنيو */
-        .section-title { text-align: center; color: var(--primary); margin: 30px 0 15px; font-weight: 900; }
-        .menu-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 20px; padding: 0 20px; max-width: 1200px; margin: auto; 
-        }
-        .item { 
-            background: white; padding: 15px; border-radius: 20px; text-align: center; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: 0.3s;
-        }
-        .item:hover { transform: translateY(-5px); }
-        .item img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; }
-        .item h3 { margin: 5px 0; font-size: 1.2rem; }
-        .price { color: var(--primary); font-weight: 900; font-size: 1.3rem; }
+        /* هيكل المنيو */
+        .menu-container { padding: 20px; }
+        .category { margin-bottom: 30px; }
+        .item-card { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button { background: var(--main); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+
+        /* السلة */
+        .cart-bar { position: fixed; bottom: 0; width: 100%; background: var(--main); color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<!-- الشريط العلوي -->
-<div class="neon-bar"><div class="marquee">✨ نورتنا في باستا فود! ✨ نورتنا في باستا فود!</div></div>
+<div class="neon-bar"><div class="marquee">✨ نورتنا في باستا فود! توصيل سريع لجميع أنحاء الجيزة ✨</div></div>
 
-<!-- الشعار -->
-<div class="header-section">
-    <img src="https://via.placeholder.com/150/e41e26/ffffff?text=PastaFood" alt="Logo" class="logo">
-    <div class="delivery-bar">
-        <div class="scooter">🛵</div>
-        <span>التوصيل متاح في أنحاء الجيزة</span>
+<div class="road-container">
+    <div class="scooter-run">🛵</div>
+</div>
+<div class="delivery-text">التوصيل متاح في جميع أنحاء الجيزة</div>
+
+<div class="menu-container" id="menu">
+    <!-- المكرونات -->
+    <div class="category">
+        <h2>🍝 المكرونات</h2>
+        <div class="item-card"><span>مكرونة موتزاريلا</span><span class="price">135 ج.م</span><button onclick="addToCart('مكرونة موتزاريلا', 135)">إضافة</button></div>
+        <div class="item-card"><span>مكرونة باللحم</span><span class="price">120 ج.م</span><button onclick="addToCart('مكرونة باللحم', 120)">إضافة</button></div>
+    </div>
+
+    <!-- السندوتشات -->
+    <div class="category">
+        <h2>🥪 السندوتشات</h2>
+        <div class="item-card"><span>سندوتش كبدة</span><span class="price">45 ج.م</span><button onclick="addToCart('سندوتش كبدة', 45)">إضافة</button></div>
+        <div class="item-card"><span>سندوتش كفتة</span><span class="price">70 ج.م</span><button onclick="addToCart('سندوتش كفتة', 70)">إضافة</button></div>
     </div>
 </div>
 
-<!-- المكرونات -->
-<h2 class="section-title">🍝 المكرونات</h2>
-<div class="menu-grid">
-    <div class="item"><img src="https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"><h3>مكرونة موتزاريلا</h3><p class="price">135 ج.م</p></div>
-    <div class="item"><img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725480512/67863dc2-e7ef-4370-9f8b-c32cdc6176c3.jpg"><h3>مكرونة باللحم</h3><p class="price">120 ج.م</p></div>
-</div>
+<div class="cart-bar" onclick="showCart()">🛒 السلة (<span id="cart-count">0</span> أصناف) - المجموع: <span id="cart-total">0</span> ج.م</div>
 
-<!-- السندوتشات -->
-<h2 class="section-title">🥪 السندوتشات</h2>
-<div class="menu-grid">
-    <div class="item"><img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"><h3>سندوتش كبدة بالردة</h3><p class="price">45 ج.م</p></div>
-    <div class="item"><img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/509893df-a06e-41f1-861b-87906f86789b.jpg"><h3>سندوتش كفتة</h3><p class="price">70 ج.م</p></div>
-</div>
-
-<!-- الحواوشي -->
-<h2 class="section-title">🔥 الحواوشي</h2>
-<div class="menu-grid">
-    <div class="item"><img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"><h3>حواوشي موتزاريلا</h3><p class="price">120 ج.م</p></div>
-    <div class="item"><img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c0609a4a-7402-45bc-92e3-191c25bee038.jpg"><h3>حواوشي لحم</h3><p class="price">75 ج.م</p></div>
-</div>
+<script>
+    let cart = [];
+    let total = 0;
+    function addToCart(name, price) {
+        cart.push({name, price});
+        total += price;
+        document.getElementById('cart-count').innerText = cart.length;
+        document.getElementById('cart-total').innerText = total;
+        alert(name + " تمت إضافته للسلة!");
+    }
+    function showCart() {
+        if(cart.length === 0) alert("السلة فارغة");
+        else alert("محتويات السلة: " + cart.map(i => i.name).join(", "));
+    }
+</script>
 
 </body>
 </html>
