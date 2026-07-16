@@ -152,7 +152,7 @@
 
 <header>
     <h1>باستا فود 🍝</h1>
-    <p>أسرع دليفري و للأكل المظبوط</p>
+    <p>أسرع دليفري للأكل المظبوط</p>
 </header>
 
 <!-- شريط التصنيفات -->
@@ -318,7 +318,7 @@
         }
     }
 
-        function sendWhatsApp() {
+    function sendWhatsApp() {
         const name = document.getElementById("name").value.trim();
         const phone = document.getElementById("phone").value.trim();
         const address = document.getElementById("address").value.trim();
@@ -336,3 +336,11 @@
         
         window.open(`https://wa.me/201001125684?text=${encodeURIComponent(message)}`, '_blank');
     }
+
+    // تشغيل الدوال عند تحميل الصفحة
+    renderCategories();
+    renderMenu();
+</script>
+
+</body>
+</html>
