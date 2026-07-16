@@ -25,7 +25,7 @@
 </head>
 <body>
 
-<header><h1>باستا فود 🍝</h1><p>أسرع دليفري و للأكل المظبوط 🏍</p></header>
+<header><h1>باستا فود 🍝</h1><p>أسرع دليفري للأكل المظبوط 🏍</p></header>
 <div class="menu-container" id="menu"></div>
 
 <div id="cart-bar" onclick="toggleCart()">
@@ -154,19 +154,31 @@
         const phone = document.getElementById("phone").value;
         const address = document.getElementById("address").value;
         const email = document.getElementById("customerEmail").value;
+        
         const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
         const total = subtotal + deliveryFee;
-        const orderDetails = cart.map(i => `${i.name} (${i.price} ج.م)`).join('\n');
-        
+
+        // تجهيز مصفوفة الطلبات للقالب
+        const orderItems = cart.map(item => ({
+            name: item.name,
+            price: item.price
+        }));
+
         emailjs.send('service_a1b2c3d', 'template_8yhqwxa', {
             customer_name: name,
             customer_email: email,
-            order_details: orderDetails,
+            orders: orderItems, 
             delivery_fee: deliveryFee,
             total_amount: total
-        }).then(() => alert("تم إرسال الفاتورة بنجاح!"));
+        }).then(() => {
+            alert("تم إرسال الفاتورة بنجاح!");
+            window.location.reload();
+        }, (err) => {
+            alert("حدث خطأ في الإرسال");
+        });
 
-        const whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n\n🛒 الطلبات:\n${orderDetails}\n\n🛵 رسوم التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total} ج.م`;
+        const orderDetailsText = cart.map(i => `${i.name} (${i.price} ج.م)`).join('\n');
+        const whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n\n🛒 الطلبات:\n${orderDetailsText}\n\n🛵 رسوم التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total} ج.م`;
         window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
     }
 
