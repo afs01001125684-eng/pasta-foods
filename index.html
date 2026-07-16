@@ -43,7 +43,6 @@
             <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للفاتورة">
             <input type="text" id="address" placeholder="عنوان التوصيل بالتفصيل">
         </div>
-        <p>رسوم التوصيل: 50 ج.م</p>
         <button class="submit-btn" onclick="processOrder()">إتمام الطلب وإرسال الفاتورة</button>
         <button class="submit-btn" style="background:#666" onclick="toggleCart()">إغلاق</button>
     </div>
@@ -130,7 +129,7 @@
         document.getElementById("totalPrice").innerText = subtotal + deliveryFee;
     }
 
-        function toggleCart() {
+    function toggleCart() {
         const modal = document.getElementById("modal");
         const cartItemsList = document.getElementById("cart-items-list");
         
@@ -138,20 +137,14 @@
             modal.style.display = "none";
         } else {
             modal.style.display = "block";
-            // حساب الإجمالي الحالي شامل الـ 50 ج.م
             const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
             const total = subtotal + deliveryFee;
             
-            // عرض الطلبات + خانة التوصيل + الإجمالي النهائي
             cartItemsList.innerHTML = cart.map(i => `<p>• ${i.name} - ${i.price} ج.م</p>`).join('') + 
-                                     `<hr style="margin:10px 0">` +
+                                     `<hr style="margin:15px 0; border: 0; border-top: 1px solid #eee;">` +
                                      `<p><strong>رسوم التوصيل: ${deliveryFee} ج.م</strong></p>` +
-                                     `<p style="font-size:1.2rem; font-weight:bold; color:var(--talabat-main);">الإجمالي: ${total} ج.م</p>`;
+                                     `<p style="font-size:1.3rem; font-weight:800; color:#FF5A00; margin-top:10px;">الإجمالي: ${total} ج.م</p>`;
         }
-    }
-
-        document.getElementById("modal").style.display = document.getElementById("modal").style.display === "block" ? "none" : "block";
-        document.getElementById("cart-items-list").innerHTML = cart.map(i => `<p>• ${i.name} - ${i.price} ج.م</p>`).join('');
     }
 
     function processOrder() {
