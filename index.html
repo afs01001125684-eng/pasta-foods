@@ -152,7 +152,7 @@
 
 <header>
     <h1>باستا فود 🍝</h1>
-    <p>أسرع دليفري للأكل المظبوط</p>
+    <p>أسرع دليفري و للأكل المظبوط</p>
 </header>
 
 <!-- شريط التصنيفات -->
@@ -318,7 +318,7 @@
         }
     }
 
-    function sendWhatsApp() {
+        function sendWhatsApp() {
         const name = document.getElementById("name").value.trim();
         const phone = document.getElementById("phone").value.trim();
         const address = document.getElementById("address").value.trim();
@@ -326,18 +326,13 @@
         if(!name || !phone || !address) return alert("يرجى ملء جميع البيانات!");
         if(cart.length === 0) return alert("السلة فارغة!");
 
-        const total = cart.reduce((sum, i) => sum + i.price, 0);
+        const deliveryFee = 50; // رسوم التوصيل الثابتة
+        const subtotal = cart.reduce((sum, i) => sum + i.price, 0); // مجموع الوجبات
+        const total = subtotal + deliveryFee; // المجموع الكلي
+        
         const orderList = cart.map(i => `- ${i.name}`).join('\n');
         
-        const message = `*طلب جديد (طلبات ستايل)* 🛵\n\nالاسم: ${name}\nرقم الهاتف: ${phone}\nالعنوان: ${address}\n\n*الطلبات:*\n${orderList}\n\n*الإجمالي: ${total} ج.م*`;
+        const message = `*طلب جديد من باستا فود* 🛵\n\nالاسم: ${name}\nرقم الهاتف: ${phone}\nالعنوان: ${address}\n\n*الطلبات:*\n${orderList}\n\n*مجموع الطلبات:* ${subtotal} ج.م\n*رسوم التوصيل:* ${deliveryFee} ج.م\n\n*الإجمالي المطلوب:* ${total} ج.م`;
         
         window.open(`https://wa.me/201001125684?text=${encodeURIComponent(message)}`, '_blank');
     }
-
-    // تشغيل الدوال عند تحميل الصفحة
-    renderCategories();
-    renderMenu();
-</script>
-
-</body>
-</html>
