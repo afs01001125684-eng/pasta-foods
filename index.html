@@ -43,6 +43,7 @@
             <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للفاتورة">
             <input type="text" id="address" placeholder="عنوان التوصيل بالتفصيل">
         </div>
+        <p>رسوم التوصيل: 50 ج.م</p>
         <button class="submit-btn" onclick="processOrder()">إتمام الطلب وإرسال الفاتورة</button>
         <button class="submit-btn" style="background:#666" onclick="toggleCart()">إغلاق</button>
     </div>
@@ -52,6 +53,7 @@
 <script>
     (function(){ emailjs.init("BV7OIpSk4gMWrTJCy"); })();
 
+    const deliveryFee = 50;
     const menuItems = [
         {"id": 1, "name": "ثلاثة سندويشات كبدة بالرده", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
         {"id": 2, "name": "3 ساندوتش استربس", "price": 180, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/93c5d7af-05d1-4ab1-8d55-b7b7a8a08eb9.jpg"},
@@ -120,7 +122,12 @@
     function addToCart(id) {
         cart.push(menuItems.find(i => i.id === id));
         document.getElementById("count").innerText = cart.length;
-        document.getElementById("totalPrice").innerText = cart.reduce((sum, i) => sum + i.price, 0);
+        updateTotal();
+    }
+
+    function updateTotal() {
+        const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+        document.getElementById("totalPrice").innerText = subtotal + deliveryFee;
     }
 
     function toggleCart() {
@@ -133,16 +140,18 @@
         const phone = document.getElementById("phone").value;
         const address = document.getElementById("address").value;
         const email = document.getElementById("customerEmail").value;
-        const total = document.getElementById("totalPrice").innerText;
+        const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+        const total = subtotal + deliveryFee;
         const orderDetails = cart.map(i => `${i.name} (${i.price} ج.م)`).join('\n');
         
-        const whatsAppMsg = `طلب جديد من باستا فود 🍝\n\nالاسم: ${name}\nالهاتف: ${phone}\nالعنوان: ${address}\n\nالطلبات:\n${orderDetails}\n\nالإجمالي: ${total} ج.م`;
+        const whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n\n🛒 الطلبات:\n${orderDetails}\n\n🛵 رسوم التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total} ج.م`;
 
         emailjs.send('service_a1b2c3d', 'template_8yhqwxa', {
             customer_name: name,
             order_details: orderDetails,
+            delivery_fee: deliveryFee,
             total_amount: total
-        }).then(() => alert("تم إرسال الفاتورة للإيميل!"));
+        }).then(() => alert("تم إرسال الفاتورة بنجاح!"));
 
         window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
     }
