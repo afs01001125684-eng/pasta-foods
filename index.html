@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasta Food - باستا فود</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e11d48; /* أحمر دافئ مميز للوجبات الشهية */
+            --primary-hover: #be123c;
+            --secondary: #f59e0b; /* لون ذهبي دافئ للمأكولات */
+            --bg-body: #fbfbfb; /* خلفية ناعمة ومريحة للعين */
+            --card-bg: #ffffff;
+            --text-dark: #1e293b; /* لون كحلي داكن جداً للقراءة المريحة */
+            --text-muted: #64748b;
+            --success: #22c55e; /* لون أخضر الواتساب */
+            --border-radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px; /* مقاس مثالي جداً لشاشات الموبايل */
+        }
+
+        /* رأس الصفحة - الهيدر */
+        header {
+            text-align: center;
+            padding: 28px 16px;
+            background: linear-gradient(135deg, #0f172a, #1e293b); /* خلفية فحمية فاخرة */
+            color: white;
+            border-radius: var(--border-radius);
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            background: linear-gradient(to right, #ffffff, #ffe4e6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 13px;
+            font-weight: 400;
+            opacity: 0.9;
+            color: #fda4af; /* أحمر ناعم متناسق */
+        }
+
+        /* قائمة الطعام - المنيو */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 16px 4px 12px 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #0f172a;
+        }
+
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .menu-item {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+            border: 1px solid rgba(241, 245, 249, 0.8);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .menu-item:active {
+            transform: scale(0.98);
+        }
+
+        .item-details {
+            flex: 1;
+            padding-left: 12px;
+        }
+
+        .item-details h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .item-details p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .item-price-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .item-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .item-currency {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .btn-add {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.15);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-add:active {
+            transform: scale(0.95);
+            background-color: var(--primary-hover);
+        }
+
+        /* سلة المشتريات */
+        .cart-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+            border: 1px solid rgba(241, 245, 249, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .cart-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f8fafc;
+        }
+
+        .cart-item-info strong {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .cart-item-info span {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-quantity {
+            background: #f1f5f9;
+            color: var(--text-dark);
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .btn-quantity:active {
+            background: #e2e8f0;
+        }
+
+        .cart-item-controls span {
+            font-size: 14px;
+            font-weight: 700;
+            min-width: 14px;
+            text-align: center;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px dashed #e2e8f0;
+            color: #0f172a;
+        }
+
+        .cart-total-price {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* فورم بيانات العميل */
+        .delivery-form {
+            margin-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+
+        .delivery-form h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 13px;
+            outline: none;
+            font-weight: 600;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #f8fafc;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.08);
+            background-color: #ffffff;
+        }
+
+        /* زر التأكيد والإرسال */
+        .btn-whatsapp {
+            width: 100%;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 16px;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .btn-whatsapp:active {
+            transform: scale(0.98);
+            background-color: #16a34a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <h1>Pasta Food - باستا فود 🍝</h1>
+            <p>التوصيل متاح داخل أول فيصل 🛵</p>
+        </header>
+
+        <div class="section-title">
+            <span>🔥</span> قائمة وجبات الباستا
+        </div>
+
+        <!-- قائمة الطعام -->
+        <div class="menu-container">
+            <!-- صنف 1 -->
+            <div class="menu-item">
+                <div class="item-details">
+                    <h3>مكرونة فرنساوى كبده / سجق</h3>
+                    <p>باستا بالخلطة المميزة مع قطع كبدة وسجق فرنساوى لذيذ</p>
+                    <div class="item-price-tag">
+                        <span class="item-price">65</span>
+                        <span class="item-currency">ج.م</span>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="addToCart('مكرونة فرنساوى كبده / سجق', 65)">+ إضافة</button>
+            </div>
+
+            <!-- صنف 2 -->
+            <div class="menu-item">
+                <div class="item-details">
+                    <h3>مكرونة كفته بالخلطه</h3>
+                    <p>باستا بالخلطة السحرية مع كرات كفتة شهية متبلة</p>
+                    <div class="item-price-tag">
+                        <span class="item-price">75</span>
+                        <span class="item-currency">ج.م</span>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="addToCart('مكرونة كفته بالخلطه', 75)">+ إضافة</button>
+            </div>
+
+            <!-- صنف 3 -->
+            <div class="menu-item">
+                <div class="item-details">
+                    <h3>مكرونة بشاميل بالفرن</h3>
+                    <p>طاجن مكرونة بالبشاميل والجبنة السايحة المحمصة في الفرن</p>
+                    <div class="item-price-tag">
+                        <span class="item-price">55</span>
+                        <span class="item-currency">ج.م</span>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="addToCart('مكرونة بشاميل بالفرن', 55)">+ إضافة</button>
+            </div>
+        </div>
+
+        <!-- سلة المشتريات وفورم الطلب -->
+        <div class="cart-container">
+            <div class="cart-header">
+                <h2>سلة المشتريات 🛒</h2>
+            </div>
+            
+            <div id="cart-items-list">
+                <p style="color: var(--text-muted); text-align: center; margin: 20px 0; font-size: 13px;">السلة فارغة، املأ بطنك بأجمد الأكلات! 😋</p>
+            </div>
+            
+            <div class="cart-total">
+                <span>إجمالي حسابك:</span>
+                <div>
+                    <span class="cart-total-price" id="cart-total-price">0</span>
+                    <span class="item-currency" style="font-size: 13px;">ج.م</span>
+                </div>
+            </div>
+
+            <!-- فورم بيانات العميل -->
+            <div class="delivery-form">
+                <h3>📋 سجل بياناتك لتأكيد التوصيل:</h3>
+                <div class="form-group">
+                    <input type="text" id="client-name" placeholder="الاسم بالكامل" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="client-phone" placeholder="رقم الموبايل" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="client-address" placeholder="العنوان بالتفصيل في أول فيصل (الشارع، الدور، الشقة)" required>
+                </div>
+                
+                <button class="btn-whatsapp" onclick="sendOrderToWhatsApp()">
+                    تأكيد الأوردر وإرساله للواتساب 💬
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let cart = [];
+
+        function addToCart(name, price) {
+            const existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name: name, price: price, quantity: 1 });
+            }
+            updateCartUI();
+        }
+
+        function changeQuantity(name, change) {
+            const item = cart.find(item => item.name === name);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.name !== name);
+                }
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartList = document.getElementById('cart-items-list');
+            const totalPriceEl = document.getElementById('cart-total-price');
+            
+            if (cart.length === 0) {
+                cartList.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin: 20px 0; font-size: 13px;">السلة فارغة، املأ بطنك بأجمد الأكلات! 😋</p>';
+                totalPriceEl.innerText = '0';
+                return;
+            }
+
+            let listHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                listHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <strong>${item.name}</strong>
+                            <span>${item.price} ج.م</span>
+                        </div>
+                        <div class="cart-item-controls">
+                            <button class="btn-quantity" onclick="changeQuantity('${item.name}', -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="btn-quantity" onclick="changeQuantity('${item.name}', 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            cartList.innerHTML = listHTML;
+            totalPriceEl.innerText = total;
+        }
+
+        function sendOrderToWhatsApp() {
+            // تم وضع رقم هاتفك الحقيقي هنا ليعمل مباشرة
+            const restaurantNumber = "201211516041"; 
+
+            const clientName = document.getElementById('client-name').value.trim();
+            const clientPhone = document.getElementById('client-phone').value.trim();
+            const clientAddress = document.getElementById('client-address').value.trim();
+
+            if (!clientName || !clientPhone || !clientAddress) {
+                alert("من فضلك سجل بياناتك (الاسم، الموبايل، العنوان بالتفصيل) أولاً!");
+                return;
+            }
+
+            if (cart.length === 0) {
+                alert("السلة فارغة! أضف مكرونة للطلب أولاً.");
+                return;
+            }
+
+            let orderDetails = "";
+            let totalCartPrice = 0;
+
+            cart.forEach(item => {
+                orderDetails += `▪️ *${item.name}* (العدد: ${item.quantity}) 👈 ${item.price * item.quantity} ج.م\n`;
+                totalCartPrice += item.price * item.quantity;
+            });
+
+            const message = `*أوردر جديد من Pasta Food* 🍝🛍️\n\n` +
+                            `👤 *الاسم:* ${clientName}\n` +
+                            `📞 *الموبايل:* ${clientPhone}\n` +
+                            `📍 *العنوان في أول فيصل:* ${clientAddress}\n\n` +
+                            `🛒 *تفاصيل الطلبات:*\n${orderDetails}\n` +
+                            `💰 *إجمالي حساب الأوردر:* ${totalCartPrice} جنيه مصري`;
+
+            const whatsappURL = `https://api.whatsapp.com/send?phone=${restaurantNumber}&text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+</body>
+</html>
