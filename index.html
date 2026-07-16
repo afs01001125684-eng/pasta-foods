@@ -342,6 +342,30 @@
     renderCategories();
     renderMenu();
 </script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+  (function(){
+    // تهيئة الخدمة باستخدام مفتاحك العام
+    emailjs.init("BV7OIpSk4gMWrTJCy"); 
+  })();
+
+  function sendOrder() {
+    // تجهيز البيانات التي ستظهر في الإيميل
+    var templateParams = {
+      to_name: "عميل باستا فود", 
+      total_amount: document.getElementById('totalPrice').innerText, 
+      message: "شكراً لطلبك من باستا فود، طلبك في الطريق إليك!"
+    };
+
+    // إرسال الإيميل (تأكد من استبدال service_xxxxx بمعرف الخدمة الخاص بك)
+    emailjs.send('service_xxxxx', 'template_8yhqwxa', templateParams)
+      .then(function(response) {
+         alert('تم إرسال الفاتورة إلى إيميل العميل بنجاح!');
+      }, function(error) {
+         alert('حدث خطأ في الإرسال: ' + JSON.stringify(error));
+      });
+  }
+</script>
 
 </body>
 </html>
