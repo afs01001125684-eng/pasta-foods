@@ -102,3 +102,15 @@
 </script>
 </body>
 </html>
+    function addToCart(id) {
+        const item = items.find(i => i.id === id);
+        cart.push(item);
+        
+        // تحديث الرقم في السلة العائمة
+        document.getElementById('count').innerText = cart.length;
+        
+        // تأثير بصري بسيط عند الإضافة (اختياري)
+        const footer = document.getElementById('cart-footer');
+        footer.style.transform = "scale(1.05)";
+        setTimeout(() => { footer.style.transform = "scale(1)"; }, 200);
+    }
