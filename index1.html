@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasta Food | باستا فود</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #FF3B30; --secondary: #2C2C2E; --bg: #F9F9FB; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; }
+        
+        /* التصنيفات */
+        .categories { display: flex; gap: 10px; padding: 20px; overflow-x: auto; background: white; position: sticky; top: 0; z-index: 50; }
+        .cat-btn { padding: 8px 20px; border-radius: 20px; border: 1px solid var(--secondary); cursor: pointer; background: white; white-space: nowrap; transition: 0.3s; }
+        .cat-btn.active { background: var(--secondary); color: white; }
+
+        /* الشبكة */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 20px; max-width: 1100px; margin: auto; }
+        .card { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 160px; border-radius: 15px; object-fit: cover; }
+        .controls { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+        .qty-btn { width: 35px; height: 35px; border-radius: 50%; border: none; background: #eee; cursor: pointer; font-weight: bold; }
+        
+        /* السلة العائمة */
+        .cart-float { position: fixed; bottom: 20px; left: 20px; background: var(--primary); color: white; padding: 15px 25px; border-radius: 50px; cursor: pointer; z-index: 100; box-shadow: 0 5px 15px rgba(255,59,48,0.3); font-weight: 700; }
+        
+        /* النافذة المنبثقة */
+        .modal { display: none; position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 200; overflow-y: auto; }
+        .modal-content { background: white; width: 90%; max-width: 450px; margin: 40px auto; padding: 25px; border-radius: 20px; }
+        input, textarea, select { width: 100%; margin: 8px 0; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+<div class="categories" id="categories">
+    <button class="cat-btn active" onclick="filterMenu('الكل')">الكل</button>
+    <button class="cat-btn" onclick="filterMenu('مكرونة')">مكرونة</button>
+    <button class="cat-btn" onclick="filterMenu('سندوتشات')">سندوتشات</button>
+</div>
+
+<div class="menu-grid" id="menu"></div>
+
+<div class="cart-float" onclick="toggleCart()">🛒 الطلبات (<span id="total-qty">0</span>)</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3>سلة طلباتك</h3>
+        <div id="cart-items"></div>
+        <hr>
+        <select id="delivery-method" onchange="toggleCart()">
+            <option value="توصيل">توصيل للمنزل (50 ج.م) 🛵</option>
+            <option value="استلام من الفرع">استلام من الفرع 🏢</option>
+        </select>
+        <input type="text" id="name" placeholder="الاسم الكريم">
+        <input type="tel" id="phone" placeholder="رقم الهاتف">
+        <input type="text" id="address" placeholder="العنوان">
+        <textarea id="notes" placeholder="ملاحظات (مثل: بدون شطة)"></textarea>
+        
+        <button class="cart-float" style="position:static; width:100%;" onclick="sendWhatsApp()">تأكيد الطلب عبر واتساب</button>
+        <button onclick="toggleCart()" style="border:none; background:none; margin-top:10px; width:100%; cursor:pointer;">إغلاق</button>
+    </div>
+</div>
+
+<script>
+    const items = [
+        {id: 1, name: "مكرونة باللحم", price: 120, cat: "مكرونة", img: "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725480512/67863dc2-e7ef-4370-9f8b-c32cdc6176c3.jpg"},
+        {id: 2, name: "سندوتش كبدة", price: 45, cat: "سندوتشات", img: "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg"}
+    ];
+
+    let cart = {};
+
+    function render(filter = 'الكل') {
+        const menu = document.getElementById('menu');
+        menu.innerHTML = items.filter(i => filter === 'الكل' || i.cat === filter).map(item => `
+            <div class="card">
+                <img src="${item.img}">
+                <h3>${item.name}</h3>
+                <p>${item.price} ج.م</p>
+                <div class="controls">
+                    <button class="qty-btn" onclick="updateCart(${item.id}, -1)">-</button>
+                    <span id="qty-${item.id}">${cart[item.id]?.qty || 0}</span>
+                    <button class="qty-btn" onclick="updateCart(${item.id}, 1)">+</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateCart(id, change) {
+        if (!cart[id]) cart[id] = { ...items.find(i => i.id === id), qty: 0 };
+        cart[id].qty = Math.max(0, cart[id].qty + change);
+        if (cart[id].qty === 0) delete cart[id];
+        document.getElementById(`qty-${id}`).innerText = cart[id]?.qty || 0;
+        updateTotalCount();
+    }
+
+    function updateTotalCount() {
+        let total = Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
+        document.getElementById('total-qty').innerText = total;
+    }
+
+    function toggleCart() {
+        const modal = document.getElementById('modal');
+        modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+        
+        const list = document.getElementById('cart-items');
+        const method = document.getElementById('delivery-method').value;
+        const deliveryFee = (method === 'توصيل') ? 50 : 0;
+        
+        let subTotal = 0;
+        let itemsHtml = Object.values(cart).map(i => {
+            subTotal += (i.price * i.qty);
+            return `<p>${i.name} (x${i.qty}) = ${i.price * i.qty} ج.م</p>`;
+        }).join('');
+
+        list.innerHTML = itemsHtml + 
+            (deliveryFee > 0 ? `<p style="color:var(--primary)">رسوم التوصيل: 50 ج.م</p>` : "") +
+            `<h4 style="color:var(--primary)">الإجمالي النهائي: ${subTotal + deliveryFee} ج.م</h4>`;
+    }
+
+    function sendWhatsApp() {
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const addr = document.getElementById('address').value;
+        const notes = document.getElementById('notes').value;
+        const method = document.getElementById('delivery-method').value;
+        
+        if(!name || !phone) return alert("يرجى إدخال الاسم ورقم الهاتف!");
+
+        let subTotal = Object.values(cart).reduce((s, i) => s + (i.price * i.qty), 0);
+        let deliveryFee = (method === 'توصيل') ? 50 : 0;
+        let totalSum = subTotal + deliveryFee;
+        let itemsDetail = Object.values(cart).map(i => `${i.name} (x${i.qty})`).join(', ');
+        
+        const msg = `طلب جديد:%0Aطريقة الاستلام: ${method}%0Aالاسم: ${name}%0Aالهاتف: ${phone}%0Aالعنوان: ${addr}%0Aالطلبات: ${itemsDetail}%0Aرسوم التوصيل: ${deliveryFee} ج.م%0Aالملاحظات: ${notes}%0Aالإجمالي النهائي: ${totalSum} ج.م`;
+        
+        window.open(`https://wa.me/201001125684?text=${msg}`, '_blank');
+    }
+
+    function filterMenu(cat) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.innerText === cat));
+        render(cat);
+    }
+
+    render();
+</script>
+</body>
+</html>
