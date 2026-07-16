@@ -1,11 +1,3 @@
-<!-- هيدر احترافي مع خدمة التوصيل -->
-<header>
-    <h1>01001125684 </h1>
-    <div style="font-size: 0.85rem; color: #666; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 5px;">
-        <span>🛵</span>
-        <span>متاح التوصيل لجميع أنحاء الجيزة</span>
-    </div>
-</header>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -17,38 +9,39 @@
         :root { --talabat-orange: #ff782c; --light: #f5f5f5; }
         body { font-family: 'Tajawal', sans-serif; background: var(--light); margin: 0; padding-bottom: 80px; }
         
-        /* هيدر بسيط */
+        /* هيدر مع اللوجو */
         header { background: white; padding: 15px; text-align: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 10; }
-        header h1 { margin: 0; color: var(--talabat-orange); font-size: 1.3rem; }
+        .logo { width: 120px; height: auto; margin-bottom: 5px; }
+        .delivery-info { font-size: 0.9rem; color: #555; display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: bold; }
         
-        /* الأقسام */
         .cat-title { padding: 15px 20px; font-size: 1.1rem; font-weight: 800; color: #333; }
-        
-        /* كارت المنتج */
         .product-card { background: white; display: flex; align-items: center; padding: 12px; margin: 0 15px 10px 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .product-img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; margin-left: 15px; }
         .product-info { flex-grow: 1; }
         .product-name { font-weight: 700; font-size: 1rem; }
         .product-price { color: #666; font-size: 0.9rem; margin-top: 4px; }
         
-        /* أزرار التحكم */
         .qty-control { display: flex; align-items: center; gap: 12px; }
         .btn-qty { background: var(--talabat-orange); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .qty-num { font-weight: 700; font-size: 1.1rem; min-width: 20px; text-align: center; }
         
-        /* الفوتر العائم */
         .footer-bar { position: fixed; bottom: 0; width: 100%; background: var(--talabat-orange); color: white; padding: 18px; text-align: center; font-weight: 800; cursor: pointer; border-top-left-radius: 15px; border-top-right-radius: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
-<header><h1>PASTA FOOD</h1></header>
+<header>
+    <!-- استبدل رابط الصورة برابط صورتك الحقيقية -->
+    <img src="رابط_صورة_اللوجو_الخاص_بك_هنا" class="logo" alt="Pasta Food Logo">
+    <div class="delivery-info">🛵 متاح التوصيل لجميع أنحاء الجيزة</div>
+</header>
 
 <div id="menu-container"></div>
 
 <div class="footer-bar" onclick="placeOrder()">إتمام الطلب | الإجمالي: <span id="total-price">0</span> ج.م</div>
 
 <script>
+    // بيانات القائمة
     const menuData = {
         "المكرونات": [
             {id: 1, name: "مكرونة موتزاريلا", price: 135, img: "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"},
@@ -90,17 +83,46 @@
         cart[id] = Math.max(0, cart[id] + change);
         document.getElementById(`qty-${id}`).innerText = cart[id];
         
-        // حساب الإجمالي
-        let total = 0;
+        let subtotal = 0;
         Object.keys(cart).forEach(itemId => {
             let item = Object.values(menuData).flat().find(i => i.id == itemId);
-            total += (item.price * cart[itemId]);
+            subtotal += (item.price * cart[itemId]);
         });
-        document.getElementById('total-price').innerText = total;
+        
+        let deliveryFee = subtotal > 0 ? 50 : 0;
+        document.getElementById('total-price').innerText = subtotal + deliveryFee;
     }
 
     function placeOrder() {
-        alert("سيتم توجيهك الآن لإتمام الطلب عبر واتساب");
+        let subtotal = 0;
+        let itemsList = "";
+        
+        Object.keys(cart).forEach(id => {
+            if (cart[id] > 0) {
+                let item = Object.values(menuData).flat().find(i => i.id == id);
+                itemsList += `${item.name} (x${cart[id]})%0A`;
+                subtotal += (item.price * cart[id]);
+            }
+        });
+
+        if (subtotal === 0) {
+            alert("الرجاء اختيار وجبة أولاً!");
+            return;
+        }
+
+        let address = prompt("يرجى كتابة عنوان التوصيل بالتفصيل:");
+        if (address !== null && address !== "") {
+            let orderDetails = "طلب جديد من باستا فود:%0A--------------------------%0A";
+            orderDetails += itemsList;
+            orderDetails += "--------------------------%0A";
+            orderDetails += `العنوان: ${address}%0A`;
+            orderDetails += `رسوم التوصيل: 50 ج.م%0A`;
+            orderDetails += `الإجمالي النهائي: ${subtotal + 50} ج.م`;
+            
+            window.open(`https://wa.me/201001125684?text=${orderDetails}`, '_blank');
+        } else {
+            alert("يجب كتابة العنوان لإتمام الطلب!");
+        }
     }
 
     renderMenu();
