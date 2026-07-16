@@ -1,3 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>باستا فود - Pasta Food</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --main: #e41e26; --dark: #1a1a1a; --light: #f8f9fa; }
+        body { font-family: 'Cairo', sans-serif; background: var(--light); margin: 0; padding-bottom: 90px; }
+        header { background: var(--dark); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        header h1 { margin: 0; color: var(--main); font-size: 1.8rem; }
+        .container { max-width: 900px; margin: 20px auto; padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+        .card { background: white; padding: 10px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .card img { width: 100%; height: 100px; border-radius: 8px; object-fit: cover; }
+        .card h3 { font-size: 0.85rem; margin: 8px 0; height: 35px; overflow: hidden; }
+        .price { color: var(--main); font-weight: 800; font-size: 0.9rem; }
+        .btn-add { background: var(--main); color: white; border: none; padding: 6px; width: 100%; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+        #cart-footer { position: fixed; bottom: 0; width: 100%; background: var(--dark); color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; border-top: 3px solid var(--main); z-index: 999; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
+        .modal-content { background: white; width: 90%; max-width: 400px; margin: 30px auto; padding: 20px; border-radius: 15px; }
+        .cart-row { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .btn-order { background: #25D366; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>PASTA FOOD</h1>
+    <p>أشهى الوجبات والمكرونات</p>
+</header>
+
+<div class="container" id="menu"></div>
+
+<div id="cart-footer" onclick="toggleCart()">🛒 الطلبات: <span id="count">0</span> | الإجمالي: <span id="total">0</span> ج.م</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3>سلة الطلبات</h3>
+        <div id="cart-items"></div>
+        <hr>
+        <input type="text" id="name" placeholder="الاسم الكريم">
+        <input type="text" id="phone" placeholder="رقم الهاتف">
+        <input type="text" id="address" placeholder="العنوان">
+        <button class="btn-order" onclick="submit()">تأكيد الطلب عبر واتساب 💬</button>
+        <button onclick="toggleCart()" style="background:none; border:none; width:100%; margin-top:10px; cursor:pointer;">إغلاق</button>
+    </div>
+</div>
+
+<script>
     const menu = [
         {"id": 1, "name": "ثلاثة سندويشات كبدة بالرده", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
         {"id": 2, "name": "3 ساندوتش استربس", "price": 180, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/93c5d7af-05d1-4ab1-8d55-b7b7a8a08eb9.jpg"},
@@ -50,3 +100,57 @@
         {"id": 49, "name": "بيبسي", "price": 20, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg"},
         {"id": 50, "name": "مياه معدنية", "price": 7, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"}
     ];
+
+    let cart = [];
+    const menuDiv = document.getElementById('menu');
+
+    menu.forEach(item => {
+        menuDiv.innerHTML += `
+            <div class="card">
+                <span style="font-size:0.7rem; color:#888;">#${item.id}</span>
+                <img src="${item.img}">
+                <h3>${item.name}</h3>
+                <div class="price">${item.price} ج.م</div>
+                <button class="btn-add" onclick="addToCart(${item.id})">أضف للسلة</button>
+            </div>
+        `;
+    });
+
+    function addToCart(id) {
+        cart.push(menu.find(i => i.id === id));
+        updateCart();
+    }
+
+    function removeItem(index) {
+        cart.splice(index, 1);
+        updateCart();
+    }
+
+    function updateCart() {
+        let total = cart.reduce((sum, item) => sum + item.price, 0);
+        document.getElementById('count').innerText = cart.length;
+        document.getElementById('total').innerText = total;
+        const list = document.getElementById('cart-items');
+        list.innerHTML = cart.map((i, index) => `
+            <div class="cart-row">
+                <span>${i.name}</span>
+                <span>${i.price} ج.م <button onclick="removeItem(${index})" style="border:none; color:red; cursor:pointer;">X</button></span>
+            </div>
+        `).join('');
+    }
+
+    function toggleCart() {
+        document.getElementById('modal').style.display = (document.getElementById('modal').style.display === 'block') ? 'none' : 'block';
+    }
+
+    function submit() {
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const items = cart.map(i => i.name).join(', ');
+        const total = document.getElementById('total').innerText;
+        if(!name || !phone) return alert("يرجى ملء البيانات!");
+        window.open(`https://wa.me/201001125684?text=طلب جديد%0Aالاسم: ${name}%0Aالهاتف: ${phone}%0Aالطلبات: ${items}%0Aالإجمالي: ${total} ج.م`, '_blank');
+    }
+</script>
+</body>
+</html>
