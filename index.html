@@ -3,18 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>باستا فود - Pasta Food</title>
-    
-    <!-- استدعاء مكتبة EmailJS -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            // ⚠️ استبدل bV7OIpSk4gMWrTJCy بالمفتاح العام الخاص بك من إعدادات EmailJS
-            emailjs.init("bV7OIpSk4gMWrTJCy"); 
-        })();
-    </script>
-
+    <title>🍜🍜باستا فود - Pasta Food</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root { --talabat-main: #FF5A00; --text-dark: #191919; --light-bg: #f5f5f5; --border-color: #efefef; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
@@ -25,158 +16,161 @@
         .item-info { flex-grow: 1; padding-left: 15px; }
         .item-image { width: 90px; height: 90px; border-radius: 12px; object-fit: cover; margin-left: 15px; background: #eee; }
         .add-btn { background: rgba(255, 90, 0, 0.1); border: none; color: var(--talabat-main); padding: 8px 15px; border-radius: 8px; font-weight: 800; cursor: pointer; }
-        #cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--talabat-main); color: #fff; padding: 18px 20px; display: flex; justify-content: space-between; font-weight: 700; cursor: pointer; z-index: 1000; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 100%; max-width: 500px; height: 100vh; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; }
-        .form-group { margin-top: 20px; }
+        #cart-bar { position: fixed; bottom: 0; width: 100%; background: var(--talabat-main); color: #fff; padding: 18px 20px; display: flex; justify-content: space-between; font-weight: 700; cursor: pointer; z-index: 1000; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; }
+        .modal-content { background: white; width: 100%; max-width: 500px; margin: auto; height: 100vh; padding: 25px; overflow-y: auto; }
         .form-group input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; background: var(--light-bg); }
         .submit-btn { background: var(--talabat-main); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: 700; }
-        .close-btn { background: #666; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>باستا فود 🍝</h1>
-    <p>أسرع دليفري للأكل المظبوط 🏍</p>
-</header>
-
-<!-- القائمة ستظهر هنا تلقائياً -->
+<header><h1>باستا فود 🍝</h1><p>أسرع دليفري و للأكل المظبوط 🏍</p></header>
 <div class="menu-container" id="menu"></div>
 
-<!-- شريط السلة السفلي -->
 <div id="cart-bar" onclick="toggleCart()">
     <span>السلة (<span id="count">0</span>)</span>
     <span>الإجمالي: <span id="totalPrice">0</span> ج.م</span>
 </div>
 
-<!-- نافذة إتمام الطلب (Modal) -->
 <div id="modal" class="modal">
     <div class="modal-content">
-        <h2>تأكيد الطلب 🛒</h2>
+        <h2>تأكيد الطلب</h2>
+        <div id="cart-items-list" style="margin: 20px 0;"></div>
         <div class="form-group">
-            <input type="text" id="name" placeholder="الاسم الكريم" required>
-            <input type="tel" id="phone" placeholder="رقم الهاتف" required>
-            <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للعميل (لوصول الفاتورة)" required>
-            <input type="text" id="address" placeholder="عنوان التوصيل بالتفصيل" required>
+            <input type="text" id="name" placeholder="الاسم العميل">
+            <input type="tel" id="phone" placeholder="رقم الهاتف للتواصل">
+            <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للعميل">
+            <input type="text" id="address" placeholder="عنوان التوصيل بالتفصيل">
         </div>
-        
         <button class="submit-btn" onclick="processOrder()">إتمام الطلب وإرسال الفاتورة</button>
-        <button class="submit-btn close-btn" onclick="toggleCart()">إغلاق السلة</button>
+        <button class="submit-btn" style="background:#666" onclick="toggleCart()">إغلاق</button>
     </div>
 </div>
 
 <script>
-    // 1. بيانات المنيو (أضف أو عدل الوجبات من هنا)
+    (function(){ emailjs.init("BV7OIpSk4gMWrTJCy"); })();
+
+    const deliveryFee = 50;
     const menuItems = [
-        { id: 1, name: "مكرونة وايت صوص دجاج", price: 75 },
-        { id: 2, name: "مكرونة ريد صوص لحم", price: 85 },
-        { id: 3, name: "طاجن مكرونة بشاميل", price: 65 }
+        {"id": 1, "name": "ثلاثة سندويشات كبدة بالرده", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
+        {"id": 2, "name": "3 ساندوتش استربس", "price": 180, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/93c5d7af-05d1-4ab1-8d55-b7b7a8a08eb9.jpg"},
+        {"id": 3, "name": "3 سندوتشات كبدة طازجة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/7d932c55-7d1e-485e-a245-3b364d615ab5.jpg"},
+        {"id": 4, "name": "3 ساندوتش سجق", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/36f53f97-3773-4e19-a848-98d63ea4d416.jpg"},
+        {"id": 5, "name": "3 سندوتشات كفتة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/99d3e0f9-3317-4cec-a34b-b4553f1afad7.jpg"},
+        {"id": 6, "name": "وجبة أرز وربع فرخة", "price": 110, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
+        {"id": 7, "name": "مكرونة مع ربع فرخة", "price": 110, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"},
+        {"id": 8, "name": "فتة الأرز", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/25bb9ef8-bf7c-4adf-a16d-0bc98dae5fa8.jpg"},
+        {"id": 9, "name": "أرز بالكبدة", "price": 85, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg"},
+        {"id": 10, "name": "مكرونة بينا بالموتزاريلا", "price": 135, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"},
+        {"id": 11, "name": "مكرونة بينا باللحم", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725480512/67863dc2-e7ef-4370-9f8b-c32cdc6176c3.jpg"},
+        {"id": 12, "name": "مكرونة دجاج بالموتزريلا", "price": 150, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فراخ639053128158182016.jpg"},
+        {"id": 13, "name": "مكرونة بينا بالسجق", "price": 135, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725493690/9ae728ff-4090-447d-8ae4-a8bd4d8fce21.jpg"},
+        {"id": 14, "name": "مكرونة بينا بالصلصة", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg"},
+        {"id": 15, "name": "مكرونة باللحم المفروم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235409/97ae8f36-8e3b-43ee-974b-a1efbb3a5fcd.jpg"},
+        {"id": 16, "name": "مكرونة بالكبدة", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235410/41677633-ab95-4bf4-be82-0920206f0892.jpg"},
+        {"id": 17, "name": "مكرونة بالسجق", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"},
+        {"id": 18, "name": "مكرونة بالفراخ", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235412/a356eea9-d7ad-4fbe-9dc3-69a08a75290e.jpg"},
+        {"id": 19, "name": "سباغيتي باللحم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/aed08c0a-d598-43aa-9767-c5679084f0bf.jpg"},
+        {"id": 20, "name": "إسباجيتي الكفتة", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c40db92b-a73e-4709-be49-44680bdcf42f.jpg"},
+        {"id": 21, "name": "إسباجيتي استريبس", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/061b5fb6-c147-4a55-90c2-a7d5967a0464.jpg"},
+        {"id": 22, "name": "إسباجيتي بالصلصة", "price": 35, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235385/1536c687-26bf-486e-b489-38a6c2446c8c.jpg"},
+        {"id": 23, "name": "إسباجيتي كبدة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235387/a251bd2a-29db-431d-9059-21c66ccf9281.jpg"},
+        {"id": 24, "name": "إسباجيتي سجق", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235389/f2222edb-e0a2-4ed3-8e24-dc801a6e8847.jpg"},
+        {"id": 25, "name": "إسباجيتي فراخ", "price": 80, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235390/36d122d6-3aae-4918-94b1-fd3d442da701.jpg"},
+        {"id": 26, "name": "ساندوتش بطاطس", "price": 25, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_بطاطس639053112346426101.jpg"},
+        {"id": 27, "name": "باكت بطاطس", "price": 30, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/باكت_بطاطس639053104690075705.jpg"},
+        {"id": 28, "name": "ساندوتش كبدة فينو", "price": 18, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg"},
+        {"id": 29, "name": "ساندوتش سجق فينو", "price": 18, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3177324841/6a56f610-33a9-46fa-bb68-2626d46a5f08.jpg"},
+        {"id": 30, "name": "ساندوتش كفتة لحم", "price": 70, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/509893df-a06e-41f1-861b-87906f86789b.jpg"},
+        {"id": 31, "name": "ساندوتش كبدة ردة", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3bf4865c-17b0-4632-95d6-c7b84c4208f9.jpg"},
+        {"id": 32, "name": "ساندوتش كفتة بلدي", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3204580839/87d3abac-fc30-426c-af0d-570e4b0e3596.jpg"},
+        {"id": 33, "name": "ساندوتش كفتة فينو", "price": 25, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/db3efc42-884d-4fe9-928a-fe4c8152d7eb.jpg"},
+        {"id": 34, "name": "ساندوتش كبدة فينا", "price": 55, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235396/e2babe46-cdf9-4ae8-8bd7-b04292077c7e.jpg"},
+        {"id": 35, "name": "ساندوتش سجق فينا", "price": 55, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_سجق639053112635804657.jpg"},
+        {"id": 36, "name": "هوت دوج فينا", "price": 95, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_هوت_دوج639053113101018706.jpg"},
+        {"id": 37, "name": "ساندوتش استربس", "price": 120, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_استربس639053112270881730.jpg"},
+        {"id": 38, "name": "بشاميل سجق", "price": 150, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725582068/987d1b05-74a2-499a-8503-d8f258c158e6.jpg"},
+        {"id": 39, "name": "بشاميل لحمه", "price": 120, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بشاميل_لحمه639053109004455805.jpg"},
+        {"id": 40, "name": "بشاميل فراخ", "price": 150, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بشاميل_فراخ639053108860071368.jpg"},
+        {"id": 41, "name": "برجر لحم كبير", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3232723780/6ccdfad1-164c-4f77-bb37-fcb567191fe7.jpg"},
+        {"id": 42, "name": "برجر لحم سنجل", "price": 100, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3232723813/bdbc0ae7-867b-4e20-a80a-5f08ac121ab1.jpg"},
+        {"id": 43, "name": "برجر دبل", "price": 190, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9f0d8003-26f2-46cf-abc7-9c5510f9e330.jpg"},
+        {"id": 44, "name": "حواوشي موتزاريلا", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"},
+        {"id": 45, "name": "حواوشي لحم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c0609a4a-7402-45bc-92e3-191c25bee038.jpg"},
+        {"id": 46, "name": "حواوشي سجق موتزاريلا", "price": 175, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/حواوشي_موتزريلا_سجق639053109998626753.jpg"},
+        {"id": 47, "name": "حواوشي سجق", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235386/ba4d9790-02f4-4794-9b0c-1fa19c5de994.jpg"},
+        {"id": 48, "name": "كوكاكولا", "price": 20, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/كولا639053129041558215.jpg"},
+        {"id": 49, "name": "بيبسي", "price": 20, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg"},
+        {"id": 50, "name": "مياه معدنية", "price": 7, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"}
     ];
 
     let cart = [];
-    const deliveryFee = 20; // رسوم التوصيل
 
-    // 2. دالة لعرض المنيو في الصفحة
     function renderMenu() {
-        const menuContainer = document.getElementById("menu");
-        menuContainer.innerHTML = menuItems.map(item => `
+        document.getElementById("menu").innerHTML = menuItems.map(item => `
             <div class="item-card">
-                <div class="item-info">
-                    <h3 style="font-size: 16px; margin-bottom: 5px;">${item.name}</h3>
-                    <p style="color: #666;">${item.price} ج.م</p>
-                    <button class="add-btn" onclick="addToCart(${item.id}, '${item.name}', ${item.price})" style="margin-top: 10px;">إضافة للسلة +</button>
-                </div>
+                <img src="${item.img}" class="item-image" loading="lazy">
+                <div class="item-info"><h3>${item.name}</h3><p>${item.price} ج.م</p></div>
+                <button class="add-btn" onclick="addToCart(${item.id})">إضافة +</button>
             </div>
         `).join('');
     }
 
-    // 3. دوال السلة
-    function addToCart(id, name, price) {
-        cart.push({ id, name, price });
-        updateCartUI();
+    function addToCart(id) {
+        cart.push(menuItems.find(i => i.id === id));
+        document.getElementById("count").innerText = cart.length;
+        updateTotal();
     }
 
-    function updateCartUI() {
-        document.getElementById("count").innerText = cart.length;
-        const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-        document.getElementById("totalPrice").innerText = subtotal;
+    function updateTotal() {
+        const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+        document.getElementById("totalPrice").innerText = subtotal + deliveryFee;
     }
 
     function toggleCart() {
         const modal = document.getElementById("modal");
-        modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+        const cartItemsList = document.getElementById("cart-items-list");
+        if (modal.style.display === "block") { modal.style.display = "none"; } 
+        else {
+            modal.style.display = "block";
+            const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+            const total = subtotal + deliveryFee;
+            cartItemsList.innerHTML = cart.map((i, index) => `<p>• ${i.name} - ${i.price} ج.م <button onclick="removeFromCart(${index})" style="color:red; cursor:pointer; border:none; background:none;">(حذف)</button></p>`).join('') + 
+                                     `<hr style="margin:15px 0;"><p><strong>رسوم التوصيل: ${deliveryFee} ج.م</strong></p>` +
+                                     `<p style="font-size:1.3rem; font-weight:800; color:#FF5A00;">الإجمالي: ${total} ج.م</p>`;
+        }
     }
 
-    // 4. دالة إرسال الطلب (EmailJS + WhatsApp)
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        document.getElementById("count").innerText = cart.length;
+        updateTotal();
+        toggleCart(); toggleCart();
+    }
+
     function processOrder() {
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
-        const customerEmail = document.getElementById("customerEmail").value;
         const address = document.getElementById("address").value;
-
-        // التحقق من إدخال البيانات واختيار منتجات
-        if(cart.length === 0) {
-            alert("السلة فارغة، يرجى اختيار طلبات أولاً!");
-            return;
-        }
-        if(!name || !phone || !customerEmail || !address) {
-            alert("يرجى ملء جميع بيانات التوصيل!");
-            return;
-        }
-
-        // تجهيز بيانات الفاتورة
-        const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+        const email = document.getElementById("customerEmail").value;
+        const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
         const total = subtotal + deliveryFee;
+        const orderDetails = cart.map(i => `${i.name} (${i.price} ج.م)`).join('\n');
         
-        // تجميع أسماء الطلبات في نص واحد
-        const orderDetails = cart.map(item => `- ${item.name} (${item.price} ج.م)`).join('\\n');
-
-        // المتغيرات التي سيتم إرسالها لقالب EmailJS
-        const templateParams = {
+        emailjs.send('service_a1b2c3d', 'template_8yhqwxa', {
             customer_name: name,
-            customer_email: customerEmail,
+            customer_email: email,
             order_details: orderDetails,
             delivery_fee: deliveryFee,
-            total_amount: total,
-            order_id: "ORD-" + Math.floor(Math.random() * 10000)
-        };
+            total_amount: total
+        }).then(() => alert("تم إرسال الفاتورة بنجاح!"));
 
-        // زر التحميل لمنع الضغط مرتين
-        const btn = document.querySelector(".submit-btn");
-        btn.innerText = "جاري الإرسال...";
-        btn.disabled = true;
-
-        // إرسال الإيميل
-        emailjs.send('service_a1b2c3d', 'template_8yhqwxa', templateParams)
-            .then(function(response) {
-                alert("تم تسجيل الطلب وإرسال الفاتورة للعميل بنجاح!");
-                
-                // تحويل الطلب لواتساب المطعم
-                const whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n\n🛒 الطلبات:\n${orderDetails}\n\n🛵 رسوم التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total} ج.م`;
-                
-                window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
-                
-                // تصفير السلة وإغلاق النافذة
-                cart = [];
-                updateCartUI();
-                toggleCart();
-                
-                btn.innerText = "إتمام الطلب وإرسال الفاتورة";
-                btn.disabled = false;
-                
-            }, function(error) {
-                alert("فشل إرسال الفاتورة، يرجى المحاولة مرة أخرى.");
-                console.log("EmailJS Error:", error);
-                
-                btn.innerText = "إتمام الطلب وإرسال الفاتورة";
-                btn.disabled = false;
-            });
+        const whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n\n🛒 الطلبات:\n${orderDetails}\n\n🛵 رسوم التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total} ج.م`;
+        window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
     }
 
-    // تشغيل المنيو عند تحميل الصفحة
-    window.onload = renderMenu;
+    renderMenu();
 </script>
-
 </body>
 </html>
