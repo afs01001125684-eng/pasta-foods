@@ -2,32 +2,34 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pasta Food - باستا فود</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --main: #e41e26; --accent: #25D366; }
-        body { font-family: 'Cairo', sans-serif; background: #fdfdfd; margin: 0; }
+        body { font-family: 'Cairo', sans-serif; background: #fdfdfd; margin: 0; padding-bottom: 80px; }
         
-        /* الشريط العلوي */
+        /* الشريط العلوي المضيء */
         .neon-bar { background: #000; color: #fff; padding: 10px; overflow: hidden; border-bottom: 3px solid var(--accent); }
         .marquee { white-space: nowrap; animation: scroll 10s linear infinite; font-weight: 800; }
         @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
-        /* حركة السكوتر بعرض الشاشة */
-        .road-container { background: #eee; height: 60px; position: relative; overflow: hidden; border-bottom: 2px solid #ddd; }
-        .scooter-run { position: absolute; font-size: 2rem; animation: moveScooter 8s linear infinite; top: 10px; }
-        @keyframes moveScooter { from { left: -50px; } to { left: 100%; } }
-        .delivery-text { text-align: center; font-weight: 700; padding-top: 20px; }
+        /* منطقة السكوتر والدخان */
+        .road-container { background: #eee; height: 80px; position: relative; overflow: hidden; border-bottom: 2px solid #ddd; display: flex; align-items: center; }
+        
+        .scooter-run { position: absolute; font-size: 2.5rem; animation: moveScooter 7s linear infinite; right: -50px; z-index: 2; }
+        @keyframes moveScooter { 0% { right: -50px; } 100% { right: 100%; } }
+        
+        /* تأثير الدخان */
+        .smoke { position: absolute; width: 10px; height: 10px; background: #ccc; border-radius: 50%; opacity: 0.5; animation: smokeAni 2s linear infinite; z-index: 1; }
+        @keyframes smokeAni { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(3); opacity: 0; } }
 
-        /* هيكل المنيو */
-        .menu-container { padding: 20px; }
-        .category { margin-bottom: 30px; }
+        /* المنيو */
+        .menu-container { padding: 20px; max-width: 800px; margin: auto; }
         .item-card { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        button { background: var(--main); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        button { background: var(--main); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
         /* السلة */
-        .cart-bar { position: fixed; bottom: 0; width: 100%; background: var(--main); color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; }
+        .cart-bar { position: fixed; bottom: 0; width: 100%; background: var(--main); color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; z-index: 999; }
     </style>
 </head>
 <body>
@@ -35,27 +37,25 @@
 <div class="neon-bar"><div class="marquee">✨ نورتنا في باستا فود! توصيل سريع لجميع أنحاء الجيزة ✨</div></div>
 
 <div class="road-container">
-    <div class="scooter-run">🛵</div>
-</div>
-<div class="delivery-text">التوصيل متاح في جميع أنحاء الجيزة</div>
-
-<div class="menu-container" id="menu">
-    <!-- المكرونات -->
-    <div class="category">
-        <h2>🍝 المكرونات</h2>
-        <div class="item-card"><span>مكرونة موتزاريلا</span><span class="price">135 ج.م</span><button onclick="addToCart('مكرونة موتزاريلا', 135)">إضافة</button></div>
-        <div class="item-card"><span>مكرونة باللحم</span><span class="price">120 ج.م</span><button onclick="addToCart('مكرونة باللحم', 120)">إضافة</button></div>
-    </div>
-
-    <!-- السندوتشات -->
-    <div class="category">
-        <h2>🥪 السندوتشات</h2>
-        <div class="item-card"><span>سندوتش كبدة</span><span class="price">45 ج.م</span><button onclick="addToCart('سندوتش كبدة', 45)">إضافة</button></div>
-        <div class="item-card"><span>سندوتش كفتة</span><span class="price">70 ج.م</span><button onclick="addToCart('سندوتش كفتة', 70)">إضافة</button></div>
+    <div class="scooter-run">
+        🛵
+        <div class="smoke" style="right: 30px; animation-delay: 0s;"></div>
+        <div class="smoke" style="right: 20px; animation-delay: 0.5s;"></div>
     </div>
 </div>
+<div style="text-align: center; font-weight: 700; margin-top: 5px;">التوصيل متاح في جميع أنحاء الجيزة</div>
 
-<div class="cart-bar" onclick="showCart()">🛒 السلة (<span id="cart-count">0</span> أصناف) - المجموع: <span id="cart-total">0</span> ج.م</div>
+<div class="menu-container">
+    <h2>🍝 المكرونات</h2>
+    <div class="item-card"><span>مكرونة موتزاريلا</span><span class="price">135 ج.م</span><button onclick="addToCart('مكرونة موتزاريلا', 135)">إضافة</button></div>
+    <div class="item-card"><span>مكرونة باللحم</span><span class="price">120 ج.م</span><button onclick="addToCart('مكرونة باللحم', 120)">إضافة</button></div>
+
+    <h2>🥪 السندوتشات</h2>
+    <div class="item-card"><span>سندوتش كبدة</span><span class="price">45 ج.م</span><button onclick="addToCart('سندوتش كبدة', 45)">إضافة</button></div>
+    <div class="item-card"><span>سندوتش كفتة</span><span class="price">70 ج.م</span><button onclick="addToCart('سندوتش كفتة', 70)">إضافة</button></div>
+</div>
+
+<div class="cart-bar" onclick="showCart()">🛒 السلة (<span id="cart-count">0</span>) - المجموع: <span id="cart-total">0</span> ج.م</div>
 
 <script>
     let cart = [];
@@ -65,11 +65,10 @@
         total += price;
         document.getElementById('cart-count').innerText = cart.length;
         document.getElementById('cart-total').innerText = total;
-        alert(name + " تمت إضافته للسلة!");
     }
     function showCart() {
-        if(cart.length === 0) alert("السلة فارغة");
-        else alert("محتويات السلة: " + cart.map(i => i.name).join(", "));
+        if(cart.length === 0) alert("السلة فارغة!");
+        else alert("طلباتك: " + cart.map(i => i.name).join(", "));
     }
 </script>
 
