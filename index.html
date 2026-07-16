@@ -130,7 +130,26 @@
         document.getElementById("totalPrice").innerText = subtotal + deliveryFee;
     }
 
-    function toggleCart() {
+        function toggleCart() {
+        const modal = document.getElementById("modal");
+        const cartItemsList = document.getElementById("cart-items-list");
+        
+        if (modal.style.display === "block") {
+            modal.style.display = "none";
+        } else {
+            modal.style.display = "block";
+            // حساب الإجمالي الحالي شامل الـ 50 ج.م
+            const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+            const total = subtotal + deliveryFee;
+            
+            // عرض الطلبات + خانة التوصيل + الإجمالي النهائي
+            cartItemsList.innerHTML = cart.map(i => `<p>• ${i.name} - ${i.price} ج.م</p>`).join('') + 
+                                     `<hr style="margin:10px 0">` +
+                                     `<p><strong>رسوم التوصيل: ${deliveryFee} ج.م</strong></p>` +
+                                     `<p style="font-size:1.2rem; font-weight:bold; color:var(--talabat-main);">الإجمالي: ${total} ج.م</p>`;
+        }
+    }
+
         document.getElementById("modal").style.display = document.getElementById("modal").style.display === "block" ? "none" : "block";
         document.getElementById("cart-items-list").innerHTML = cart.map(i => `<p>• ${i.name} - ${i.price} ج.م</p>`).join('');
     }
