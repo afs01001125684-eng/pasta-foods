@@ -5,256 +5,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>باستا فود - Pasta Food</title>
     <style>
-        :root {
-            --primary-color: #e41e26;
-            --secondary-color: #ffcc00;
-            --dark-color: #1a1a1a;
-            --light-color: #f9f9f9;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: var(--light-color);
-            color: var(--dark-color);
-        }
-        /* شريط التوصيل */
-        .delivery-banner {
-            background-color: var(--secondary-color);
-            color: #000;
-            text-align: center;
-            padding: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 30px 15px;
-        }
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 5px;
-        }
-        /* الأقسام والمنتجات */
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-        .section-title {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
-            padding-bottom: 8px;
-            margin: 35px 0 20px 0;
-            font-size: 1.8rem;
-        }
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .menu-item {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        .menu-item:hover {
-            transform: translateY(-5px);
-        }
-        .item-img-container {
-            width: 100%;
-            height: 200px;
-            background-color: #eee;
-            position: relative;
-            overflow: hidden;
-        }
-        .item-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .item-details {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-        .item-name {
-            font-size: 1.15rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: var(--dark-color);
-            line-height: 1.4;
-        }
-        .item-desc {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 15px;
-            flex-grow: 1;
-            line-height: 1.5;
-        }
-        .item-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-        }
-        .item-price {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-        .order-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        .order-btn:hover {
-            background-color: #bd151b;
-        }
-        @media (max-width: 768px) {
-            header h1 { font-size: 2rem; }
-            .section-title { font-size: 1.5rem; }
-        }
+        :root { --primary-color: #e41e26; --secondary-color: #ffcc00; --dark-color: #1a1a1a; --light-color: #f9f9f9; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f4f4; margin: 0; padding-bottom: 80px; }
+        header { background: var(--primary-color); color: white; text-align: center; padding: 25px; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .menu-item { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; display: flex; flex-direction: column; }
+        .menu-item img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .menu-item h3 { font-size: 1.1rem; margin: 10px 0; }
+        .order-btn { background: var(--primary-color); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: auto; }
+        
+        #cart-footer { position: fixed; bottom: 0; width: 100%; background: var(--dark-color); color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; z-index: 1000; font-size: 1.2rem; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; overflow-y: auto; }
+        .modal-content { background: white; width: 90%; max-width: 500px; margin: 40px auto; padding: 25px; border-radius: 15px; }
+        .form-group { margin-bottom: 15px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- شريط التوصيل المعدل -->
-    <div class="delivery-banner" id="delivery-info">
-        التوصيل متاح في أنحاء الجيزة 🛵
+<header><h1>باستا فود - Pasta Food</h1></header>
+
+<div class="container" id="menu-container"></div>
+
+<div id="cart-footer" onclick="toggleCart()">🛒 عرض الطلبات (<span id="cart-count">0</span>) - <span id="cart-total">0</span> ج.م</div>
+
+<div id="cart-modal" class="modal">
+    <div class="modal-content">
+        <h2 style="text-align: center;">سلة المشتريات</h2>
+        <div id="cart-items"></div>
+        <hr>
+        <h3 style="margin-top:20px;">بيانات التوصيل</h3>
+        <div class="form-group"><input type="text" id="name" placeholder="الاسم الكريم"></div>
+        <div class="form-group"><input type="tel" id="phone" placeholder="رقم التليفون"></div>
+        <div class="form-group"><input type="text" id="address" placeholder="العنوان بالتفصيل"></div>
+        <button class="order-btn" style="width:100%" onclick="submitOrder()">تأكيد وإرسال الطلب للواتساب</button>
+        <button class="order-btn" style="width:100%; background:#555; margin-top:10px;" onclick="toggleCart()">إغلاق</button>
     </div>
+</div>
 
-    <header>
-        <h1>باستا فود - Pasta Food</h1>
-        <p>أشهى المكرونات والوجبات الشرقية بأعلى جودة</p>
-    </header>
+<script>
+    let cart = [];
+    const menuItems = [
+        {"id": 1, "name": "ثلاثة سندويشات كبدة بالرده", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
+        {"id": 2, "name": "3 ساندوتش استربس", "price": 180, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/93c5d7af-05d1-4ab1-8d55-b7b7a8a08eb9.jpg"},
+        {"id": 3, "name": "3 سندوتشات كبدة طازجة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/7d932c55-7d1e-485e-a245-3b364d615ab5.jpg"},
+        {"id": 4, "name": "3 ساندوتش سجق", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/36f53f97-3773-4e19-a848-98d63ea4d416.jpg"},
+        {"id": 5, "name": "3 سندوتشات كفتة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/99d3e0f9-3317-4cec-a34b-b4553f1afad7.jpg"},
+        {"id": 6, "name": "وجبة أرز وربع فرخة", "price": 110, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
+        {"id": 7, "name": "مكرونة مع ربع فرخة", "price": 110, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"},
+        {"id": 8, "name": "فتة الأرز", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/25bb9ef8-bf7c-4adf-a16d-0bc98dae5fa8.jpg"},
+        {"id": 9, "name": "أرز بالكبدة", "price": 85, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg"},
+        {"id": 10, "name": "مكرونة بينا بالموتزاريلا", "price": 135, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"},
+        {"id": 11, "name": "مكرونة بينا باللحم", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725480512/67863dc2-e7ef-4370-9f8b-c32cdc6176c3.jpg"},
+        {"id": 12, "name": "مكرونة دجاج بالموتزريلا", "price": 150, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فراخ639053128158182016.jpg"},
+        {"id": 13, "name": "مكرونة بينا بالسجق", "price": 135, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725493690/9ae728ff-4090-447d-8ae4-a8bd4d8fce21.jpg"},
+        {"id": 14, "name": "مكرونة بينا بالصلصة", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg"},
+        {"id": 15, "name": "مكرونة باللحم المفروم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235409/97ae8f36-8e3b-43ee-974b-a1efbb3a5fcd.jpg"},
+        {"id": 16, "name": "مكرونة بالكبدة", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235410/41677633-ab95-4bf4-be82-0920206f0892.jpg"},
+        {"id": 17, "name": "مكرونة بالسجق", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"},
+        {"id": 18, "name": "مكرونة بالفراخ", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235412/a356eea9-d7ad-4fbe-9dc3-69a08a75290e.jpg"},
+        {"id": 19, "name": "سباغيتي باللحم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/aed08c0a-d598-43aa-9767-c5679084f0bf.jpg"},
+        {"id": 20, "name": "إسباجيتي الكفتة", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c40db92b-a73e-4709-be49-44680bdcf42f.jpg"},
+        {"id": 21, "name": "إسباجيتي استريبس", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/061b5fb6-c147-4a55-90c2-a7d5967a0464.jpg"},
+        {"id": 22, "name": "إسباجيتي بالصلصة", "price": 35, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235385/1536c687-26bf-486e-b489-38a6c2446c8c.jpg"},
+        {"id": 23, "name": "إسباجيتي كبدة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235387/a251bd2a-29db-431d-9059-21c66ccf9281.jpg"},
+        {"id": 24, "name": "إسباجيتي سجق", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235389/f2222edb-e0a2-4ed3-8e24-dc801a6e8847.jpg"},
+        {"id": 25, "name": "إسباجيتي فراخ", "price": 80, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235390/36d122d6-3aae-4918-94b1-fd3d442da701.jpg"},
+        {"id": 26, "name": "ساندوتش بطاطس", "price": 25, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_بطاطس639053112346426101.jpg"},
+        {"id": 27, "name": "باكت بطاطس", "price": 30, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/باكت_بطاطس639053104690075705.jpg"},
+        {"id": 28, "name": "ساندوتش كبدة فينو", "price": 18, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg"},
+        {"id": 29, "name": "ساندوتش سجق فينو", "price": 18, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3177324841/6a56f610-33a9-46fa-bb68-2626d46a5f08.jpg"},
+        {"id": 30, "name": "ساندوتش كفتة لحم", "price": 70, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/509893df-a06e-41f1-861b-87906f86789b.jpg"},
+        {"id": 31, "name": "ساندوتش كبدة ردة", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3bf4865c-17b0-4632-95d6-c7b84c4208f9.jpg"},
+        {"id": 32, "name": "ساندوتش كفتة بلدي", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3204580839/87d3abac-fc30-426c-af0d-570e4b0e3596.jpg"},
+        {"id": 33, "name": "ساندوتش كفتة فينو", "price": 25, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/db3efc42-884d-4fe9-928a-fe4c8152d7eb.jpg"},
+        {"id": 34, "name": "ساندوتش كبدة فينا", "price": 55, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235396/e2babe46-cdf9-4ae8-8bd7-b04292077c7e.jpg"},
+        {"id": 35, "name": "ساندوتش سجق فينا", "price": 55, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_سجق639053112635804657.jpg"},
+        {"id": 36, "name": "هوت دوج فينا", "price": 95, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_هوت_دوج639053113101018706.jpg"},
+        {"id": 37, "name": "ساندوتش استربس", "price": 120, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_استربس639053112270881730.jpg"},
+        {"id": 38, "name": "بشاميل سجق", "price": 150, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725582068/987d1b05-74a2-499a-8503-d8f258c158e6.jpg"},
+        {"id": 39, "name": "بشاميل لحمه", "price": 120, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بشاميل_لحمه639053109004455805.jpg"},
+        {"id": 40, "name": "بشاميل فراخ", "price": 150, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بشاميل_فراخ639053108860071368.jpg"},
+        {"id": 41, "name": "برجر لحم كبير", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3232723780/6ccdfad1-164c-4f77-bb37-fcb567191fe7.jpg"},
+        {"id": 42, "name": "برجر لحم سنجل", "price": 100, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3232723813/bdbc0ae7-867b-4e20-a80a-5f08ac121ab1.jpg"},
+        {"id": 43, "name": "برجر دبل", "price": 190, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9f0d8003-26f2-46cf-abc7-9c5510f9e330.jpg"},
+        {"id": 44, "name": "حواوشي موتزاريلا", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"},
+        {"id": 45, "name": "حواوشي لحم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c0609a4a-7402-45bc-92e3-191c25bee038.jpg"},
+        {"id": 46, "name": "حواوشي سجق موتزاريلا", "price": 175, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/حواوشي_موتزريلا_سجق639053109998626753.jpg"},
+        {"id": 47, "name": "حواوشي سجق", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235386/ba4d9790-02f4-4794-9b0c-1fa19c5de994.jpg"},
+        {"id": 48, "name": "كوكاكولا", "price": 20, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/كولا639053129041558215.jpg"},
+        {"id": 49, "name": "بيبسي", "price": 20, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg"},
+        {"id": 50, "name": "مياه معدنية", "price": 7, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"}
+    ];
 
-    <div class="container" id="menu-container">
-        <!-- سيتم توليد أقسام المنيو والوجبات ديناميكياً هنا -->
-    </div>
+    function renderMenu() {
+        const container = document.getElementById("menu-container");
+        container.innerHTML = `<div class="menu-grid">` + menuItems.map(item => `
+            <div class="menu-item">
+                <img src="${item.img}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <p><strong>${item.price} ج.م</strong></p>
+                <button class="order-btn" onclick="addToCart(${item.id})">أضف للسلة</button>
+            </div>
+        `).join('') + `</div>`;
+    }
 
-    <script>
-        // مصفوفة المنتجات الـ 50 كاملة بالصور والأسعار الصحيحة
-        const menuItems = [
-          {"id": 1, "section": "العروض الخاصة (Special Offers)", "name": "ثلاثة سندويشات كبدة بالرده مع خبز بلدي", "price": 120, "desc": "ثلاثة سندويشات لذيذة من الكبدة الطازج المطبوخة بإتقان والتوابل الأصلية، تقدم في خبز بلدي ساخن ومقرمش.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
-          {"id": 2, "section": "العروض الخاصة (Special Offers)", "name": "3 ساندوتش استربس من خبز فينو", "price": 180, "desc": "عرض خاص يشمل 3 شرائح من خبز فينو الطازج، المُعدّ يومياً بأجود المكونات الطبيعية ويُقدّم بشكل لذيذ.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/93c5d7af-05d1-4ab1-8d55-b7b7a8a08eb9.jpg"},
-          {"id": 3, "section": "العروض الخاصة (Special Offers)", "name": "3 سندوتشات كبدة طازجة", "price": 65, "desc": "ثلاثة سندوتشات لذيذة محشوة بالكبدة الطازج، مشوية بالطريقة التقليدية مع البصل والفلفل والتوابل الشرقية الأصيلة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/7d932c55-7d1e-485e-a245-3b364d615ab5.jpg"},
-          {"id": 4, "section": "العروض الخاصة (Special Offers)", "name": "3 ساندوتش سجق", "price": 65, "desc": "ثلاثة ساندوتشات سجق شهية محضرة من أجود أنواع السجق المشوي مع الخضروات الطازجة والصلصات اللذيذة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/36f53f97-3773-4e19-a848-98d63ea4d416.jpg"},
-          {"id": 5, "section": "العروض الخاصة (Special Offers)", "name": "3 سندوتشات كفتة بالخلطة", "price": 65, "desc": "ثلاث سندوتشات كفتة شهية محضرة من لحم مفروم طازج مع البهارات الأصيلة والخضروات المختارة بعناية.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/99d3e0f9-3317-4cec-a34b-b4553f1afad7.jpg"},
-          {"id": 6, "section": "الطبخ والوجبات (Meals)", "name": "وجبة أرز وربع فرخة فرن", "price": 110, "desc": "وجبة شهية من الأرز الأبيض الفاخر مع ربع فرخة مشوية في الفرن بطريقة تقليدية وتُقدم مع صوص لذيذ.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
-          {"id": 7, "section": "الطبخ والوجبات (Meals)", "name": "مكرونة مع ربع فرخة فرن", "price": 110, "desc": "مكرونة طازجة مع ربع دجاجة مشوية في الفرن بنكهة البهارات الأصيلة تُقدم ساخنة وشهية.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"},
-          {"id": 8, "section": "الطبخ والوجبات (Meals)", "name": "فتة الأرز", "price": 65, "desc": "فتة أرز شهية محضرة بطريقة تقليدية مع أرز مطهو بعناية وطبقات من الخبز المقرمش وصلصة الثوم اللذيذة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/25bb9ef8-bf7c-4adf-a16d-0bc98dae5fa8.jpg"},
-          {"id": 9, "section": "الطبخ والوجبات (Meals)", "name": "أرز بالكبدة", "price": 85, "desc": "أرز مصري شهي مطهو بالكبدة الطازجة مع البصل والثوم والتوابل العطرية يقدم ساخناً.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg"},
-          {"id": 10, "section": "مكرونة بينا (Penne Pasta)", "name": "مكرونة بينا مع الفلفل والزيتون وجبنة الموزاريلا", "price": 135, "desc": "طاجن شهي من الفلفل الملون والزيتون الأسود مع جبنة الموتزاريلا الذائبة المحضر على نار هادئة.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"},
-          {"id": 11, "section": "مكرونة بينا (Penne Pasta)", "name": "مكرونة بينا باللحم والموتزاريلا", "price": 120, "desc": "طاجن لحم بقري طازج مطهو ببطء مع صلصة طماطم غنية وتوابل شرقية مميزة مغطى بطبقة سميكة من جبن الموزاريلا المذاب.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725480512/67863dc2-e7ef-4370-9f8b-c32cdc6176c3.jpg"},
-          {"id": 12, "section": "مكرونة بينا (Penne Pasta)", "name": "مكرونة دجاج بالموتزريلا", "price": 150, "desc": "طاجن شهي من المكرونة المخبوزة مع قطع الدجاج الطرية وجبنة الموتزريلا الذائبة التي تضفي طعماً غنياً.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فراخ639053128158182016.jpg"},
-          {"id": 13, "section": "مكرونة بينا (Penne Pasta)", "name": "مكرونة بينا بالسجق والموتزاريلا", "price": 135, "desc": "طاجن من معكرونة بيني مع سجق لحم بقري، مغطى بطبقة من جبنة موزاريلا ذائبة لذيذة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725493690/9ae728ff-4090-447d-8ae4-a8bd4d8fce21.jpg"},
-          {"id": 14, "section": "مكرونة بينا (Penne Pasta)", "name": "مكرونة بينا بالصلصة الحمراء", "price": 45, "desc": "مكرونة بنية لذيذة مع صلصة حمراء غنية بنكهة توابل خفيفة ومميزة. طبق منزلي بلمسة دافئة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg"},
-          {"id": 15, "section": "مكرونة بينا (Penne Pasta)", "name": "مكرونة بينا بلحم مفروم والصلصة الحمراء", "price": 75, "desc": "معكرونة بيني بنية مطهوة ببطء مع لحم مفروم طازج وصلصة حمراء غنية بتوابل شرقية أصيلة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235409/97ae8f36-8e3b-43ee-974b-a1efbb3a5fcd.jpg"},
-          {"id": 16, "section": "مكرونة بينا (Penne Pasta)", "name": "مكرونة بينا بالكبدة والصلصة الحمراء", "price": 95, "desc": "مكرونة بينا شهية محضرة مع شرائح كبدة طازجة مطهوة بعناية مع بصل وفلفل وصلصة حمراء غنية.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235410/41677633-ab95-4bf4-be82-0920206f0892.jpg"},
-          {"id": 17, "section": "مكرونة بينا (Penne Pasta)", "name": "مكرونة بينا بالسجق والصلصة الحمراء", "price": 95, "desc": "مكرونة بنية مع سجق بلدي متبل مطبوخ مع الخضار وصلصة حمراء لذيذة، تمنحها نكهة غنية.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"},
-          {"id": 18, "section": "مكرونة بينا (Penne Pasta)", "name": "معكرونة بينا مع الفراخ والصلصة الحمراء", "price": 95, "desc": "معكرونة بيني شهية مع قطع دجاج طرية مطهية في صلصة حمراء خفيفة غنية بالنكهات الطبيعية.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235412/a356eea9-d7ad-4fbe-9dc3-69a08a75290e.jpg"},
-          {"id": 19, "section": "إسباجيتي (Spaghetti)", "name": "معكرونة سباغيتي باللحم المفروم وصلصة الطماطم", "price": 75, "desc": "إسباجيتي طازجة مطهية بعناية مع لحم مفروم مختار وصلصة طماطم حمراء غنية بالنكهات والتوابل العطرية.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/aed08c0a-d598-43aa-9767-c5679084f0bf.jpg"},
-          {"id": 20, "section": "إسباجيتي (Spaghetti)", "name": "إسباجيتي الكفتة", "price": 95, "desc": "إسباجيتي الكفتة المصرية الشهيرة محضرة بكفتة لحم طازجة مع صلصة طماطم غنية وبهارات أصيلة تُقدم ساخنة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c40db92b-a73e-4709-be49-44680bdcf42f.jpg"},
-          {"id": 21, "section": "إسباجيتي (Spaghetti)", "name": "إسباجيتي مع 2 قطعة استريبس", "price": 120, "desc": "إسباجيتي مقرمشة ولذيذة تقدم مع قطعتين من دجاج الاستربس الذهبي والمقرمش بنكهة رائعة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/061b5fb6-c147-4a55-90c2-a7d5967a0464.jpg"},
-          {"id": 22, "section": "إسباجيتي (Spaghetti)", "name": "إسباجيتي بالصلصة الحمراء", "price": 35, "desc": "معكرونة إسباجيتي مطهوة بعناية مع صلصة بسيطة بنكهة كلاسيكية تناسب جميع الأذواق.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235385/1536c687-26bf-486e-b489-38a6c2446c8c.jpg"},
-          {"id": 23, "section": "إسباجيتي (Spaghetti)", "name": "إسباجيتي بالصوص وشرائح الكبدة", "price": 65, "desc": "إسباجيتي ممزوجة بشرائح الكبدة اللذيذة المتبلة بالتوابل الشرقية مع اللمسة الإيطالية المميزة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235387/a251bd2a-29db-431d-9059-21c66ccf9281.jpg"},
-          {"id": 24, "section": "إسباجيتي (Spaghetti)", "name": "إسباجيتي سجق", "price": 65, "desc": "معكرونة إسباجيتي مع قطع السجق البلدي المتبل واللذيذ، طبق غني بالنكهات المشبعة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235389/f2222edb-e0a2-4ed3-8e24-dc801a6e8847.jpg"},
-          {"id": 25, "section": "إسباجيتي (Spaghetti)", "name": "إسباجيتي فراخ", "price": 80, "desc": "إسباجيتي مع قطع الدجاج الطرية في صوص طماطم خفيف ولذيذ، وجبة متوازنة ومغذية.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235390/36d122d6-3aae-4918-94b1-fd3d442da701.jpg"},
-          {"id": 26, "section": "السندوتشات (Sandwiches)", "name": "ساندوتش بطاطس", "price": 25, "desc": "بطاطس مقلية مقرمشة تقدم في خبز طازج، وجبة خفيفة ولذيذة لمحبي البساطة.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_بطاطس639053112346426101.jpg"},
-          {"id": 27, "section": "السندوتشات (Sandwiches)", "name": "باكت بطاطس", "price": 30, "desc": "باكت من البطاطس المقلية الذهبية، مقرمشة من الخارج وطرية من الداخل، مملحة بعناية وتقدم ساخنة.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/باكت_بطاطس639053104690075705.jpg"},
-          {"id": 28, "section": "السندوتشات (Sandwiches)", "name": "ساندوتش كبدة فينو", "price": 18, "desc": "ساندوتش كبدة لذيذ محضر من كبد طازج عالي الجودة، مطبوخ مع التوابل اللذيذة ويقدم في خبز فينو طري.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg"},
-          {"id": 29, "section": "السندوتشات (Sandwiches)", "name": "سندوتش سجق فينو", "price": 18, "desc": "ساندوتش سجق لذيذ محضر من أجود أنواع السجق الشرقي الطازج مع الخضروات، يقدم في خبز فينو طازج.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3177324841/6a56f610-33a9-46fa-bb68-2626d46a5f08.jpg"},
-          {"id": 30, "section": "السندوتشات (Sandwiches)", "name": "ساندوتش كفتة لحم بقري", "price": 70, "desc": "ساندوتش كفتة لذيذ مصنوع من لحم مفروم طازج وخلطة التوابل الأصلية الخاصة بباستا فود.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/509893df-a06e-41f1-861b-87906f86789b.jpg"},
-          {"id": 31, "section": "السندوتشات (Sandwiches)", "name": "سندوتش كبدة بالرده عيش بلدي", "price": 45, "desc": "سندوتش كبدة طازجة بالردة محضرة بعناية مع التوابل المميزة وتقدم في عيش بلدي ناعم وطري.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3bf4865c-17b0-4632-95d6-c7b84c4208f9.jpg"},
-          {"id": 32, "section": "السندوتشات (Sandwiches)", "name": "سندوتش كفتة لحم مفروم بلدي", "price": 45, "desc": "سندوتش كفتة شهي محضر من لحم مفروم طازج ممزوج بالبهارات والبصل والبقدونس مشوي ويقدم في خبز بلدي.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3204580839/87d3abac-fc30-426c-af0d-570e4b0e3596.jpg"},
-          {"id": 33, "section": "السندوتشات (Sandwiches)", "name": "سندوتش كفتة فينو", "price": 25, "desc": "سندوتش كفتة فينو شهي محضر من لحم مفروم طازج مع البهارات الشرقية الأصيلة ويقدم في خبز فينو طري.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/db3efc42-884d-4fe9-928a-fe4c8152d7eb.jpg"},
-          {"id": 34, "section": "السندوتشات (Sandwiches)", "name": "ساندوتش كبدة عيش فينا", "price": 55, "desc": "شرائح كبدة طازجة متبلة بتوابل شرقية قوية، تقدم ساخنة داخل خبز فرنسي طويل مقرمش.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235396/e2babe46-cdf9-4ae8-8bd7-b04292077c7e.jpg"},
-          {"id": 35, "section": "السندوتشات (Sandwiches)", "name": "ساندوتش سجق فينا", "price": 55, "desc": "سجق بلدي متبل يقدم داخل عيش فينا طويل مع تتبيلة الطماطم والفلفل الغنية.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_سجق639053112635804657.jpg"},
-          {"id": 36, "section": "السندوتشات (Sandwiches)", "name": "ساندوتش هوت دوج بالعيش الفينا", "price": 95, "desc": "أصابع الهوت دوج الطازجة واللذيذة تقدم مع صوص الكاتشب والخردل في عيش فينا طويل ومميز.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_هوت_دوج639053113101018706.jpg"},
-          {"id": 37, "section": "السندوتشات (Sandwiches)", "name": "ساندوتش استربس", "price": 120, "desc": "استربس دجاج مقرمش ومتبل بعناية مغطى بالصوص اللذيذ والخس في خبز فينا شهي.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_استربس639053112270881730.jpg"},
-          {"id": 38, "section": "البشاميل والوايت صوص (Béchamel and White Sauce)", "name": "بشاميل سجق بلدي", "price": 150, "desc": "مكرونة بالبشاميل الغني واللذيذ ممزوجة بقطع السجق البلدي المتبل والمطبوخ على نار هادئة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725582068/987d1b05-74a2-499a-8503-d8f258c158e6.jpg"},
-          {"id": 39, "section": "البشاميل والوايت صوص (Béchamel and White Sauce)", "name": "بشاميل لحمه", "price": 120, "desc": "طبقات من المكرونة مع اللحم المفروم المعصج وصوص البشاميل الكريمي الغني والمحمر بالفرن.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بشاميل_لحمه639053109004455805.jpg"},
-          {"id": 40, "section": "البشاميل والوايت صوص (Béchamel and White Sauce)", "name": "باستا بينا بصلصة بشاميل والدجاج", "price": 150, "desc": "باستا ناعمة مع قطع دجاج طرية متبلة ومطهية بصلصة بشاميل كريمية غنية بالنكهة الرائعة.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بشاميل_فراخ639053108860071368.jpg"},
-          {"id": 41, "section": "البرجر (Burger)", "name": "برجر لحم بقري كبير", "price": 120, "desc": "قطعة برجر لحم بقري جامبو مشوية مع الجبن الذائب، الخس الطازج، الطماطم والبصل في خبز كيزر محمص.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3232723780/6ccdfad1-164c-4f77-bb37-fcb567191fe7.jpg"},
-          {"id": 42, "section": "البرجر (Burger)", "name": "برجر لحم بقري سنجل", "price": 100, "desc": "برجر شهي مصنوع من قطعة لحم بقري طازج مشوي مع الجبن والخضار والصلصة الخاصة بباستا فود.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3232723813/bdbc0ae7-867b-4e20-a80a-5f08ac121ab1.jpg"},
-          {"id": 43, "section": "البرجر (Burger)", "name": "برجر دبل لحمه وبطاطس", "price": 190, "desc": "برجر شهي بقطعتين من اللحم المشوي مع الجبن السايح والخضار، يُقدم مع أصابع البطاطس الذهبية المقرمشة.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9f0d8003-26f2-46cf-abc7-9c5510f9e330.jpg"},
-          {"id": 44, "section": "الحواوشي (Hawawshi)", "name": "حواوشي لحم بالموتزريلا", "price": 120, "desc": "رغيف حواوشي لحم بلدي طازج ممزوج بجبنة الموتزاريلا الذائبة ومخبوز في الفرن ليقرمش من الخارج.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"},
-          {"id": 45, "section": "الحواوشي (Hawawshi)", "name": "حواوشي لحم طازج", "price": 75, "desc": "حواوشي لحم بلدي طازج متبل بالبهارات الشرقية والبصل والفلفل الحار، مخبوز ليكون مقرمشاً وشهياً.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c0609a4a-7402-45bc-92e3-191c25bee038.jpg"},
-          {"id": 46, "section": "الحواوشي (Hawawshi)", "name": "حواوشي سجق موتزريلا", "price": 175, "desc": "حواوشي رائع محشو بالسجق المتبل واللذيذ مع جبنة الموتزريلا الذائبة المخبوزة بعناية.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/حواوشي_موتزريلا_سجق639053109998626753.jpg"},
-          {"id": 47, "section": "الحواوشي (Hawawshi)", "name": "حواوشي سجق", "price": 95, "desc": "حواوشي سجق بلدي متبل داخل رغيف خبز بلدي مخبوز في الفرن، نكهة غنية ومميزة لعشاق السجق.", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235386/ba4d9790-02f4-4794-9b0c-1fa19c5de994.jpg"},
-          {"id": 48, "section": "المشروبات (Drinks)", "name": "كوكاكولا", "price": 20, "desc": "مشروب كوكاكولا غازي منعش وبارد بطعمه المميز.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/كولا639053129041558215.jpg"},
-          {"id": 49, "section": "المشروبات (Drinks)", "name": "بيبسي", "price": 20, "desc": "مشروب بيبسي غازي بارد ومنعش يروي العطش.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg"},
-          {"id": 50, "section": "المشروبات (Drinks)", "name": "مياه معدنية صغيرة", "price": 7, "desc": "زجاجة مياه معدنية طبيعية صغيرة ونقية وباردة.", "img": "https://images.deliveryhero.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"}
-        ];
+    function addToCart(id) {
+        const item = menuItems.find(i => i.id === id);
+        cart.push(item);
+        updateCartDisplay();
+    }
 
-        // تجميع المنتجات حسب أقسامها وتوليد الصفحة تلقائياً
-        document.addEventListener("DOMContentLoaded", () => {
-            const container = document.getElementById("menu-container");
-            
-            // تجميع الأقسام الفريدة
-            const sections = [...new Set(menuItems.map(item => item.section))];
-            
-            sections.forEach(secName => {
-                // إنشاء عنوان القسم
-                const title = document.createElement("h2");
-                title.className = "section-title";
-                title.innerText = secName;
-                container.appendChild(title);
-                
-                // إنشاء شبكة المنتجات للقسم
-                const grid = document.createElement("div");
-                grid.className = "menu-grid";
-                
-                // فلترة وعرض المنتجات التابعة للقسم
-                const secItems = menuItems.filter(item => item.section === secName);
-                secItems.forEach(item => {
-                    const itemCard = document.createElement("div");
-                    itemCard.className = "menu-item";
-                    
-                    itemCard.innerHTML = `
-                        <div class="item-img-container">
-                            <img class="item-img" src="${item.img || 'https://via.placeholder.com/300x200?text=Pasta+Food'}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/300x200?text=Pasta+Food'">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">${item.name}</h3>
-                            <p class="item-desc">${item.desc}</p>
-                            <div class="item-footer">
-                                <span class="item-price">${item.price} ج.م</span>
-                                <button class="order-btn" onclick="orderItem('${item.name}', ${item.price})">اطلب الآن</button>
-                            </div>
-                        </div>
-                    `;
-                    grid.appendChild(itemCard);
-                });
-                
-                container.appendChild(grid);
-            });
-        });
+    function updateCartDisplay() {
+        document.getElementById("cart-count").innerText = cart.length;
+        const total = cart.reduce((sum, i) => sum + i.price, 0);
+        document.getElementById("cart-total").innerText = total;
+    }
 
-        // دالة الطلب البسيطة للتجربة
-        function orderItem(name, price) {
-            alert(`تم إضافة "${name}" بسعر ${price} ج.م لسلتك بنجاح!`);
-        }
-    </script>
+    function toggleCart() {
+        const modal = document.getElementById("cart-modal");
+        modal.style.display = (modal.style.display === "block") ? "none" : "block";
+        const itemsDiv = document.getElementById("cart-items");
+        itemsDiv.innerHTML = cart.map((i, index) => `<div class="cart-item"><span>${i.name}</span><span>${i.price} ج.م</span></div>`).join('');
+        if(cart.length === 0) itemsDiv.innerHTML = "<p>السلة فارغة</p>";
+    }
+
+    function submitOrder() {
+        const name = document.getElementById("name").value;
+        const phone = document.getElementById("phone").value;
+        const address = document.getElementById("address").value;
+        
+        if(!name || !phone || !address) return alert("يرجى ملء جميع البيانات!");
+        if(cart.length === 0) return alert("السلة فارغة!");
+
+        const itemsList = cart.map(i => i.name).join(', ');
+        const total = cart.reduce((sum, i) => sum + i.price, 0);
+        
+        const message = `طلب جديد من الموقع 🍕\n\nالاسم: ${name}\nالهاتف: ${phone}\nالعنوان: ${address}\n\nالطلبات: ${itemsList}\nالإجمالي: ${total} ج.م`;
+        
+        const phoneNumber = "201001125684"; // <--- ضع رقمك هنا
+        window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    renderMenu();
+</script>
 </body>
 </html>
