@@ -3,517 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>باستا فود - Pasta Food</title>
-    <!-- استيراد خطوط جوجل وتنسيقات الأيقونات -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <title>باستا فود | Pasta Food</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --primary-color: #e41e26; 
-            --primary-hover: #c3131a;
-            --secondary-color: #ffcc00; 
-            --dark-color: #1a1a1a; 
-            --light-bg: #f8f9fa;
-            --card-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            --transition: all 0.3s ease;
-        }
+        :root { --primary: #e41e26; --secondary: #ffcc00; --accent: #25D366; --dark: #1a1a1a; }
+        body { font-family: 'Cairo', sans-serif; background: #f8f9fa; margin: 0; padding-bottom: 50px; }
 
-        * {
-            box-sizing: border-box;
-            font-family: 'Cairo', sans-serif;
-            margin: 0;
-            padding: 0;
+        /* الشريط المضيء */
+        .neon-bar { 
+            background: #000; color: #fff; padding: 12px; overflow: hidden; 
+            border-bottom: 4px solid transparent; 
+            animation: borderAni 3s infinite;
         }
+        @keyframes borderAni { 
+            0% {border-color: #25D366;} 33% {border-color: #ffcc00;} 66% {border-color: #e41e26;} 
+        }
+        .marquee { white-space: nowrap; animation: scroll 12s linear infinite; font-weight: 900; font-size: 1.3rem; letter-spacing: 2px; }
+        @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
-        body { 
-            background: var(--light-bg); 
-            color: var(--dark-color);
-            padding-bottom: 90px; 
-        }
-
-        /* شريط الإعلان العلوي */
-        .promo-bar {
-            background: var(--secondary-color);
-            color: var(--dark-color);
-            text-align: center;
-            padding: 8px 10px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        /* رأس الصفحة العصري */
-        header { 
-            background: white; 
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        .header-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .brand h1 { 
-            color: var(--primary-color);
-            font-size: 1.8rem;
-            font-weight: 800;
-        }
+        /* الشعار والتوصيل */
+        .header-section { text-align: center; padding: 20px; background: white; }
+        .logo { width: 150px; height: auto; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
-        .brand p {
-            font-size: 0.85rem;
-            color: #777;
-            margin-top: -5px;
+        .delivery-bar { 
+            background: white; padding: 15px; margin: 10px auto; width: 90%; max-width: 500px;
+            border-radius: 50px; text-align: center; font-weight: 800; font-size: 1.1rem;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 2px solid var(--secondary);
         }
+        .scooter { font-size: 1.8rem; animation: drive 2s linear infinite; }
+        @keyframes drive { 0% { transform: translateX(0); } 50% { transform: translateX(15px); } 100% { transform: translateX(0); } }
 
-        .contact-btn {
-            background: #25D366; /* لون الواتساب */
-            color: white;
-            text-decoration: none;
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
-            transition: var(--transition);
-        }
-
-        .contact-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(37, 211, 102, 0.3);
-        }
-
-        /* شبكة المنتجات المحدثة */
-        .container { 
-            max-width: 1100px; 
-            margin: 30px auto; 
-            padding: 0 20px; 
-        }
-
+        /* أقسام المنيو */
+        .section-title { text-align: center; color: var(--primary); margin: 30px 0 15px; font-weight: 900; }
         .menu-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
-            gap: 25px; 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; padding: 0 20px; max-width: 1200px; margin: auto; 
         }
-
-        .menu-item { 
-            background: white; 
-            border-radius: 16px; 
-            overflow: hidden;
-            box-shadow: var(--card-shadow); 
-            text-align: center; 
-            display: flex; 
-            flex-direction: column; 
-            transition: var(--transition);
-            border: 1px solid rgba(0,0,0,0.02);
+        .item { 
+            background: white; padding: 15px; border-radius: 20px; text-align: center; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: 0.3s;
         }
-
-        .menu-item:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-
-        .image-container {
-            width: 100%;
-            height: 180px;
-            overflow: hidden;
-            background: #eee;
-        }
-
-        .menu-item img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            transition: var(--transition);
-        }
-
-        .menu-item:hover img {
-            transform: scale(1.05);
-        }
-
-        .item-info {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .menu-item h3 { 
-            font-size: 1.15rem; 
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--dark-color);
-        }
-
-        .price-tag {
-            font-size: 1.2rem;
-            color: var(--primary-color);
-            font-weight: 800;
-            margin-bottom: 15px;
-        }
-        
-        .price-tag span {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #777;
-            margin-right: 3px;
-        }
-
-        /* أزرار عصرية */
-        .order-btn { 
-            background: var(--primary-color); 
-            color: white; 
-            border: none; 
-            padding: 10px 15px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: 700; 
-            font-size: 0.95rem;
-            width: 100%;
-            transition: var(--transition);
-        }
-
-        .order-btn:hover {
-            background: var(--primary-hover);
-            box-shadow: 0 4px 12px rgba(228, 30, 38, 0.2);
-        }
-
-        /* سلة المشتريات العائمة */
-        #cart-footer { 
-            position: fixed; 
-            bottom: 20px; 
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 600px;
-            background: var(--dark-color); 
-            color: white; 
-            padding: 15px 25px; 
-            text-align: center; 
-            font-weight: 700; 
-            cursor: pointer; 
-            z-index: 1000; 
-            font-size: 1.1rem; 
-            border-radius: 50px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: var(--transition);
-        }
-
-        #cart-footer:hover {
-            transform: translateX(-50%) translateY(-3px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-        }
-
-        /* نافذة السلة المنبثقة (Modal) */
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.6); 
-            backdrop-filter: blur(5px);
-            z-index: 2000; 
-            overflow-y: auto; 
-        }
-
-        .modal-content { 
-            background: white; 
-            width: 90%; 
-            max-width: 480px; 
-            margin: 50px auto; 
-            padding: 25px; 
-            border-radius: 20px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #f0f0f0;
-            padding-bottom: 15px;
-        }
-
-        .modal-header h2 {
-            font-weight: 800;
-            font-size: 1.4rem;
-        }
-
-        .form-group { 
-            margin-bottom: 15px; 
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            color: #555;
-        }
-
-        input { 
-            width: 100%; 
-            padding: 12px 15px; 
-            border: 1px solid #e0e0e0; 
-            border-radius: 10px; 
-            box-sizing: border-box; 
-            font-size: 0.95rem;
-            transition: var(--transition);
-            background: #fafafa;
-        }
-
-        input:focus {
-            border-color: var(--primary-color);
-            background: white;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(228, 30, 38, 0.1);
-        }
-
-        .cart-item { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            margin-bottom: 12px; 
-            border-bottom: 1px solid #f0f0f0; 
-            padding-bottom: 10px; 
-            font-size: 0.95rem;
-        }
-
-        .cart-item-name {
-            font-weight: 600;
-        }
-
-        .cart-item-price {
-            color: var(--primary-color);
-            font-weight: 700;
-        }
-
-        .submit-btn {
-            background: #25D366;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            width: 100%;
-            font-size: 1.05rem;
-            margin-top: 15px;
-            transition: var(--transition);
-        }
-
-        .submit-btn:hover {
-            background: #20ba5a;
-            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.2);
-        }
-
-        .close-btn { 
-            background: #f0f0f0; 
-            color: #555; 
-            border: none; 
-            padding: 10px; 
-            width: 100%; 
-            margin-top: 10px; 
-            border-radius: 10px; 
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .close-btn:hover {
-            background: #e5e5e5;
-        }
+        .item:hover { transform: translateY(-5px); }
+        .item img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; }
+        .item h3 { margin: 5px 0; font-size: 1.2rem; }
+        .price { color: var(--primary); font-weight: 900; font-size: 1.3rem; }
     </style>
 </head>
 <body>
 
-<!-- شريط الإعلان العلوي -->
-<div class="promo-bar">
-    🛵 التوصيل متاح في جميع أنحاء الجيزة
-</div>
+<!-- الشريط العلوي -->
+<div class="neon-bar"><div class="marquee">✨ نورتنا في باستا فود! ✨ نورتنا في باستا فود!</div></div>
 
-<!-- رأس الصفحة -->
-<header>
-    <div class="header-container">
-        <div class="brand">
-            <h1>باستا فود - Pasta Food</h1>
-            <p>أشهى المكرونات والوجبات الشرقية بأعلى جودة</p>
-        </div>
-        <!-- زر تواصل معنا -->
-        <a href="https://wa.me/201001125684" target="_blank" class="contact-btn">
-            <span>تواصل معنا</span>
-            <span>💬</span>
-        </a>
-    </div>
-</header>
-
-<div class="container" id="menu-container"></div>
-
-<!-- السلة المحدثة -->
-<div id="cart-footer" onclick="toggleCart()">
-    <span>🛒 سلة الطلبات (<span id="cart-count">0</span>)</span>
-    <span>الإجمالي: <span id="cart-total">0</span> ج.م</span>
-</div>
-
-<!-- نافذة السلة -->
-<div id="cart-modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>طلباتك المحددة</h2>
-            <span style="cursor:pointer; font-size: 1.5rem;" onclick="toggleCart()">×</span>
-        </div>
-        <div id="cart-items"></div>
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-        <h3>بيانات التوصيل</h3>
-        <br>
-        <div class="form-group">
-            <label for="name">الاسم الكريم</label>
-            <input type="text" id="name" placeholder="اكتب اسمك هنا">
-        </div>
-        <div class="form-group">
-            <label for="phone">رقم التليفون</label>
-            <input type="tel" id="phone" placeholder="مثال: 01xxxxxxxxx">
-        </div>
-        <div class="form-group">
-            <label for="address">العنوان بالتفصيل</label>
-            <input type="text" id="address" placeholder="المنطقة، الشارع، الدور، الشقة">
-        </div>
-        <button class="submit-btn" onclick="submitOrder()">تأكيد وإرسال الطلب عبر الواتساب</button>
-        <button class="close-btn" onclick="toggleCart()">الرجوع للمنيو</button>
+<!-- الشعار -->
+<div class="header-section">
+    <img src="https://via.placeholder.com/150/e41e26/ffffff?text=PastaFood" alt="Logo" class="logo">
+    <div class="delivery-bar">
+        <div class="scooter">🛵</div>
+        <span>التوصيل متاح في أنحاء الجيزة</span>
     </div>
 </div>
 
-<script>
-    let cart = [];
-    const menuItems = [
-        {"id": 1, "name": "ثلاثة سندويشات كبدة بالرده", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
-        {"id": 2, "name": "3 ساندوتش استربس", "price": 180, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/93c5d7af-05d1-4ab1-8d55-b7b7a8a08eb9.jpg"},
-        {"id": 3, "name": "3 سندوتشات كبدة طازجة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/7d932c55-7d1e-485e-a245-3b364d615ab5.jpg"},
-        {"id": 4, "name": "3 ساندوتش سجق", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/36f53f97-3773-4e19-a848-98d63ea4d416.jpg"},
-        {"id": 5, "name": "3 سندوتشات كفتة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/99d3e0f9-3317-4cec-a34b-b4553f1afad7.jpg"},
-        {"id": 6, "name": "وجبة أرز وربع فرخة", "price": 110, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
-        {"id": 7, "name": "مكرونة مع ربع فرخة", "price": 110, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"},
-        {"id": 8, "name": "فتة الأرز", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/25bb9ef8-bf7c-4adf-a16d-0bc98dae5fa8.jpg"},
-        {"id": 9, "name": "أرز بالكبدة", "price": 85, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg"},
-        {"id": 10, "name": "مكرونة بينا بالموتزاريلا", "price": 135, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"},
-        {"id": 11, "name": "مكرونة بينا باللحم", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725480512/67863dc2-e7ef-4370-9f8b-c32cdc6176c3.jpg"},
-        {"id": 12, "name": "مكرونة دجاج بالموتزريلا", "price": 150, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فراخ639053128158182016.jpg"},
-        {"id": 13, "name": "مكرونة بينا بالسجق", "price": 135, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725493690/9ae728ff-4090-447d-8ae4-a8bd4d8fce21.jpg"},
-        {"id": 14, "name": "مكرونة بينا بالصلصة", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg"},
-        {"id": 15, "name": "مكرونة باللحم المفروم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235409/97ae8f36-8e3b-43ee-974b-a1efbb3a5fcd.jpg"},
-        {"id": 16, "name": "مكرونة بالكبدة", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235410/41677633-ab95-4bf4-be82-0920206f0892.jpg"},
-        {"id": 17, "name": "مكرونة بالسجق", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"},
-        {"id": 18, "name": "مكرونة بالفراخ", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235412/a356eea9-d7ad-4fbe-9dc3-69a08a75290e.jpg"},
-        {"id": 19, "name": "سباغيتي باللحم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/aed08c0a-d598-43aa-9767-c5679084f0bf.jpg"},
-        {"id": 20, "name": "إسباجيتي الكفتة", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c40db92b-a73e-4709-be49-44680bdcf42f.jpg"},
-        {"id": 21, "name": "إسباجيتي استريبس", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/061b5fb6-c147-4a55-90c2-a7d5967a0464.jpg"},
-        {"id": 22, "name": "إسباجيتي بالصلصة", "price": 35, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235385/1536c687-26bf-486e-b489-38a6c2446c8c.jpg"},
-        {"id": 23, "name": "إسباجيتي كبدة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235387/a251bd2a-29db-431d-9059-21c66ccf9281.jpg"},
-        {"id": 24, "name": "إسباجيتي سجق", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235389/f2222edb-e0a2-4ed3-8e24-dc801a6e8847.jpg"},
-        {"id": 25, "name": "إسباجيتي فراخ", "price": 80, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235390/36d122d6-3aae-4918-94b1-fd3d442da701.jpg"},
-        {"id": 26, "name": "ساندوتش بطاطس", "price": 25, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_بطاطس639053112346426101.jpg"},
-        {"id": 27, "name": "باكت بطاطس", "price": 30, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/باكت_بطاطس639053104690075705.jpg"},
-        {"id": 28, "name": "ساندوتش كبدة فينو", "price": 18, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg"},
-        {"id": 29, "name": "ساندوتش سجق فينو", "price": 18, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3177324841/6a56f610-33a9-46fa-bb68-2626d46a5f08.jpg"},
-        {"id": 30, "name": "ساندوتش كفتة لحم", "price": 70, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/509893df-a06e-41f1-861b-87906f86789b.jpg"},
-        {"id": 31, "name": "ساندوتش كبدة ردة", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3bf4865c-17b0-4632-95d6-c7b84c4208f9.jpg"},
-        {"id": 32, "name": "ساندوتش كفتة بلدي", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3204580839/87d3abac-fc30-426c-af0d-570e4b0e3596.jpg"},
-        {"id": 33, "name": "ساندوتش كفتة فينو", "price": 25, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/db3efc42-884d-4fe9-928a-fe4c8152d7eb.jpg"},
-        {"id": 34, "name": "ساندوتش كبدة فينا", "price": 55, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235396/e2babe46-cdf9-4ae8-8bd7-b04292077c7e.jpg"},
-        {"id": 35, "name": "ساندوتش سجق فينا", "price": 55, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_سجق639053112635804657.jpg"},
-        {"id": 36, "name": "هوت دوج فينا", "price": 95, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_هوت_دوج639053113101018706.jpg"},
-        {"id": 37, "name": "ساندوتش استربس", "price": 120, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_استربس639053112270881730.jpg"},
-        {"id": 38, "name": "بشاميل سجق", "price": 150, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725582068/987d1b05-74a2-499a-8503-d8f258c158e6.jpg"},
-        {"id": 39, "name": "بشاميل لحمه", "price": 120, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بشاميل_لحمه639053109004455805.jpg"},
-        {"id": 40, "name": "بشاميل فراخ", "price": 150, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بشاميل_فراخ639053108860071368.jpg"},
-        {"id": 41, "name": "برجر لحم كبير", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3232723780/6ccdfad1-164c-4f77-bb37-fcb567191fe7.jpg"},
-        {"id": 42, "name": "برجر لحم سنجل", "price": 100, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3232723813/bdbc0ae7-867b-4e20-a80a-5f08ac121ab1.jpg"},
-        {"id": 43, "name": "برجر دبل", "price": 190, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9f0d8003-26f2-46cf-abc7-9c5510f9e330.jpg"},
-        {"id": 44, "name": "حواوشي موتزاريلا", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"},
-        {"id": 45, "name": "حواوشي لحم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c0609a4a-7402-45bc-92e3-191c25bee038.jpg"},
-        {"id": 46, "name": "حواوشي سجق موتزاريلا", "price": 175, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/حواوشي_موتزريلا_سجق639053109998626753.jpg"},
-        {"id": 47, "name": "حواوشي سجق", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235386/ba4d9790-02f4-4794-9b0c-1fa19c5de994.jpg"},
-        {"id": 48, "name": "كوكاكولا", "price": 20, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/كولا639053129041558215.jpg"},
-        {"id": 49, "name": "بيبسي", "price": 20, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg"},
-        {"id": 50, "name": "مياه معدنية", "price": 7, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"}
-    ];
+<!-- المكرونات -->
+<h2 class="section-title">🍝 المكرونات</h2>
+<div class="menu-grid">
+    <div class="item"><img src="https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"><h3>مكرونة موتزاريلا</h3><p class="price">135 ج.م</p></div>
+    <div class="item"><img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725480512/67863dc2-e7ef-4370-9f8b-c32cdc6176c3.jpg"><h3>مكرونة باللحم</h3><p class="price">120 ج.م</p></div>
+</div>
 
-    function renderMenu() {
-        const container = document.getElementById("menu-container");
-        container.innerHTML = `<div class="menu-grid">` + menuItems.map(item => `
-            <div class="menu-item">
-                <div class="image-container">
-                    <img src="${item.img}" alt="${item.name}">
-                </div>
-                <div class="item-info">
-                    <h3>${item.name}</h3>
-                    <div class="price-tag">${item.price}<span>ج.م</span></div>
-                    <button class="order-btn" onclick="addToCart(${item.id})">أضف للسلة</button>
-                </div>
-            </div>
-        `).join('') + `</div>`;
-    }
+<!-- السندوتشات -->
+<h2 class="section-title">🥪 السندوتشات</h2>
+<div class="menu-grid">
+    <div class="item"><img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"><h3>سندوتش كبدة بالردة</h3><p class="price">45 ج.م</p></div>
+    <div class="item"><img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/509893df-a06e-41f1-861b-87906f86789b.jpg"><h3>سندوتش كفتة</h3><p class="price">70 ج.م</p></div>
+</div>
 
-    function addToCart(id) {
-        const item = menuItems.find(i => i.id === id);
-        cart.push(item);
-        updateCartDisplay();
-    }
+<!-- الحواوشي -->
+<h2 class="section-title">🔥 الحواوشي</h2>
+<div class="menu-grid">
+    <div class="item"><img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"><h3>حواوشي موتزاريلا</h3><p class="price">120 ج.م</p></div>
+    <div class="item"><img src="https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c0609a4a-7402-45bc-92e3-191c25bee038.jpg"><h3>حواوشي لحم</h3><p class="price">75 ج.م</p></div>
+</div>
 
-    function updateCartDisplay() {
-        document.getElementById("cart-count").innerText = cart.length;
-        const total = cart.reduce((sum, i) => sum + i.price, 0);
-        document.getElementById("cart-total").innerText = total;
-    }
-
-    function toggleCart() {
-        const modal = document.getElementById("cart-modal");
-        modal.style.display = (modal.style.display === "block") ? "none" : "block";
-        const itemsDiv = document.getElementById("cart-items");
-        itemsDiv.innerHTML = cart.map((i, index) => `
-            <div class="cart-item">
-                <span class="cart-item-name">${i.name}</span>
-                <span class="cart-item-price">${i.price} ج.م</span>
-            </div>
-        `).join('');
-        if(cart.length === 0) itemsDiv.innerHTML = "<p style='text-align:center; color:#777;'>السلة فارغة حالياً</p>";
-    }
-
-    function submitOrder() {
-        const name = document.getElementById("name").value;
-        const phone = document.getElementById("phone").value;
-        const address = document.getElementById("address").value;
-        
-        if(!name || !phone || !address) return alert("يرجى ملء جميع البيانات لإكمال الطلب!");
-        if(cart.length === 0) return alert("سلتك فارغة، يرجى إضافة وجبات أولاً!");
-
-        const itemsList = cart.map(i => i.name).join(', ');
-        const total = cart.reduce((sum, i) => sum + i.price, 0);
-        
-        const message = `طلب جديد من الموقع 🍕\n\nالاسم: ${name}\nالهاتف: ${phone}\nالعنوان: ${address}\n\nالطلبات:\n- ${itemsList}\n\nالإجمالي: ${total} ج.م`;
-        
-        const phoneNumber = "201001125684"; // <--- ضع رقمك هنا
-        window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
-    }
-
-    renderMenu();
-</script>
 </body>
 </html>
