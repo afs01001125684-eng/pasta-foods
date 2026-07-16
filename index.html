@@ -3,27 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Pasta Food</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --main-color: #ff3e6c; --dark: #1a1a1a; }
-        body { font-family: 'Tajawal', sans-serif; background: #f4f4f4; padding-bottom: 80px; }
-        header { background: var(--dark); color: white; padding: 20px; text-align: center; border-bottom: 5px solid var(--main-color); }
-        .category-title { background: #ddd; padding: 10px; margin-top: 20px; font-weight: bold; }
-        .item-card { background: white; display: flex; padding: 10px; margin: 10px; border-radius: 10px; align-items: center; }
-        .item-card img { width: 80px; height: 80px; border-radius: 8px; margin-left: 10px; }
-        .controls { display: flex; align-items: center; gap: 10px; }
-        .qty-btn { background: var(--main-color); color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+        :root { --accent: #ff3e6c; }
+        body { font-family: 'Cairo', sans-serif; background: #f9f9f9; margin: 0; padding-bottom: 80px; }
+        header { background: #fff; padding: 20px; text-align: center; border-bottom: 2px solid #eee; }
+        header h1 { margin: 0; color: var(--accent); font-size: 1.5rem; }
         
-        #cart-footer { position: fixed; bottom: 0; width: 100%; background: var(--main-color); color: white; padding: 15px; text-align: center; font-weight: bold; z-index: 999; }
+        .cat-header { padding: 15px 20px; font-weight: bold; color: #555; }
+        
+        .product { background: white; margin: 0 15px 10px 15px; padding: 15px; border-radius: 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .product img { width: 60px; height: 60px; border-radius: 10px; margin-left: 15px; object-fit: cover; }
+        .info { flex-grow: 1; }
+        .name { font-weight: bold; }
+        .price { color: var(--accent); font-size: 0.9rem; }
+        
+        .qty-box { display: flex; align-items: center; gap: 10px; border: 1px solid #eee; padding: 5px; border-radius: 20px; }
+        .btn-qty { border: none; background: #eee; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        
+        #footer { position: fixed; bottom: 0; width: 100%; background: var(--accent); color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header><h1>PASTA FOOD</h1></header>
 
-<div id="menu-container"></div>
+<div id="menu"></div>
 
-<div id="cart-footer">🛒 السلة: <span id="count">0</span> | الإجمالي: <span id="total">0</span> ج.م</div>
+<div id="footer" onclick="sendOrder()">إتمام الطلب (الإجمالي: <span id="total">0</span> ج.م)</div>
 
 <script>
     const data = {
@@ -37,24 +44,24 @@
         ]
     };
 
-    let cart = {}; // لتخزين الطلبات بالكميات
+    let cart = {};
 
-    function renderMenu() {
-        const container = document.getElementById('menu-container');
-        for (let cat in data) {
-            container.innerHTML += `<div class="category-title">${cat}</div>`;
+    function render() {
+        const menu = document.getElementById('menu');
+        for(let cat in data) {
+            menu.innerHTML += `<div class="cat-header">${cat}</div>`;
             data[cat].forEach(item => {
-                container.innerHTML += `
-                    <div class="item-card">
+                menu.innerHTML += `
+                    <div class="product">
                         <img src="${item.img}">
-                        <div style="flex-grow:1">
-                            <h3>${item.name}</h3>
+                        <div class="info">
+                            <div class="name">${item.name}</div>
                             <div class="price">${item.price} ج.م</div>
                         </div>
-                        <div class="controls">
-                            <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
+                        <div class="qty-box">
+                            <button class="btn-qty" onclick="changeQty(${item.id}, -1)">-</button>
                             <span id="qty-${item.id}">0</span>
-                            <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+                            <button class="btn-qty" onclick="changeQty(${item.id}, 1)">+</button>
                         </div>
                     </div>
                 `;
@@ -62,26 +69,28 @@
         }
     }
 
-    function updateQty(id, change) {
-        if (!cart[id]) cart[id] = 0;
-        cart[id] = Math.max(0, cart[id] + change);
+    function changeQty(id, val) {
+        if(!cart[id]) cart[id] = 0;
+        cart[id] = Math.max(0, cart[id] + val);
         document.getElementById(`qty-${id}`).innerText = cart[id];
-        updateTotal();
+        calculateTotal();
     }
 
-    function updateTotal() {
-        let total = 0, count = 0;
-        // هنا نقوم بحساب الإجمالي بناءً على مصفوفة البيانات
+    function calculateTotal() {
+        let total = 0;
         Object.keys(cart).forEach(id => {
             let item = Object.values(data).flat().find(i => i.id == id);
             total += item.price * cart[id];
-            count += cart[id];
         });
-        document.getElementById('count').innerText = count;
         document.getElementById('total').innerText = total;
     }
 
-    renderMenu();
+    function sendOrder() {
+        alert("سيتم إرسال طلبك عبر واتساب...");
+        // يمكنك إضافة كود الربط بالواتساب هنا
+    }
+
+    render();
 </script>
 </body>
 </html>
