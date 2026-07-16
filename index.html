@@ -2,100 +2,86 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pasta Food - طلبات</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>Pasta Food</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --talabat-orange: #ff782c; --dark: #333; --light: #f7f7f7; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--light); margin: 0; padding-bottom: 100px; }
+        :root { --main-color: #ff3e6c; --dark: #1a1a1a; }
+        body { font-family: 'Tajawal', sans-serif; background: #f4f4f4; padding-bottom: 80px; }
+        header { background: var(--dark); color: white; padding: 20px; text-align: center; border-bottom: 5px solid var(--main-color); }
+        .category-title { background: #ddd; padding: 10px; margin-top: 20px; font-weight: bold; }
+        .item-card { background: white; display: flex; padding: 10px; margin: 10px; border-radius: 10px; align-items: center; }
+        .item-card img { width: 80px; height: 80px; border-radius: 8px; margin-left: 10px; }
+        .controls { display: flex; align-items: center; gap: 10px; }
+        .qty-btn { background: var(--main-color); color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
         
-        header { background: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--talabat-orange); position: sticky; top: 0; z-index: 100; }
-        header h1 { margin: 0; color: var(--talabat-orange); font-size: 1.5rem; }
-        
-        .container { max-width: 600px; margin: 15px auto; padding: 10px; }
-        .item-card { background: white; display: flex; padding: 12px; border-radius: 12px; margin-bottom: 10px; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .item-card img { width: 90px; height: 90px; border-radius: 10px; object-fit: cover; margin-left: 15px; }
-        .item-info { flex-grow: 1; }
-        .item-info h3 { margin: 0; font-size: 1rem; }
-        .item-info .price { color: var(--talabat-orange); font-weight: bold; margin-top: 5px; }
-        .btn-add { background: var(--talabat-orange); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
-
-        #cart-footer { position: fixed; bottom: 0; width: 100%; background: var(--talabat-orange); color: white; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; border-top-left-radius: 20px; border-top-right-radius: 20px; z-index: 999; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
-        .modal-content { background: white; width: 95%; max-width: 400px; margin: 50px auto; padding: 20px; border-radius: 15px; }
-        .cart-item { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn-submit { background: var(--talabat-orange); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        #cart-footer { position: fixed; bottom: 0; width: 100%; background: var(--main-color); color: white; padding: 15px; text-align: center; font-weight: bold; z-index: 999; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>PASTA FOOD</h1>
-</header>
+<header><h1>PASTA FOOD</h1></header>
 
-<div class="container" id="menu"></div>
+<div id="menu-container"></div>
 
-<div id="cart-footer" onclick="toggleCart()">🛒 عرض السلة (<span id="count">0</span>) - إجمالي: <span id="total">0</span> ج.م</div>
-
-<div id="modal" class="modal">
-    <div class="modal-content">
-        <h3>سلة الطلبات</h3>
-        <div id="cart-items"></div>
-        <input type="text" id="name" placeholder="الاسم الكريم">
-        <input type="text" id="phone" placeholder="رقم الهاتف">
-        <input type="text" id="address" placeholder="العنوان">
-        <button class="btn-submit" onclick="submit()">إرسال الطلب عبر واتساب 💬</button>
-        <button onclick="toggleCart()" style="background:none; border:none; margin-top:10px; width:100%;">إغلاق</button>
-    </div>
-</div>
+<div id="cart-footer">🛒 السلة: <span id="count">0</span> | الإجمالي: <span id="total">0</span> ج.م</div>
 
 <script>
-    const menu = [
-        {"id": 1, "name": "كبدة بالرده", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
-        {"id": 10, "name": "مكرونة موتزاريلا", "price": 135, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"},
-        {"id": 37, "name": "ساندوتش استربس", "price": 120, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_استربس639053112270881730.jpg"}
-    ];
-    // (يمكنك إضافة بقية الـ 50 صنفاً بنفس التنسيق أعلاه)
+    const data = {
+        "المكرونات": [
+            {id: 1, name: "مكرونة موتزاريلا", price: 135, img: "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"},
+            {id: 2, name: "مكرونة بالسجق", price: 95, img: "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"}
+        ],
+        "الساندوتشات": [
+            {id: 3, name: "كبدة بالرده", price: 120, img: "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
+            {id: 4, name: "استربس", price: 180, img: "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_استربس639053112270881730.jpg"}
+        ]
+    };
 
-    let cart = [];
-    const menuDiv = document.getElementById('menu');
-    menu.forEach(item => {
-        menuDiv.innerHTML += `
-            <div class="item-card">
-                <img src="${item.img}">
-                <div class="item-info">
-                    <h3>#${item.id} - ${item.name}</h3>
-                    <div class="price">${item.price} ج.م</div>
-                </div>
-                <button class="btn-add" onclick="addToCart(${item.id})">+</button>
-            </div>
-        `;
-    });
+    let cart = {}; // لتخزين الطلبات بالكميات
 
-    function addToCart(id) {
-        cart.push(menu.find(i => i.id === id));
-        updateCart();
+    function renderMenu() {
+        const container = document.getElementById('menu-container');
+        for (let cat in data) {
+            container.innerHTML += `<div class="category-title">${cat}</div>`;
+            data[cat].forEach(item => {
+                container.innerHTML += `
+                    <div class="item-card">
+                        <img src="${item.img}">
+                        <div style="flex-grow:1">
+                            <h3>${item.name}</h3>
+                            <div class="price">${item.price} ج.م</div>
+                        </div>
+                        <div class="controls">
+                            <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
+                            <span id="qty-${item.id}">0</span>
+                            <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
     }
 
-    function updateCart() {
-        let total = cart.reduce((sum, item) => sum + item.price, 0);
-        document.getElementById('count').innerText = cart.length;
+    function updateQty(id, change) {
+        if (!cart[id]) cart[id] = 0;
+        cart[id] = Math.max(0, cart[id] + change);
+        document.getElementById(`qty-${id}`).innerText = cart[id];
+        updateTotal();
+    }
+
+    function updateTotal() {
+        let total = 0, count = 0;
+        // هنا نقوم بحساب الإجمالي بناءً على مصفوفة البيانات
+        Object.keys(cart).forEach(id => {
+            let item = Object.values(data).flat().find(i => i.id == id);
+            total += item.price * cart[id];
+            count += cart[id];
+        });
+        document.getElementById('count').innerText = count;
         document.getElementById('total').innerText = total;
-        const list = document.getElementById('cart-items');
-        list.innerHTML = cart.map((i, index) => `<div class="cart-item"><span>${i.name}</span><span>${i.price} ج.م</span></div>`).join('');
     }
 
-    function toggleCart() {
-        const modal = document.getElementById('modal');
-        modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
-    }
-
-    function submit() {
-        const name = document.getElementById('name').value;
-        const phone = document.getElementById('phone').value;
-        window.open(`https://wa.me/201001125684?text=طلب جديد من ${name}%0Aالهاتف: ${phone}%0Aالإجمالي: ${document.getElementById('total').innerText} ج.م`, '_blank');
-    }
+    renderMenu();
 </script>
 </body>
 </html>
