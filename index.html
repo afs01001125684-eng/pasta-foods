@@ -48,7 +48,12 @@
         .price-box { margin-top: 5px; }
         .curr-price { font-size: 14px; font-weight: 800; color: #000; background: #e8f5e9; padding: 2px 6px; border-radius: 4px; display: inline-block; }
         .old-price { font-size: 11px; color: #888; text-decoration: line-through; margin-left: 5px; }
+        
+        /* أزرار إضافة وتعديل الكمية على الكارت */
         .add-badge { position: absolute; top: 90px; right: 8px; background: var(--talabat-main); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .qty-controls-card { position: absolute; top: 90px; right: 8px; background: var(--talabat-main); color: #fff; border-radius: 20px; display: flex; align-items: center; gap: 6px; padding: 2px 8px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .qty-btn-card { background: none; border: none; color: #fff; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0 4px; }
+        .qty-num-card { font-size: 13px; font-weight: 800; }
 
         /* Bottom Cart Fixed Bar */
         .bottom-cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 12px 15px; background: transparent; z-index: 1000; display: none; flex-direction: column; gap: 6px; }
@@ -62,6 +67,10 @@
         .form-group input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; background: var(--light-bg); }
         .submit-btn { background: var(--talabat-main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: 800; }
         .location-btn { background: #25D366; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; width: 100%; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
+        /* عناصر الزيادة والنقصان داخل مودال السلة */
+        .modal-cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .modal-qty-btn { background: #f0f0f0; border: none; width: 28px; height: 28px; border-radius: 50%; font-weight: 800; cursor: pointer; color: #333; }
     </style>
 </head>
 <body>
@@ -144,9 +153,10 @@
     const RESTAURANT_LNG = 31.1811; 
     let deliveryFee = 50; 
     let currentDistance = 0;
-    let cart = [];
+    
+    // الهيكل الجديد للسلة كـ Map بدلالة اسم الصنف للتحكم بالكميات
+    let cart = {};
 
-    // الأصناف الـ 30 مع روابط الصور الأصلية والدقيقة المأخوذة مباشرة من ملف الإكسل الأصلي
     const fullOriginalCategories = [
         {
             category: "الوجبات (Meals) 🍗",
@@ -216,7 +226,6 @@
     ];
 
     function getMenuData() {
-        // إعادة تهيئة وتحديث الروابط دائماً لضمان ظهور الصور الصحيحة
         localStorage.setItem("pasta_menu_categories", JSON.stringify(fullOriginalCategories));
         return fullOriginalCategories;
     }
@@ -237,19 +246,33 @@
                     <p>أشهى المأكولات الطازجة والمطهية بعناية</p>
                 </div>
                 <div class="items-grid">
-                    ${cat.items.map(item => `
-                        <div class="product-card">
-                            <img src="${item.img}" class="prod-img" loading="lazy" alt="${item.name}">
-                            <button class="add-badge" onclick="addToCart('${item.name}', ${item.price},${item.discountPrice || 0})">+</button>
-                            <div class="prod-body">
-                                <div class="prod-title">${item.name}</div>
-                                <div class="price-box">
-                                    <span class="curr-price">${item.price} ج.م</span>
-                                    ${item.discountPrice ? `<span class="old-price">${item.discountPrice} ج.م</span>` : ''}
+                    ${cat.items.map(item => {
+                        let itemKey = item.name;
+                        let count = cart[itemKey] ? cart[itemKey].qty : 0;
+                        let btnHtml = count > 0 ? `
+                            <div class="qty-controls-card">
+                                <button class="qty-btn-card" onclick="changeQty('${item.name}', ${item.price},${item.discountPrice || 0}, 1)">+</button>
+                                <span class="qty-num-card">${count}</span>
+                                <button class="qty-btn-card" onclick="changeQty('${item.name}', ${item.price},${item.discountPrice || 0}, -1)">-</button>
+                            </div>
+                        ` : `
+                            <button class="add-badge" onclick="changeQty('${item.name}', ${item.price},${item.discountPrice || 0}, 1)">+</button>
+                        `;
+
+                        return `
+                            <div class="product-card">
+                                <img src="${item.img}" class="prod-img" loading="lazy" alt="${item.name}">
+                                ${btnHtml}
+                                <div class="prod-body">
+                                    <div class="prod-title">${item.name}</div>
+                                    <div class="price-box">
+                                        <span class="curr-price">${item.price} ج.م</span>
+                                        ${item.discountPrice ? `<span class="old-price">${item.discountPrice} ج.م</span>` : ''}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             </div>
         `).join('');
@@ -263,26 +286,43 @@
         if(sec) sec.scrollIntoView({ behavior: 'smooth' });
     }
 
-    function addToCart(name, price, discountPrice) {
-        cart.push({ name, price, discountPrice });
+    function changeQty(name, price, discountPrice, delta) {
+        if (!cart[name]) {
+            if (delta > 0) {
+                cart[name] = { name, price, discountPrice, qty: delta };
+            }
+        } else {
+            cart[name].qty += delta;
+            if (cart[name].qty <= 0) {
+                delete cart[name];
+            }
+        }
+        renderPage();
         updateCartBar();
+        if (document.getElementById("modal").style.display === "block") {
+            renderCartModal();
+        }
     }
 
     function updateCartBar() {
         let bar = document.getElementById("bottomCartBar");
-        if (cart.length === 0) {
+        let keys = Object.keys(cart);
+        if (keys.length === 0) {
             bar.style.display = "none";
             return;
         }
         bar.style.display = "flex";
         
-        document.getElementById("cartCount").innerText = cart.length;
+        let totalItemsCount = keys.reduce((sum, k) => sum + cart[k].qty, 0);
+        document.getElementById("cartCount").innerText = totalItemsCount;
         
-        let subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+        let subtotal = keys.reduce((sum, k) => sum + (cart[k].price * cart[k].qty), 0);
         document.getElementById("cartTotalPrice").innerText = `${subtotal.toFixed(2)} ج.م`;
 
-        let totalSavings = cart.reduce((sum, item) => {
-            return sum + (item.discountPrice && item.discountPrice > item.price ? (item.discountPrice - item.price) : 0);
+        let totalSavings = keys.reduce((sum, k) => {
+            let item = cart[k];
+            let savePerItem = (item.discountPrice && item.discountPrice > item.price) ? (item.discountPrice - item.price) : 0;
+            return sum + (savePerItem * item.qty);
         }, 0);
 
         let savingsTag = document.getElementById("savingsTag");
@@ -302,25 +342,38 @@
 
     function renderCartModal() {
         let list = document.getElementById("cartItemsList");
-        let subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+        let keys = Object.keys(cart);
+        
+        if(keys.length === 0) {
+            list.innerHTML = "<p style='text-align:center; color:#777;'>السلة فارغة حالياً</p>";
+            document.getElementById("modal").style.display = "none";
+            return;
+        }
+
+        let subtotal = keys.reduce((sum, k) => sum + (cart[k].price * cart[k].qty), 0);
         let total = subtotal + deliveryFee;
 
-        list.innerHTML = cart.map((i, idx) => `
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                <span>• ${i.name}</span>
-                <span><b>${i.price} ج.م</b> <button onclick="removeFromCart(${idx})" style="color:red; border:none; background:none; cursor:pointer;">(حذف)</button></span>
+        list.innerHTML = keys.map(k => {
+            let item = cart[k];
+            return `
+                <div class="modal-cart-item">
+                    <div>
+                        <div style="font-weight:700;">${item.name}</div>
+                        <div style="font-size:12px; color:#666;">${item.price} ج.م × ${item.qty} = <b>${(item.price * item.qty).toFixed(2)} ج.م</b></div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button class="modal-qty-btn" onclick="changeQty('${item.name}', ${item.price}, ${item.discountPrice||0}, 1)">+</button>
+                        <span style="font-weight:800;">${item.qty}</span>
+                        <button class="modal-qty-btn" onclick="changeQty('${item.name}', ${item.price}, ${item.discountPrice||0}, -1)">-</button>
+                    </div>
+                </div>
+            `;
+        }).join('') + `
+            <div style="margin-top:15px; border-top:1px solid #ddd; padding-top:10px;">
+                <p>خدمة التوصيل: ${deliveryFee} ج.م</p>
+                <p style="font-size:18px; font-weight:800; color:var(--talabat-main); margin-top:5px;">الإجمالي: ${total.toFixed(2)} ج.م</p>
             </div>
-        `).join('') + `
-            <hr style="margin:15px 0;">
-            <p>خدمة التوصيل: ${deliveryFee} ج.م</p>
-            <p style="font-size:18px; font-weight:800; color:var(--talabat-main); margin-top:5px;">الإجمالي: ${total.toFixed(2)} ج.م</p>
         `;
-    }
-
-    function removeFromCart(index) {
-        cart.splice(index, 1);
-        updateCartBar();
-        renderCartModal();
     }
 
     function calculateRoadDistance(lat1, lon1, lat2, lon2) {
@@ -371,7 +424,14 @@
         const address = document.getElementById("address").value;
         const email = document.getElementById("customerEmail").value;
         const mapUrl = document.getElementById("custLocationMap").value;
-        const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+        
+        let keys = Object.keys(cart);
+        if(keys.length === 0) {
+            alert("السلة فارغة!");
+            return;
+        }
+
+        const subtotal = keys.reduce((sum, k) => sum + (cart[k].price * cart[k].qty), 0);
         const total = subtotal + deliveryFee;
 
         if(!name || !phone || !address) {
@@ -379,11 +439,14 @@
             return;
         }
 
+        let cartListArray = keys.map(k => cart[k]);
+
         let ordersHistory = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
-        ordersHistory.push({ customer_name: name, phone: phone, total: total, items: cart });
+        ordersHistory.push({ customer_name: name, phone: phone, total: total, items: cartListArray });
         localStorage.setItem("pasta_orders_history", JSON.stringify(ordersHistory));
 
-        const orderItems = cart.map(item => ({ name: item.name, price: item.price }));
+        const orderItems = cartListArray.map(item => ({ name: `${item.name} (عدد: ${item.qty})`, price: item.price * item.qty }));
+        
         emailjs.send('service_a1b2c3d', 'template_8yhqwxa', {
             customer_name: name,
             customer_email: email,
@@ -393,7 +456,7 @@
             customer_location: mapUrl || "لم يتم تحديد الموقع"
         }).then(() => {}, (err) => {});
 
-        let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n\n🛒 الطلبات:\n` + cart.map(i=>`• ${i.name} (${i.price} ج.م)`).join('\n') + `\n\n🛵 خدمة التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total.toFixed(2)} ج.م`;
+        let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n\n🛒 الطلبات:\n` + cartListArray.map(i=>`• ${i.name} × ${i.qty} (${(i.price * i.qty).toFixed(2)} ج.م)`).join('\n') + `\n\n🛵 خدمة التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total.toFixed(2)} ج.م`;
         
         window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
         setTimeout(() => { window.location.reload(); }, 1000);
