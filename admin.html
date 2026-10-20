@@ -108,11 +108,13 @@
         .content-tab { display: none; }
         .content-tab.active { display: block; }
 
-        /* Action Top Bar */
+        /* Action Top Bar - تحسين التنسيق لمنع التداخل */
         .action-top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
             margin-bottom: 20px;
             background: #fff;
             padding: 15px 20px;
@@ -293,7 +295,7 @@
         .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 5px; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Cairo'; font-size: 13px; }
 
-        .btn-primary { background: var(--talabat-orange); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; }
+        .btn-primary { background: var(--talabat-orange); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; white-space: nowrap; }
         .btn-secondary { background: #6c757d; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; }
 
         /* Modal Dialog Styling */
@@ -305,6 +307,8 @@
             .sidebar.open { transform: translateX(0); }
             .main-wrapper { margin-right: 0; width: 100%; padding: 15px; }
             .toggle-btn { display: block !important; }
+            .action-top-bar { flex-direction: column; align-items: flex-start; }
+            .action-top-bar button { width: 100%; }
         }
         .toggle-btn { display: none; background: none; border: none; font-size: 22px; cursor: pointer; }
     </style>
@@ -342,9 +346,8 @@
         </div>
     </header>
 
-    <!-- TAB: Menu Management (Talabat Style) -->
+    <!-- TAB: Menu Management -->
     <section id="tab-menu" class="content-tab active">
-        <!-- Top Action Bar -->
         <div class="action-top-bar">
             <div>
                 <h3 style="font-size:15px; font-weight:800;">أقسام المنيو والمنتجات</h3>
@@ -392,7 +395,7 @@
     </section>
 </div>
 
-<!-- Modal: Add New Category -->
+<!-- Modals -->
 <div id="addCatModal" class="modal">
     <div class="modal-content">
         <h3 style="margin-bottom:15px;">إضافة قسم جديد</h3>
@@ -407,7 +410,6 @@
     </div>
 </div>
 
-<!-- Modal: Edit Category Title -->
 <div id="editCatModal" class="modal">
     <div class="modal-content">
         <h3 style="margin-bottom:15px;">تعديل اسم القسم</h3>
@@ -423,7 +425,6 @@
     </div>
 </div>
 
-<!-- Modal: Add or Edit Product Item -->
 <div id="itemModal" class="modal">
     <div class="modal-content">
         <h3 style="margin-bottom:15px;" id="itemModalTitle">إضافة/تعديل صنف</h3>
@@ -435,7 +436,7 @@
             <input type="text" id="itemNameInput">
         </div>
         <div class="form-group" style="margin-bottom:10px;">
-            <label>وصف المنتج (مثال: حواوشي طازج ممزوج بالموتزريلا...)</label>
+            <label>وصف المنتج</label>
             <textarea id="itemDescInput" rows="2"></textarea>
         </div>
         <div class="form-group" style="margin-bottom:10px;">
@@ -480,9 +481,22 @@
         { id: "#1023", customer: "محمود حسن", total: 85.00, status: "preparing", items: "1x حواوشي لحم بقري" }
     ];
 
-    let menu = JSON.parse(localStorage.getItem("pasta_menu")) || defaultMenu;
-    let settings = JSON.parse(localStorage.getItem("pasta_settings")) || { deliveryFee: 50, freeThreshold: 250 };
-    let orders = JSON.parse(localStorage.getItem("pasta_orders")) || defaultOrders;
+    let menu = defaultMenu;
+    let settings = { deliveryFee: 50, freeThreshold: 250 };
+    let orders = defaultOrders;
+
+    try {
+        const storedMenu = localStorage.getItem("pasta_menu");
+        if(storedMenu) menu = JSON.parse(storedMenu);
+
+        const storedSettings = localStorage.getItem("pasta_settings");
+        if(storedSettings) settings = JSON.parse(storedSettings);
+
+        const storedOrders = localStorage.getItem("pasta_orders");
+        if(storedOrders) orders = JSON.parse(storedOrders);
+    } catch(e) {
+        console.error("خطأ في جلب بيانات LocalStorage", e);
+    }
 
     function init() {
         renderMenuAccordion();
@@ -491,7 +505,6 @@
         document.getElementById("settingThresholdInput").value = settings.freeThreshold;
     }
 
-    /* إغلاق الـ Modal عند النقر خارجه */
     window.onclick = function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.style.display = "none";
@@ -517,7 +530,6 @@
     }
 
     function toggleCategoryCollapse(event, catIdx) {
-        // منع الطي عند النقر على أزرار التعديل والحذف
         if(event.target.closest('.cat-actions')) return;
         const card = document.getElementById(`cat-card-${catIdx}`);
         card.classList.toggle('collapsed');
@@ -525,13 +537,20 @@
 
     function renderMenuAccordion() {
         const container = document.getElementById("menuAccordionContainer");
+        if (!container) return;
+
+        if (menu.length === 0) {
+            container.innerHTML = "<p style='text-align:center; padding:20px;'>لا توجد أقسام في القائمة بعد.</p>";
+            return;
+        }
+
         container.innerHTML = menu.map((cat, catIdx) => `
             <div class="cat-card" id="cat-card-${catIdx}">
                 <div class="cat-header" onclick="toggleCategoryCollapse(event, ${catIdx})">
                     <div class="cat-title-box">
                         <span class="arrow-icon">▼</span>
                         <span class="cat-title">${cat.category}</span>
-                        <span class="count-badge">${cat.items.length}</span>
+                        <span class="count-badge">${cat.items ? cat.items.length : 0}</span>
                     </div>
                     <div class="cat-actions">
                         <button class="icon-btn" title="تعديل اسم القسم" onclick="openEditCatModal(${catIdx})">✏️</button>
@@ -544,7 +563,7 @@
                     </button>
 
                     <div class="items-list">
-                        ${cat.items.map((item, itemIdx) => `
+                        ${cat.items && cat.items.length > 0 ? cat.items.map((item, itemIdx) => `
                             <div class="item-card">
                                 <div class="item-left">
                                     <div class="switch-box">
@@ -561,14 +580,14 @@
                                 <div class="item-details">
                                     <div class="item-name">${item.name}</div>
                                     <div class="item-desc">${item.desc || 'لا يوجد وصف'}</div>
-                                    <div class="item-price">${item.price.toFixed(2)} ج.م</div>
+                                    <div class="item-price">${item.price ? Number(item.price).toFixed(2) : '0.00'} ج.م</div>
                                     <div class="item-action-btns">
                                         <button class="btn-sm-edit" onclick="openEditItemModal(${catIdx},${itemIdx})">✏️ تعديل</button>
                                         <button class="btn-sm-delete" onclick="deleteItem(${catIdx},${itemIdx})">🗑️ حذف</button>
                                     </div>
                                 </div>
                             </div>
-                        `).join('')}
+                        `).join('') : '<p style="text-align:center; color:var(--text-sub); font-size:13px;">لا توجد منتجات داخل هذا القسم</p>'}
                     </div>
                 </div>
             </div>
@@ -577,6 +596,8 @@
 
     function renderOrders() {
         const container = document.getElementById("ordersList");
+        if(!container) return;
+
         if(orders.length === 0) {
             container.innerHTML = "<p style='text-align:center; color:var(--text-sub);'>لا توجد طلبات حالياً.</p>";
             return;
@@ -598,7 +619,7 @@
                 </div>
                 <div style="font-size:13px; margin-bottom:8px;"><strong>المحتويات:</strong> ${order.items}</div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <strong style="color:var(--talabat-orange);">${order.total.toFixed(2)} ج.م</strong>
+                    <strong style="color:var(--talabat-orange);">${Number(order.total).toFixed(2)} ج.م</strong>
                     <select onchange="updateOrderStatus(${idx}, this.value)" style="width:auto; padding:4px 8px; font-size:12px;">
                         <option value="pending" ${order.status==='pending'?'selected':''}>جديد</option>
                         <option value="preparing" ${order.status==='preparing'?'selected':''}>قيد التحضير</option>
@@ -615,13 +636,11 @@
         renderOrders();
     }
 
-    /* التحكم في الإتاحة */
     function toggleItemStatus(catIdx, itemIdx) {
         menu[catIdx].items[itemIdx].active = !(menu[catIdx].items[itemIdx].active !== false);
         saveMenu();
     }
 
-    /* التحكم في الأقسام */
     function openAddCatModal() { document.getElementById("addCatModal").style.display = "block"; }
     function openEditCatModal(catIdx) {
         document.getElementById("editCatIdx").value = catIdx;
@@ -654,7 +673,6 @@
         }
     }
 
-    /* التحكم في المنتجات */
     function openAddItemModal(catIdx) {
         document.getElementById("itemModalTitle").innerText = `إضافة منتج جديد لـ (${menu[catIdx].category})`;
         document.getElementById("itemCatIdx").value = catIdx;
@@ -725,7 +743,7 @@
         alert("✅ تم حفظ إعدادات التوصيل والحد الأدنى!");
     }
 
-    init();
+    document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
