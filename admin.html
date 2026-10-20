@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة القائمة المتقدمة - باستا فود | Enterprise POS Style</title>
+    <title>لوحة التحكم الشاملة - باستا فود | Enterprise POS Style</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --talabat-orange: #FF5A00;
@@ -15,6 +16,10 @@
             --text-primary: #111827;
             --text-secondary: #6B7280;
             --border-color: #E5E7EB;
+            --success-bg: #ECFDF5;
+            --success-text: #059669;
+            --danger-bg: #FEF2F2;
+            --danger-text: #DC2626;
             --radius-lg: 16px;
             --radius-md: 10px;
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
@@ -31,7 +36,7 @@
         }
 
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background: var(--bg-main); color: var(--text-primary); padding-bottom: 70px; transition: background 0.3s, color 0.3s; }
+        body { background: var(--bg-main); color: var(--text-primary); padding-bottom: 80px; transition: background 0.3s, color 0.3s; }
 
         /* Top Branch Status Banner */
         .status-top-bar {
@@ -62,15 +67,51 @@
             font-size: 16px; cursor: pointer; color: var(--text-primary);
         }
 
-        .container { max-width: 650px; margin: 0 auto; padding: 16px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+
+        /* Tabs Visibility */
+        .app-tab { display: none; }
+        .app-tab.active { display: block; animation: fadeIn 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Stats Cards Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--surface-card);
+            padding: 16px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+        .stat-title { font-size: 12px; color: var(--text-secondary); font-weight: 700; margin-bottom: 6px; }
+        .stat-value { font-size: 20px; font-weight: 900; color: var(--text-primary); }
+
+        /* Card Section Component */
+        .card-box {
+            background: var(--surface-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .card-box h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); }
 
         /* Search & Toolbar */
-        .menu-toolbar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
+        .menu-toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
         .search-box { flex-grow: 1; }
         .search-box input {
             width: 100%; padding: 10px 16px; border: 1px solid var(--border-color);
@@ -86,125 +127,111 @@
             overflow: hidden;
             box-shadow: var(--shadow-sm);
         }
-
         .category-header {
-            padding: 18px 20px;
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             user-select: none;
         }
-
         .category-title-group { display: flex; align-items: center; gap: 10px; }
         .category-title-input {
-            font-size: 18px; font-weight: 800; border: 1px dashed transparent;
+            font-size: 16px; font-weight: 800; border: 1px dashed transparent;
             background: transparent; color: var(--text-primary); border-radius: 6px; padding: 2px 6px;
         }
         .category-title-input:hover, .category-title-input:focus {
             border-color: var(--talabat-orange); background: var(--bg-main); outline: none;
         }
-
         .count-badge {
-            background: #6B7280; color: #fff; width: 22px; height: 22px;
+            background: #6B7280; color: #fff; width: 20px; height: 20px;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 11px; font-weight: 800;
+            font-size: 10px; font-weight: 800;
         }
 
         .add-item-btn-bar {
-            padding: 12px 20px;
+            padding: 10px 20px;
             border-top: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
             text-align: center;
         }
         .add-item-btn {
             background: transparent; border: 1px dashed var(--talabat-orange); color: var(--talabat-orange);
-            width: 100%; padding: 10px; border-radius: var(--radius-md); font-weight: 800; font-size: 14px; cursor: pointer;
+            width: 100%; padding: 8px; border-radius: var(--radius-md); font-weight: 800; font-size: 13px; cursor: pointer;
             transition: background 0.2s;
         }
         .add-item-btn:hover { background: var(--talabat-orange-light); }
 
         /* Items List */
         .item-row {
-            padding: 16px 20px;
+            padding: 14px 20px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
-            gap: 14px;
+            gap: 12px;
             align-items: flex-start;
         }
         .item-row:last-child { border-bottom: none; }
-
-        .item-img {
-            width: 75px; height: 75px; border-radius: 12px;
-            object-fit: cover; border: 1px solid var(--border-color);
-        }
-
+        .item-img { width: 65px; height: 65px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color); }
         .item-details { flex-grow: 1; }
         
-        /* Inline Editable Inputs with Pencil icon style */
-        .editable-name-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 4px;
-        }
+        .editable-name-wrapper { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
         .item-name-input {
-            font-size: 15px; font-weight: 800; width: 100%;
+            font-size: 14px; font-weight: 800; width: 100%;
             border: 1px dashed transparent; background: transparent; color: var(--text-primary);
             border-radius: 6px; padding: 2px 4px;
         }
         .item-name-input:hover, .item-name-input:focus {
             border-color: var(--talabat-orange); background: var(--bg-main); outline: none;
         }
-        .pencil-icon { font-size: 12px; color: var(--text-secondary); cursor: pointer; }
-
-        .item-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.4; }
-        
+        .pencil-icon { font-size: 11px; color: var(--text-secondary); }
+        .item-desc { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.4; }
         .item-tag-badge {
             font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px;
             background: #FEF3C7; color: #D97706; display: inline-block; margin-bottom: 4px;
         }
-
         .price-input {
-            width: 90px; padding: 5px 8px; font-weight: 900; font-size: 14px;
+            width: 80px; padding: 4px 6px; font-weight: 900; font-size: 13px;
             border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-main); color: var(--text-primary); text-align: center;
         }
-
         .promo-btn {
-            display: inline-block; margin-top: 8px; border: 1px solid var(--talabat-orange);
-            color: var(--talabat-orange); background: transparent; padding: 3px 10px;
-            border-radius: 20px; font-size: 11px; font-weight: 800; cursor: pointer;
+            display: inline-block; margin-top: 6px; border: 1px solid var(--talabat-orange);
+            color: var(--talabat-orange); background: transparent; padding: 2px 8px;
+            border-radius: 20px; font-size: 10px; font-weight: 800; cursor: pointer;
         }
 
         /* iOS Toggle Switch */
-        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #D1D5DB; transition: .3s; border-radius: 24px;
+            background-color: #D1D5DB; transition: .3s; border-radius: 22px;
         }
         .slider:before {
-            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
             background-color: white; transition: .3s; border-radius: 50%;
         }
         input:checked + .slider { background-color: var(--talabat-orange); }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider:before { transform: translateX(18px); }
 
         /* Gallery Picker */
-        .gallery-picker { display: flex; gap: 8px; overflow-x: auto; padding: 6px 0; margin-top: 6px; }
-        .gallery-thumb { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; cursor: pointer; border: 2px solid transparent; }
+        .gallery-picker { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0; margin-top: 4px; }
+        .gallery-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; cursor: pointer; border: 2px solid transparent; }
         .gallery-thumb:hover { border-color: var(--talabat-orange); }
 
         /* Add Item Form */
-        .add-form-container {
-            padding: 16px 20px; background: var(--bg-main); border-bottom: 1px solid var(--border-color);
-        }
-        .form-group { margin-bottom: 10px; }
-        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--text-secondary); margin-bottom: 4px; }
+        .add-form-container { padding: 14px 20px; background: var(--bg-main); border-bottom: 1px solid var(--border-color); }
+        .form-group { margin-bottom: 8px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--text-secondary); margin-bottom: 3px; }
         .form-group input, .form-group select {
-            width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px;
+            width: 100%; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 8px;
             font-size: 12px; background: var(--surface-card); color: var(--text-primary);
         }
+
+        /* Orders Table & Cards */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { background: var(--bg-main); color: var(--text-secondary); padding: 10px; text-align: right; font-weight: 800; border-bottom: 1px solid var(--border-color); }
+        td { padding: 10px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
 
         /* Bottom Nav Bar */
         .bottom-nav {
@@ -218,6 +245,13 @@
             font-size: 11px; font-weight: 700; color: var(--text-secondary); text-decoration: none; cursor: pointer;
         }
         .nav-item.active { color: var(--talabat-orange); }
+
+        /* Printable Area */
+        @media print {
+            body * { visibility: hidden; }
+            #printableReceipt, #printableReceipt * { visibility: visible; }
+            #printableReceipt { position: absolute; left: 0; top: 0; width: 80mm; padding: 10px; font-family: 'Cairo'; color: #000; background: #fff; }
+        }
     </style>
 </head>
 <body>
@@ -229,35 +263,103 @@
 
 <!-- Main App Header -->
 <header class="app-header">
-    <h2 style="font-size:20px; font-weight:900;">إدارة القائمة المتقدمة</h2>
+    <h2 style="font-size:18px; font-weight:900;" id="headerTitle">لوحة المعلومات</h2>
     <div class="app-header-icons">
         <div class="icon-btn" onclick="toggleDarkMode()" title="الوضع الداكن">🌙</div>
         <div class="icon-btn" title="المتجر">🏪</div>
     </div>
 </header>
 
+<!-- CONTAINER TABS -->
 <main class="container">
-    <!-- Search Toolbar -->
-    <div class="menu-toolbar">
-        <div class="search-box">
-            <input type="text" id="menuSearchInput" oninput="renderMenu()" placeholder="🔍 ابحث عن أي وجبة في القائمة...">
-        </div>
-    </div>
 
-    <div id="menuContainer"></div>
+    <!-- TAB 1: DASHBOARD -->
+    <section id="tab-dashboard" class="app-tab active">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">إجمالي المبيعات التقديرية</div>
+                <div class="stat-value" id="dashSales">0.00 ج.م</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">عدد الطلبات المستلمة</div>
+                <div class="stat-value" id="dashOrdersCount">0</div>
+            </div>
+        </div>
+
+        <div class="card-box">
+            <h3>📈 مؤشر المبيعات اليومية</h3>
+            <div style="position:relative; height:200px; margin-top:15px;">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card-box">
+            <div class="card-header-flex">
+                <h3>🛍️ أحدث الطلبات الواردة</h3>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>العميل</th>
+                            <th>الهاتف</th>
+                            <th>الإجمالي</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashOrdersTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- TAB 2: DIRECT ORDERS -->
+    <section id="tab-orders" class="app-tab">
+        <div class="card-box">
+            <div class="card-header-flex">
+                <h3>🛍️ إدارة الطلبات المباشرة السجِل بالكامل</h3>
+                <button onclick="clearOrders()" style="background:#FEE2E2; color:#DC2626; border:none; padding:6px 12px; border-radius:6px; font-weight:800; cursor:pointer;">مسح السجل</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>العميل</th>
+                            <th>الهاتف</th>
+                            <th>الإجمالي</th>
+                            <th>الحالة</th>
+                            <th>الإيصالات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fullOrdersTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- TAB 3: ADVANCED MENU -->
+    <section id="tab-menu" class="app-tab">
+        <div class="menu-toolbar">
+            <div class="search-box">
+                <input type="text" id="menuSearchInput" oninput="renderMenu()" placeholder="🔍 ابحث عن أي وجبة في القائمة...">
+            </div>
+        </div>
+        <div id="menuContainer"></div>
+    </section>
+
 </main>
 
 <!-- Bottom Navigation Bar -->
 <nav class="bottom-nav">
-    <div class="nav-item">
+    <div class="nav-item active" onclick="switchTab('dashboard', this)">
         <span style="font-size:18px;">📊</span>
         <span>لوحة المعلومات</span>
     </div>
-    <div class="nav-item">
+    <div class="nav-item" onclick="switchTab('orders', this)">
         <span style="font-size:18px;">🛍️</span>
         <span>الطلبات المباشرة</span>
     </div>
-    <div class="nav-item active">
+    <div class="nav-item" onclick="switchTab('menu', this)">
         <span style="font-size:18px;">📖</span>
         <span>إدارة القائمة</span>
     </div>
@@ -267,13 +369,14 @@
     </div>
 </nav>
 
+<!-- Printable Receipt Hidden Container -->
+<div id="printableReceipt" style="display:none;"></div>
+
 <script>
     const presetImages = [
         "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg",
         "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/99f096e2-f829-4dfa-9990-27865dd5ac7b.jpg",
-        "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg",
-        "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg",
-        "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg"
+        "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg"
     ];
 
     const defaultMenu = [
@@ -285,24 +388,35 @@
                 { id: 1, name: "حواوشي لحم بالموتزريلا", price: 145.00, tag: "🔥 الأكثر مبيعاً", desc: "حواوشي لحم طازج ممزوج بالموتزريلا...", img: presetImages[0], available: true },
                 { id: 2, name: "حواوشي لحم بقري مخصوص", price: 85.00, tag: "", desc: "حواوشي لحم اسبشيل مميزة محضرة...", img: presetImages[1], available: true }
             ]
-        },
-        {
-            category: "مكرونة",
-            collapsed: true,
-            showAddForm: false,
-            items: [
-                { id: 3, name: "إسباجيتي بالطماطم", price: 45.00, tag: "🌟 جديد", desc: "إسباجيتي طازجة مطهية بعناية...", img: presetImages[2], available: true },
-                { id: 4, name: "مكرونة بينا بالصلصة الحمراء", price: 50.00, tag: "", desc: "مكرونة بنية لذيذة مع صلصة حمراء...", img: presetImages[3], available: true }
-            ]
         }
     ];
 
     let menu = JSON.parse(localStorage.getItem("pasta_advanced_menu_v2")) || defaultMenu;
     let isRestaurantOpen = JSON.parse(localStorage.getItem("pasta_is_open")) || false;
+    let salesChartInstance = null;
 
     function init() {
         renderStatusBanner();
+        renderDashboard();
+        renderOrdersTables();
         renderMenu();
+        initChart();
+        setInterval(renderOrdersTables, 5000); // تحديث دوري للطلبات
+    }
+
+    function switchTab(tabKey, element) {
+        document.querySelectorAll('.app-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+
+        document.getElementById(`tab-${tabKey}`).classList.add('active');
+        element.classList.add('active');
+
+        const titles = {
+            'dashboard': 'لوحة المعلومات والتحليلات',
+            'orders': 'سجل الطلبات المباشرة',
+            'menu': 'إدارة القائمة المتقدمة'
+        };
+        document.getElementById('headerTitle').innerText = titles[tabKey];
     }
 
     function toggleDarkMode() {
@@ -327,6 +441,119 @@
         }
     }
 
+    // Dashboard Analytics & Charts
+    function renderDashboard() {
+        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        const totalSales = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+
+        document.getElementById("dashSales").innerText = `${totalSales.toFixed(2)} ج.م`;
+        document.getElementById("dashOrdersCount").innerText = orders.length;
+    }
+
+    function initChart() {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        salesChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['طلب 1', 'طلب 2', 'طلب 3', 'طلب 4', 'طلب 5'],
+                datasets: [{
+                    label: 'المبيعات (ج.م)',
+                    data: [0, 0, 0, 0, 0],
+                    borderColor: '#FF5A00',
+                    backgroundColor: 'rgba(255, 90, 0, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+        updateChartData();
+    }
+
+    function updateChartData() {
+        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        if(orders.length > 0 && salesChartInstance) {
+            const recent = orders.slice(-7);
+            salesChartInstance.data.labels = recent.map((_, i) => `#${i+1}`);
+            salesChartInstance.data.datasets[0].data = recent.map(o => o.total || 0);
+            salesChartInstance.update();
+        }
+    }
+
+    // Orders Management
+    function renderOrdersTables() {
+        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]").reverse();
+        let html = "";
+
+        if(orders.length === 0) {
+            html = "<tr><td colspan='5' style='text-align:center; padding:20px; color:#6B7280;'>لا توجد طلبات سابقة</td></tr>";
+        } else {
+            orders.forEach((o, idx) => {
+                const realIdx = orders.length - 1 - idx;
+                html += `
+                    <tr>
+                        <td><b>${o.customer_name}</b></td>
+                        <td>${o.phone}</td>
+                        <td><b>${o.total ? o.total.toFixed(2) : '0.00'} ج.م</b></td>
+                        <td>
+                            <select onchange="updateOrderStatus(${realIdx}, this.value)" style="padding:4px; font-weight:800; border-radius:6px;">
+                                <option value="قيد المراجعة" ${o.status==='قيد المراجعة'?'selected':''}>⏳ قيد المراجعة</option>
+                                <option value="تم التسليم" ${o.status==='تم التسليم'?'selected':''}>✅ تم التسليم</option>
+                                <option value="ملغي" ${o.status==='ملغي'?'selected':''}>❌ ملغي</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button onclick="printReceipt(${realIdx})" style="padding:3px 8px; font-size:10px; font-weight:800; cursor:pointer;">طباعة 🖨️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.getElementById("dashOrdersTable").innerHTML = html;
+        document.getElementById("fullOrdersTable").innerHTML = html;
+        renderDashboard();
+        updateChartData();
+    }
+
+    function updateOrderStatus(index, newStatus) {
+        let orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        if(orders[index]) {
+            orders[index].status = newStatus;
+            localStorage.setItem("pasta_orders_history", JSON.stringify(orders));
+            renderOrdersTables();
+        }
+    }
+
+    function clearOrders() {
+        if(confirm("هل تريد مسح كل السجل؟")) {
+            localStorage.removeItem("pasta_orders_history");
+            renderOrdersTables();
+        }
+    }
+
+    function printReceipt(index) {
+        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        const order = orders[index];
+        if(!order) return;
+
+        const html = `
+            <div style="text-align:center; border-bottom:1px dashed #000; padding-bottom:6px; margin-bottom:6px;">
+                <h3 style="margin:0;">باستا فود 🍝</h3>
+                <small>إيصال مطعم</small>
+            </div>
+            <div><b>العميل:</b> ${order.customer_name}<br><b>الهاتف:</b> ${order.phone}</div>
+            <hr style="border-top:1px dashed #000;">
+            <div><b>الإجمالي الكلي:</b> ${order.total} ج.م</div>
+        `;
+        const container = document.getElementById("printableReceipt");
+        container.innerHTML = html;
+        container.style.display = "block";
+        window.print();
+        container.style.display = "none";
+    }
+
+    // Menu Management functions
     function toggleCategoryCollapse(catIdx) {
         menu[catIdx].collapsed = !menu[catIdx].collapsed;
         saveMenu();
@@ -348,35 +575,27 @@
         const desc = document.getElementById(`formDesc_${catIdx}`).value.trim() || "وجبة مميزة";
         const img = document.getElementById(`formImg_${catIdx}`).value.trim() || presetImages[0];
 
-        if(!name || isNaN(price)) {
-            alert("⚠️ يرجى إدخال اسم الوجبة والسعر بشكل صحيح!");
-            return;
-        }
+        if(!name || isNaN(price)) return alert("يرجى إدخال اسم الوجبة والسعر!");
 
         menu[catIdx].items.push({ id: Date.now(), name, price, tag, desc, img, available: true });
         menu[catIdx].showAddForm = false;
         saveMenu();
     }
 
-    // التعديل المباشر لاسم الصنف
     function updateItemName(catIdx, itemIdx, newName) {
-        const name = newName.trim();
-        if(name) {
-            menu[catIdx].items[itemIdx].name = name;
+        if(newName.trim()) {
+            menu[catIdx].items[itemIdx].name = newName.trim();
             localStorage.setItem("pasta_advanced_menu_v2", JSON.stringify(menu));
         }
     }
 
-    // التعديل المباشر لاسم القسم
     function updateCategoryName(catIdx, newCatName) {
-        const name = newCatName.trim();
-        if(name) {
-            menu[catIdx].category = name;
+        if(newCatName.trim()) {
+            menu[catIdx].category = newCatName.trim();
             localStorage.setItem("pasta_advanced_menu_v2", JSON.stringify(menu));
         }
     }
 
-    // التعديل المباشر لسعر الصنف
     function updateItemPrice(catIdx, itemIdx, newPrice) {
         const price = parseFloat(newPrice);
         if(!isNaN(price) && price >= 0) {
@@ -390,17 +609,10 @@
         saveMenu();
     }
 
-    function createPromo(catIdx, itemIdx) {
-        const discount = prompt("أدخل نسبة الخصم للطلب الترويجي (%):", "10");
-        if(discount) {
-            alert(`✅ تم تفعيل العرض الترويجي بنسبة ${discount}% للوجبة!`);
-        }
-    }
-
     function addNewCategoryPrompt() {
-        const catName = prompt("أدخل اسم القسم الجديد:");
-        if(catName) {
-            menu.push({ category: catName, collapsed: false, showAddForm: false, items: [] });
+        const name = prompt("أدخل اسم القسم الجديد:");
+        if(name) {
+            menu.push({ category: name, collapsed: false, showAddForm: false, items: [] });
             saveMenu();
         }
     }
@@ -416,19 +628,16 @@
         let html = "";
 
         menu.forEach((cat, catIdx) => {
-            const filteredItems = cat.items.filter(item => 
-                item.name.toLowerCase().includes(searchQuery) || item.desc.toLowerCase().includes(searchQuery)
-            );
-
-            if(searchQuery && filteredItems.length === 0) return;
+            const filtered = cat.items.filter(i => i.name.toLowerCase().includes(searchQuery) || i.desc.toLowerCase().includes(searchQuery));
+            if(searchQuery && filtered.length === 0) return;
 
             html += `
                 <div class="category-card">
                     <div class="category-header">
                         <div class="category-title-group" style="flex-grow:1;" onclick="toggleCategoryCollapse(${catIdx})">
-                            <span class="count-badge">${filteredItems.length}</span>
+                            <span class="count-badge">${filtered.length}</span>
                         </div>
-                        <input type="text" class="category-title-input" value="${cat.category}" onchange="updateCategoryName(${catIdx}, this.value)" title="اضغط للتعديل المباشر للقسم">
+                        <input type="text" class="category-title-input" value="${cat.category}" onchange="updateCategoryName(${catIdx}, this.value)">
                         <span style="font-size:14px; font-weight:800; margin-right:10px; cursor:pointer;" onclick="toggleCategoryCollapse(${catIdx})">${cat.collapsed ? '⌄' : '⌃'}</span>
                     </div>
 
@@ -439,41 +648,21 @@
 
                         ${cat.showAddForm ? `
                             <div class="add-form-container">
-                                <h4 style="font-size:13px; font-weight:800; margin-bottom:8px;">إضافة وجبة جديدة</h4>
-                                <div class="form-group">
-                                    <label>اسم الوجبة</label>
-                                    <input type="text" id="formName_${catIdx}" placeholder="اسم الوجبة">
-                                </div>
-                                <div class="form-group">
-                                    <label>السعر (ج.م)</label>
-                                    <input type="number" id="formPrice_${catIdx}" placeholder="0.00">
-                                </div>
-                                <div class="form-group">
-                                    <label>الشارة المميزة</label>
-                                    <select id="formTag_${catIdx}">
-                                        <option value="">بدون شارة</option>
-                                        <option value="🔥 الأكثر مبيعاً">🔥 الأكثر مبيعاً</option>
-                                        <option value="🌟 جديد">🌟 جديد</option>
-                                        <option value="🌶️ حار">🌶️ حار</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>الوصف</label>
-                                    <input type="text" id="formDesc_${catIdx}" placeholder="مكونات الوجبة">
-                                </div>
-                                <div class="form-group">
-                                    <label>اختر صورة جاهزة أو أدخل رابط</label>
-                                    <input type="text" id="formImg_${catIdx}" placeholder="رابط الصورة">
+                                <div class="form-group"><label>اسم الوجبة</label><input type="text" id="formName_${catIdx}"></div>
+                                <div class="form-group"><label>السعر (ج.م)</label><input type="number" id="formPrice_${catIdx}"></div>
+                                <div class="form-group"><label>الشارة</label><select id="formTag_${catIdx}"><option value="">بدون</option><option value="🔥 الأكثر مبيعاً">🔥 الأكثر مبيعاً</option></select></div>
+                                <div class="form-group"><label>الوصف</label><input type="text" id="formDesc_${catIdx}"></div>
+                                <div class="form-group"><label>رابط أو اختر صورة</label><input type="text" id="formImg_${catIdx}">
                                     <div class="gallery-picker">
                                         ${presetImages.map(img => `<img src="${img}" class="gallery-thumb" onclick="selectPresetImageForForm(${catIdx}, '${img}')">`).join('')}
                                     </div>
                                 </div>
-                                <button class="add-item-btn" style="background:var(--talabat-orange); color:#fff; border:none; margin-top:8px;" onclick="addNewItem(${catIdx})">حفظ وإضافة الوجبة</button>
+                                <button class="add-item-btn" style="background:var(--talabat-orange); color:#fff; border:none;" onclick="addNewItem(${catIdx})">حفظ وإضافة</button>
                             </div>
                         ` : ''}
 
                         <div>
-                            ${filteredItems.map((item) => {
+                            ${filtered.map(item => {
                                 const realIdx = cat.items.indexOf(item);
                                 return `
                                     <div class="item-row">
@@ -484,17 +673,16 @@
                                         <div class="item-details">
                                             ${item.tag ? `<span class="item-tag-badge">${item.tag}</span>` : ''}
                                             <div class="editable-name-wrapper">
-                                                <input type="text" class="item-name-input" value="${item.name}" onchange="updateItemName(${catIdx}, ${realIdx}, this.value)" title="عدل الاسم مباشرة">
-                                                <span class="pencil-icon" title="تعديل مباشر">✏️</span>
+                                                <input type="text" class="item-name-input" value="${item.name}" onchange="updateItemName(${catIdx}, ${realIdx}, this.value)">
+                                                <span class="pencil-icon">✏️</span>
                                             </div>
                                             <div class="item-desc">${item.desc}</div>
                                             <div style="display:flex; align-items:center; gap:8px;">
-                                                <input type="number" class="price-input" value="${item.price}" onchange="updateItemPrice(${catIdx}, ${realIdx}, this.value)" title="عدل السعر مباشرة">
-                                                <span style="font-size:12px; font-weight:800;">ج.م</span>
+                                                <input type="number" class="price-input" value="${item.price}" onchange="updateItemPrice(${catIdx}, ${realIdx}, this.value)">
+                                                <span style="font-size:11px; font-weight:800;">ج.م</span>
                                             </div>
-                                            <button class="promo-btn" onclick="createPromo(${catIdx}, ${realIdx})">إنشاء العرض الترويجي</button>
                                         </div>
-                                        <img src="${item.img}" class="img-thumb item-img" alt="${item.name}">
+                                        <img src="${item.img}" class="item-img" alt="${item.name}">
                                     </div>
                                 `;
                             }).join('')}
@@ -504,7 +692,7 @@
             `;
         });
 
-        container.innerHTML = html || "<div style='text-align:center; padding:30px; color:#6B7280;'>لا توجد نتائج مطابقة للبحث</div>";
+        container.innerHTML = html || "<div style='text-align:center; padding:20px; color:#6B7280;'>لا توجد نتائج</div>";
     }
 
     init();
