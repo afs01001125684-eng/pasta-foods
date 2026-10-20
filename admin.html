@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - باستا فود | Talabat Partner Style</title>
+    <title>لوحة التحكم - إدارة القائمة والطلبات | Pasta Food Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -99,17 +99,14 @@
             font-weight: 700;
             cursor: pointer;
             user-select: none;
-            transition: opacity 0.2s;
         }
         .branch-status.open { background: #e8f5e9; color: #2e7d32; }
         .branch-status.closed { background: #ffebee; color: #c62828; }
-        .branch-status:hover { opacity: 0.85; }
-
         .status-dot { width: 8px; height: 8px; border-radius: 50%; }
         .branch-status.open .status-dot { background: #2e7d32; }
         .branch-status.closed .status-dot { background: #c62828; }
 
-        /* Dashboard Overview Grid */
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -159,7 +156,7 @@
         }
 
         .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 5px; }
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid var(--border-color);
@@ -168,6 +165,7 @@
             font-size: 13px;
             background: #fafafa;
         }
+        textarea { resize: vertical; height: 42px; }
 
         .btn-primary {
             background: var(--talabat-orange);
@@ -178,9 +176,7 @@
             font-weight: 800;
             cursor: pointer;
             font-size: 13px;
-            transition: opacity 0.2s;
         }
-        .btn-primary:hover { opacity: 0.9; }
 
         .btn-warning {
             background: #ffc107;
@@ -207,25 +203,26 @@
 
         /* Availability Badge */
         .status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
+            padding: 5px 12px;
+            border-radius: 15px;
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             display: inline-block;
             user-select: none;
+            transition: all 0.2s;
         }
-        .status-badge.available { background: #e8f5e9; color: #2e7d32; }
-        .status-badge.unavailable { background: #ffebee; color: #c62828; }
+        .status-badge.available { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .status-badge.unavailable { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
 
         /* Responsive Table */
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         th { background: #f8f9fa; color: var(--text-sub); padding: 12px; text-align: right; border-bottom: 1px solid var(--border-color); }
         td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        .img-thumb { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
+        .img-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+        .desc-text { max-width: 200px; color: var(--text-sub); font-size: 12px; line-height: 1.4; }
 
-        /* Responsive Mobile Drawer */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(100%); }
             .sidebar.open { transform: translateX(0); }
@@ -245,12 +242,9 @@
     </div>
     <ul class="sidebar-menu">
         <li class="active"><a href="#" onclick="switchTab(event, 'tab-dashboard')">📊 لوحة المعلومات</a></li>
-        <li><a href="#" onclick="switchTab(event, 'tab-menu')">🍔 إدارة القائمة (المنيو)</a></li>
+        <li><a href="#" onclick="switchTab(event, 'tab-menu')">🍔 إدارة القائمة والتوافر</a></li>
         <li><a href="#" onclick="switchTab(event, 'tab-settings')">⚙️ إعدادات التوصيل</a></li>
         <li><a href="#" onclick="switchTab(event, 'tab-orders')">🛍️ الطلبات المباشرة</a></li>
-        <li style="margin-top: auto; border-top: 1px solid var(--border-color);">
-            <a href="index.html" target="_blank" style="color:var(--talabat-orange);">🌐 عرض موقع العملاء ➔</a>
-        </li>
     </ul>
 </aside>
 
@@ -262,7 +256,7 @@
             <button class="toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
             <h2 style="font-size:18px; font-weight:800;" id="pageTitle">لوحة المعلومات</h2>
         </div>
-        <div class="branch-status open" id="branchStatusBtn" onclick="toggleBranchStatus()" title="اضغط لتغيير حالة المطعم">
+        <div class="branch-status open" id="branchStatusBtn" onclick="toggleBranchStatus()">
             <span class="status-dot"></span>
             <span id="branchStatusText">المطعم مفتوح ويستقبل الطلبات</span>
         </div>
@@ -309,7 +303,7 @@
         </div>
     </section>
 
-    <!-- TAB 2: Menu Management -->
+    <!-- TAB 2: Menu Management (إدارة المنيو، التعديل، والتوافر) -->
     <section id="tab-menu" class="content-tab">
         <!-- Add New Category -->
         <div class="card-box">
@@ -317,7 +311,7 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label>اسم القسم الجديد</label>
-                    <input type="text" id="newCatInput" placeholder="مثال: المشويات، الحلويات...">
+                    <input type="text" id="newCatInput" placeholder="مثال: المشويات، المشروبات...">
                 </div>
             </div>
             <button class="btn-primary" onclick="addNewCategory()">+ إضافة القسم</button>
@@ -340,6 +334,10 @@
                     <input type="number" id="itemPriceInput" placeholder="السعر">
                 </div>
                 <div class="form-group">
+                    <label>وصف الوجبة / المكونات</label>
+                    <input type="text" id="itemDescInput" placeholder="مثال: مكرونة بالبشاميل مع قطع الدجاج والجبن">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
                     <label>رابط الصورة (URL)</label>
                     <input type="text" id="itemImgInput" placeholder="https://example.com/image.jpg">
                 </div>
@@ -347,19 +345,20 @@
             <button class="btn-primary" onclick="addNewItem()">+ إضافة الوجبة للمنيو</button>
         </div>
 
-        <!-- Menu Table List -->
+        <!-- Menu Management Table -->
         <div class="card-box">
-            <h3>📋 قائمة المنتجات الحالية والإتاحة</h3>
+            <h3>📋 تعديل وتوافر منتجات المنيو</h3>
             <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
                             <th>الصورة</th>
                             <th>اسم الوجبة</th>
+                            <th>الوصف</th>
                             <th>القسم</th>
                             <th>السعر</th>
-                            <th>الإتاحة</th>
-                            <th>إجراء تعديل / حذف</th>
+                            <th>التوافر (متاح/غير متاح)</th>
+                            <th>خيارات التعديل</th>
                         </tr>
                     </thead>
                     <tbody id="adminMenuTable"></tbody>
@@ -402,7 +401,7 @@
                             <th>طريقة الدفع</th>
                             <th>الإجمالي</th>
                             <th>حالة الطلب</th>
-                            <th>الطلبات</th>
+                            <th>الطلبات والتفاصيل</th>
                         </tr>
                     </thead>
                     <tbody id="fullOrdersTable"></tbody>
@@ -413,19 +412,19 @@
 </div>
 
 <script>
-    // Default Fallback Menu
+    // قائمة المنيو الافتراضية مع دعم الوصف والإتاحة
     const defaultMenu = [
         {
             category: "الوجبات (Meals) 🍗",
             items: [
-                {id: 1, name: "وجبة أرز وربع فرخة فرن", price: 185.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg", available: true},
-                {id: 2, name: "مكرونة مع ربع فرخة فرن", price: 180.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg", available: true}
+                {id: 1, name: "وجبة أرز وربع فرخة فرن", price: 185.00, desc: "أرز بسمتي أصفر مع ربع فرخة مشوية بالفرن وسلطة", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg", available: true},
+                {id: 2, name: "مكرونة مع ربع فرخة فرن", price: 180.00, desc: "مكرونة بنة بصلصة الطماطم الحمراء مع ربع فرخة فرن", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg", available: true}
             ]
         },
         {
             category: "المكرونة (Pasta) 🍝",
             items: [
-                {id: 22, name: "إسباجيتي بالطماطم", price: 45.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg", available: true}
+                {id: 22, name: "إسباجيتي بالطماطم", price: 45.00, desc: "مكرونة إسباجيتي مع صلصة الطماطم الإيطالية والأعشاب", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg", available: true}
             ]
         }
     ];
@@ -478,9 +477,7 @@
             gain.connect(audioCtx.destination);
             osc.start();
             osc.stop(audioCtx.currentTime + 0.3);
-        } catch(e) {
-            console.log("Audio not supported or blocked");
-        }
+        } catch(e) {}
     }
 
     function checkForNewOrders() {
@@ -503,7 +500,7 @@
 
         const titles = {
             'tab-dashboard': 'لوحة المعلومات',
-            'tab-menu': 'إدارة القائمة (المنيو)',
+            'tab-menu': 'إدارة القائمة والتوافر',
             'tab-settings': 'إعدادات التوصيل',
             'tab-orders': 'الطلبات المباشرة'
         };
@@ -539,40 +536,47 @@
         const catIdx = document.getElementById("itemCatSelect").value;
         const name = document.getElementById("itemNameInput").value.trim();
         const price = parseFloat(document.getElementById("itemPriceInput").value);
+        const desc = document.getElementById("itemDescInput").value.trim() || "لا يوجد وصف";
         const img = document.getElementById("itemImgInput").value.trim() || "https://via.placeholder.com/150";
 
         if(!name || isNaN(price)) return alert("يرجى إدخال اسم الوجبة والسعر!");
 
-        menu[catIdx].items.push({ id: Date.now(), name, price, img, available: true });
+        menu[catIdx].items.push({ id: Date.now(), name, price, desc, img, available: true });
         saveMenu();
 
         document.getElementById("itemNameInput").value = "";
         document.getElementById("itemPriceInput").value = "";
+        document.getElementById("itemDescInput").value = "";
         document.getElementById("itemImgInput").value = "";
         alert("✅ تمت إضافة الوجبة للمنيو!");
     }
 
-    // التبديل بين متاح/غير متاح
+    // التبديل السريع بين (متاح / غير متاح)
     function toggleItemAvailability(catIdx, itemIdx) {
         let current = menu[catIdx].items[itemIdx].available !== false;
         menu[catIdx].items[itemIdx].available = !current;
         saveMenu();
     }
 
-    // تعديل بيانات الوجبة
+    // تعديل كامل بيانات الوجبة (اسم - سعر - وصف - صورة)
     function editItem(catIdx, itemIdx) {
         const item = menu[catIdx].items[itemIdx];
+        
         const newName = prompt("تعديل اسم الوجبة:", item.name);
         if (newName === null) return;
+
+        const newDesc = prompt("تعديل وصف الوجبة / المكونات:", item.desc || "");
+        if (newDesc === null) return;
 
         const newPrice = prompt("تعديل السعر (ج.م):", item.price);
         if (newPrice === null) return;
 
-        const newImg = prompt("تعديل رابط الصورة:", item.img);
+        const newImg = prompt("تعديل رابط الصورة (URL):", item.img);
         if (newImg === null) return;
 
         if (newName.trim() !== "" && !isNaN(parseFloat(newPrice))) {
             item.name = newName.trim();
+            item.desc = newDesc.trim() || "لا يوجد وصف";
             item.price = parseFloat(newPrice);
             item.img = newImg.trim() || item.img;
             saveMenu();
@@ -583,7 +587,7 @@
     }
 
     function deleteItem(catIdx, itemIdx) {
-        if(confirm("هل أنت متأكد من حذف هذا الصنف؟")) {
+        if(confirm("هل أنت متأكد من حذف هذه الوجبة نهائياً؟")) {
             menu[catIdx].items.splice(itemIdx, 1);
             saveMenu();
         }
@@ -605,12 +609,13 @@
                     <tr>
                         <td><img src="${item.img}" class="img-thumb"></td>
                         <td><b>${item.name}</b></td>
+                        <td class="desc-text">${item.desc || 'لا يوجد وصف'}</td>
                         <td>${cat.category}</td>
-                        <td><b>${item.price} ج.م</b></td>
+                        <td><b>${item.price.toFixed(2)} ج.م</b></td>
                         <td>
                             <span class="status-badge ${isAvail ? 'available' : 'unavailable'}" 
                                   onclick="toggleItemAvailability(${catIdx}, ${itemIdx})" 
-                                  title="اضغط لتغيير الإتاحة">
+                                  title="اضغط لتغيير الحالة فوراً">
                                 ${isAvail ? '🟢 متاح' : '🔴 غير متاح'}
                             </span>
                         </td>
@@ -622,7 +627,7 @@
                 `;
             });
         });
-        tbody.innerHTML = html || "<tr><td colspan='6' style='text-align:center;'>لا توجد أصناف حالياً</td></tr>";
+        tbody.innerHTML = html || "<tr><td colspan='7' style='text-align:center;'>لا توجد وجبات في المنيو حالياً</td></tr>";
     }
 
     function saveSettings() {
@@ -630,7 +635,7 @@
         settings.freeThreshold = parseFloat(document.getElementById("settingThresholdInput").value) || 0;
         localStorage.setItem("pasta_settings", JSON.stringify(settings));
         renderDashboard();
-        alert("✅ تم حفظ إعدادات التوصيل والحد الأدنى!");
+        alert("✅ تم حفظ إعدادات التوصيل!");
     }
 
     function updateOrderStatus(index, newStatus) {
