@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم مطعم باستا فود 👨‍🍳</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --talabat-main: #FF5A00; --text-dark: #191919; --light-bg: #f5f5f5; --border-color: #efefef; }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+        body { background: #f9f9f9; color: var(--text-dark); padding: 20px; }
+        .container { max-width: 700px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        h1, h2 { text-align: center; margin-bottom: 20px; color: var(--talabat-main); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 700; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: var(--light-bg); }
+        .btn { background: var(--talabat-main); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; }
+        .btn-danger { background: #e74c3c; margin-top: 5px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>لوحة تحكم الأطباق والأسعار 🛠</h1>
+    
+    <div class="form-group">
+        <label>اسم الصنف الجديد:</label>
+        <input type="text" id="newName" placeholder="مثال: مكرونة باللحم">
+    </div>
+    <div class="form-group">
+        <label>السعر (ج.م):</label>
+        <input type="number" id="newPrice" placeholder="مثال: 120">
+    </div>
+    <div class="form-group">
+        <label>رابط الصورة (URL):</label>
+        <input type="text" id="newImg" placeholder="رابط صورة الصنف من الإنترنت">
+    </div>
+    <button class="btn" onclick="addNewItem()">إضافة صنف جديد للقائمة ➕</button>
+
+    <hr style="margin: 30px 0;">
+
+    <h2>الأصناف الحالية في القائمة</h2>
+    <div id="adminItemsList"></div>
+
+    <a href="index.html" class="back-link">
