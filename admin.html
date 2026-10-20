@@ -137,6 +137,8 @@
             align-items: center;
             background: #fff;
             border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
         }
 
         .cat-title-box { display: flex; align-items: center; gap: 10px; }
@@ -153,6 +155,15 @@
             font-size: 12px;
             font-weight: 800;
         }
+
+        .arrow-icon {
+            font-size: 12px;
+            transition: transform 0.3s;
+            color: var(--text-sub);
+        }
+        .cat-card.collapsed .arrow-icon { transform: rotate(-90deg); }
+        .cat-card.collapsed .cat-body { display: none; }
+        .cat-card.collapsed .cat-header { border-bottom: none; }
 
         .cat-actions { display: flex; align-items: center; gap: 8px; }
 
@@ -261,6 +272,18 @@
         input:checked + .slider { background-color: #2e7d32; }
         input:checked + .slider:before { transform: translateX(20px); }
 
+        /* Orders Card Design */
+        .order-card {
+            background: #fff; border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 15px 20px; margin-bottom: 15px;
+            box-shadow: var(--card-shadow);
+        }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); }
+        .order-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-preparing { background: #cce5ff; color: #004085; }
+        .badge-delivered { background: #d4edda; color: #155724; }
+
         /* Forms & Cards Styling */
         .card-box {
             background: #fff; border-radius: 12px; padding: 20px;
@@ -272,7 +295,6 @@
 
         .btn-primary { background: var(--talabat-orange); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; }
         .btn-secondary { background: #6c757d; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; }
-        .btn-danger { background: #dc3545; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
         /* Modal Dialog Styling */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; }
@@ -338,7 +360,7 @@
     <section id="tab-dashboard" class="content-tab">
         <div class="card-box">
             <h3>📊 ملخص الأداء والإحصائيات</h3>
-            <p>إجمالي المبيعات والطلبات الواردة يعرض هنا.</p>
+            <p style="margin-top:10px; font-size:14px; color:var(--text-sub);">إجمالي المبيعات والطلبات الواردة يعرض هنا.</p>
         </div>
     </section>
 
@@ -346,7 +368,7 @@
     <section id="tab-settings" class="content-tab">
         <div class="card-box">
             <h3>⚙️ إعدادات التوصيل والحد الأدنى</h3>
-            <div class="form-grid">
+            <div class="form-grid" style="margin-top:15px;">
                 <div class="form-group">
                     <label>رسوم التوصيل الأساسية (ج.م)</label>
                     <input type="number" id="settingFeeInput">
@@ -363,7 +385,8 @@
     <!-- TAB: Orders -->
     <section id="tab-orders" class="content-tab">
         <div class="card-box">
-            <h3>🛍️ جميع الطلبات</h3>
+            <h3>🛍️ الطلبات المباشرة</h3>
+            <p style="font-size:12px; color:var(--text-sub); margin-bottom:15px;">متابعة حالة الطلبات الواردة للفرع وتحديث حالتها</p>
             <div id="ordersList"></div>
         </div>
     </section>
@@ -452,14 +475,28 @@
         }
     ];
 
+    const defaultOrders = [
+        { id: "#1024", customer: "أحمد علي", total: 190.00, status: "pending", items: "1x حواوشي بالموتزريلا، 1x إسباجيتي" },
+        { id: "#1023", customer: "محمود حسن", total: 85.00, status: "preparing", items: "1x حواوشي لحم بقري" }
+    ];
+
     let menu = JSON.parse(localStorage.getItem("pasta_menu")) || defaultMenu;
     let settings = JSON.parse(localStorage.getItem("pasta_settings")) || { deliveryFee: 50, freeThreshold: 250 };
+    let orders = JSON.parse(localStorage.getItem("pasta_orders")) || defaultOrders;
 
     function init() {
         renderMenuAccordion();
+        renderOrders();
         document.getElementById("settingFeeInput").value = settings.deliveryFee;
         document.getElementById("settingThresholdInput").value = settings.freeThreshold;
     }
+
+    /* إغلاق الـ Modal عند النقر خارجه */
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = "none";
+        }
+    };
 
     function switchTab(e, tabId) {
         e.preventDefault();
@@ -479,12 +516,20 @@
         document.getElementById('sidebar').classList.remove('open');
     }
 
+    function toggleCategoryCollapse(event, catIdx) {
+        // منع الطي عند النقر على أزرار التعديل والحذف
+        if(event.target.closest('.cat-actions')) return;
+        const card = document.getElementById(`cat-card-${catIdx}`);
+        card.classList.toggle('collapsed');
+    }
+
     function renderMenuAccordion() {
         const container = document.getElementById("menuAccordionContainer");
         container.innerHTML = menu.map((cat, catIdx) => `
-            <div class="cat-card">
-                <div class="cat-header">
+            <div class="cat-card" id="cat-card-${catIdx}">
+                <div class="cat-header" onclick="toggleCategoryCollapse(event, ${catIdx})">
                     <div class="cat-title-box">
+                        <span class="arrow-icon">▼</span>
                         <span class="cat-title">${cat.category}</span>
                         <span class="count-badge">${cat.items.length}</span>
                     </div>
@@ -494,7 +539,6 @@
                     </div>
                 </div>
                 <div class="cat-body">
-                    <!-- زر إضافة منتج بداخل كل قسم -->
                     <button class="btn-add-item-dashed" onclick="openAddItemModal(${catIdx})">
                         <span>＋</span> <span>إضافة منتج بهذا القسم</span>
                     </button>
@@ -503,7 +547,6 @@
                         ${cat.items.map((item, itemIdx) => `
                             <div class="item-card">
                                 <div class="item-left">
-                                    <!-- مفتاح الإتاحة والعدم إتاحة -->
                                     <div class="switch-box">
                                         <span class="switch-label ${item.active !== false ? 'active':'inactive'}">
                                             ${item.active !== false ? 'متاح':'مغلق'}
@@ -530,6 +573,46 @@
                 </div>
             </div>
         `).join('');
+    }
+
+    function renderOrders() {
+        const container = document.getElementById("ordersList");
+        if(orders.length === 0) {
+            container.innerHTML = "<p style='text-align:center; color:var(--text-sub);'>لا توجد طلبات حالياً.</p>";
+            return;
+        }
+
+        const badgeMap = {
+            'pending': { text: 'جديد', class: 'badge-pending' },
+            'preparing': { text: 'قيد التحضير', class: 'badge-preparing' },
+            'delivered': { text: 'تم التوصيل', class: 'badge-delivered' }
+        };
+
+        container.innerHTML = orders.map((order, idx) => `
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <strong>الطلب ${order.id}</strong> - <span style="color:var(--text-sub); font-size:13px;">${order.customer}</span>
+                    </div>
+                    <span class="order-badge ${badgeMap[order.status].class}">${badgeMap[order.status].text}</span>
+                </div>
+                <div style="font-size:13px; margin-bottom:8px;"><strong>المحتويات:</strong> ${order.items}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:var(--talabat-orange);">${order.total.toFixed(2)} ج.م</strong>
+                    <select onchange="updateOrderStatus(${idx}, this.value)" style="width:auto; padding:4px 8px; font-size:12px;">
+                        <option value="pending" ${order.status==='pending'?'selected':''}>جديد</option>
+                        <option value="preparing" ${order.status==='preparing'?'selected':''}>قيد التحضير</option>
+                        <option value="delivered" ${order.status==='delivered'?'selected':''}>تم التوصيل</option>
+                    </select>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateOrderStatus(idx, newStatus) {
+        orders[idx].status = newStatus;
+        localStorage.setItem("pasta_orders", JSON.stringify(orders));
+        renderOrders();
     }
 
     /* التحكم في الإتاحة */
@@ -609,10 +692,8 @@
         if(!name || isNaN(price)) return alert("يرجى إدخال الاسم والسعر بشكل صحيح!");
 
         if (itemIdx === -1) {
-            // إضافة جديد
             menu[catIdx].items.push({ id: Date.now(), name, desc, price, img, active: true });
         } else {
-            // تعديل قائم
             menu[catIdx].items[itemIdx].name = name;
             menu[catIdx].items[itemIdx].desc = desc;
             menu[catIdx].items[itemIdx].price = price;
