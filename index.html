@@ -13,7 +13,7 @@
 
         .closed-overlay-banner { background: #fee2e2; color: #dc2626; text-align: center; padding: 10px; font-weight: 800; font-size: 14px; display: none; }
 
-        .cover-header { position: relative; height: 180px; background: url('https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg') center/cover no-repeat; }
+        .cover-header { position: relative; height: 180px; background: url('1000540196.jpg') center/cover no-repeat; }
         .top-nav-icons { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .icon-btn { background: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); border: none; font-size: 18px; cursor: pointer; }
         .group-order-btn { background: #fff; border-radius: 20px; padding: 6px 15px; font-size: 13px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.15); border: none; }
@@ -55,7 +55,6 @@
         .progress-bar-bg { width: 100%; height: 6px; background: #ffd0b5; border-radius: 3px; margin-top: 4px; overflow: hidden; }
         .progress-bar-fill { height: 100%; background: var(--talabat-main); width: 0%; transition: width 0.3s ease; }
         
-        .savings-tag { background: #ffe0b2; color: #d84315; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; align-self: center; display: flex; align-items: center; gap: 5px; }
         .cart-main-btn { background: var(--talabat-main); color: #fff; border-radius: 12px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 90, 0, 0.3); border: none; width: 100%; }
         .cart-count-badge { background: #fff; color: var(--talabat-main); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
 
@@ -85,10 +84,9 @@
 <body>
 
 <div id="toastContainer"></div>
-
 <div class="closed-overlay-banner" id="closedBanner">🔴 عذراً، المطعم مغلق حالياً ولا يمكن استقبال طلبات جديدة.</div>
 
-<div class="cover-header">
+<div class="cover-header" style="background: url('1000540196.jpg') center/cover no-repeat;">
     <div class="top-nav-icons">
         <button class="icon-btn" onclick="window.history.back()">❯</button>
         <button class="group-order-btn">👥 الطلب الجماعي</button>
@@ -100,10 +98,10 @@
 </div>
 
 <div class="restaurant-card">
-    <img src="https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg" class="logo-img" alt="باستا فود">
+    <img src="1000540196.jpg" class="logo-img" alt="باستا فود">
     <div class="rest-details">
         <div class="rest-title">باستا فود 🍝</div>
-        <div class="rest-sub">طواجن، مكرونة، وجبات، ساندوتشات</div>
+        <div class="rest-sub">كبدة، سجق، برجر، وجبات، طواجن</div>
         <span class="rating-badge">★ 4.8 (+500)</span>
         <div class="delivery-info"><span>🕒 35-45 دقيقة</span> • <span>🛵 خدمة توصيل ممتازة</span></div>
     </div>
@@ -190,7 +188,6 @@
     let selectedPaymentMethod = "الدفع عند الاستلام";
     let cart = JSON.parse(localStorage.getItem("pasta_cart")) || {};
 
-    // القائمة الافتراضية الشاملة
     const defaultMenu = [
         {
             category: "الوجبات (Meals) 🍗",
@@ -309,7 +306,7 @@
                                 <button class="qty-btn-card" onclick="changeQty('${item.name}',${item.price}, -1)">-</button>
                             </div>
                         ` : `
-                            <button class="add-badge" onclick="${isOpen ? `changeQty('${item.name}', ${item.price}, 1)` : `alert('عذراً، المطعم مغلق حالياً')`}">+</button>
+                            <button class="add-badge" onclick="${isOpen ? `changeQty('${item.name}',${item.price}, 1)` : `alert('عذراً، المطعم مغلق حالياً')`}">+</button>
                         `;
                         return `
                             <div class="product-card">
@@ -391,116 +388,9 @@
             <div class="modal-cart-item">
                 <div><b>${cart[k].name}</b><br><small>${cart[k].price} ج.م × ${cart[k].qty}</small></div>
                 <div style="display:flex; gap:6px; align-items:center;">
-                    <button class="modal-qty-btn" onclick="changeQty('${k}', ${cart[k].price}, 1)">+</button>
+                    <button class="modal-qty-btn" onclick="changeQty('${k}',${cart[k].price}, 1)">+</button>
                     <b>${cart[k].qty}</b>
-                    <button class="modal-qty-btn" onclick="changeQty('${k}', ${cart[k].price}, -1)">-</button>
+                    <button class="modal-qty-btn" onclick="changeQty('${k}',${cart[k].price}, -1)">-</button>
                 </div>
             </div>
-        `).join('') + `<div style="margin-top:10px; border-top:1px solid #ddd; padding-top:6px; font-weight:800; color:var(--talabat-main);">الإجمالي النهائي: ${total.toFixed(2)} ج.م</div>`;
-    }
-
-    function calculateRoadDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return (R * c) * 1.3; 
-    }
-
-    function autoGetGPSLocation() {
-        const status = document.getElementById("locationStatus");
-        const mapInput = document.getElementById("custLocationMap");
-        const addressInput = document.getElementById("address");
-
-        if (!navigator.geolocation) return;
-
-        status.innerText = "⏳ جاري تحديد موقعك وعنوانك تلقائياً...";
-        status.style.color = "#d84315";
-
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                mapInput.value = `https://www.google.com/maps?q=${lat},${lng}`;
-                currentDistance = calculateRoadDistance(RESTAURANT_LAT, RESTAURANT_LNG, lat, lng);
-                deliveryFee = currentDistance <= 5 ? 50 : 50 + Math.ceil((currentDistance - 5) * 6);
-                
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && data.display_name) {
-                            addressInput.value = data.display_name;
-                        } else {
-                            addressInput.value = `إحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                        }
-                    })
-                    .catch(() => {
-                        addressInput.value = `إحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                    });
-
-                status.innerHTML = `✅ تم جلب الموقع والعنوان بنجاح`;
-                status.style.color = "green";
-                renderCartModal();
-            },
-            () => {
-                status.innerText = "⚠️ يرجى كتابة عنوانك يدوياً.";
-                status.style.color = "#d84315";
-            },
-            { enableHighAccuracy: true, timeout: 10000 }
-        );
-    }
-
-    function processOrder() {
-        const name = document.getElementById("name").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const address = document.getElementById("address").key ? document.getElementById("address").value.trim() : document.getElementById("address").value.trim();
-        const email = document.getElementById("customerEmail").value.trim();
-        const notes = document.getElementById("notes").value.trim();
-        const mapUrl = document.getElementById("custLocationMap").value.trim();
-        
-        let keys = Object.keys(cart);
-        if(keys.length === 0 || !name || !phone || !address) { alert("يرجى إكمال بيانات الطلب!"); return; }
-
-        const phoneRegex = /^01[0125][0-9]{8}$/;
-        if (!phoneRegex.test(phone)) {
-            alert("رقم الهاتف غير صحيح! يرجى إدخال رقم هاتف محمول مصري صحيح (11 رقماً).");
-            return;
-        }
-
-        let subtotal = keys.reduce((sum, k) => sum + (cart[k].price * cart[k].qty), 0);
-        let actualFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : deliveryFee;
-        let total = subtotal + actualFee;
-        let cartListArray = keys.map(k => cart[k]);
-
-        let ordersHistory = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
-        ordersHistory.push({ customer_name: name, phone: phone, total: total, items: cartListArray, payment: selectedPaymentMethod, status: "قيد المراجعة" });
-        localStorage.setItem("pasta_orders_history", JSON.stringify(ordersHistory));
-
-        const orderItems = cartListArray.map(item => ({ name: `${item.name} (عدد: ${item.qty})`, price: item.price * item.qty }));
-        
-        emailjs.send('service_a1b2c3d', 'template_8yhqwxa', {
-            customer_name: name,
-            customer_email: email,
-            orders: orderItems, 
-            delivery_fee: actualFee,
-            total_amount: total,
-            customer_location: mapUrl || "لم يتم تحديد الموقع",
-            payment_method: selectedPaymentMethod,
-            customer_notes: notes || "لا توجد ملاحظات"
-        }).then(() => {}, (err) => { console.error("EmailJS Error:", err); });
-
-        let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n💳 الدفع: ${selectedPaymentMethod}\n📝 ملاحظات: ${notes || 'لا توجد'}\n🗺️ الخريطة: ${mapUrl || 'لم يرسل'}\n\n🛒 الطلبات:\n` + cartListArray.map(i=>`• ${i.name} × ${i.qty} (${(i.price * i.qty).toFixed(2)} ج.م)`).join('\n') + `\n\n🛵 التوصيل: ${actualFee === 0 ? 'مجاناً 🎉' : actualFee + ' ج.م'}\n💰 الإجمالي: ${total.toFixed(2)} ج.م`;
-        
-        window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
-        localStorage.removeItem("pasta_cart");
-        setTimeout(() => window.location.reload(), 1000);
-    }
-
-    renderPage();
-    updateCartBar();
-</script>
-</body>
-</html>
+        `).join('') + `<div style="margin-top:10px; border-top:1px solid
