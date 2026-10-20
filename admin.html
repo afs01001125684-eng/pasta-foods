@@ -6,7 +6,7 @@
     <title>لوحة تحكم باستا فود 👨‍🍳</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --talabat-main: #FF5A00; --text-dark: #191919; --light-bg: #f8f9fa; --border-color: #eee; }
+        :root { --talabat-main: #FF5A00; --text-dark: #191919; --light-bg: #f8f9fa; --border-color: #e5e5e5; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
         body { background: #f4f6f8; color: var(--text-dark); padding-bottom: 80px; }
         .container { max-width: 650px; margin: 0 auto; padding: 15px; }
@@ -23,11 +23,11 @@
         .action-icon-delete { background: #ffebee; color: #c62828; }
         
         .products-list { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px; display: block; }
-        .product-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f5f5; gap: 10px; }
+        .product-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f5f5; gap: 10px; cursor: pointer; }
         .product-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; }
         .product-info-box { flex-grow: 1; }
         .product-name { font-size: 14px; font-weight: 700; color: #222; }
-        .product-desc { font-size: 11px; color: #777; margin-top: 2px; }
+        .product-desc { font-size: 11px; color: #777; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
         .product-price-tag { font-size: 13px; font-weight: 800; color: var(--talabat-main); margin-top: 2px; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000; box-shadow: 0 -2px 8px rgba(0,0,0,0.05); }
@@ -38,13 +38,27 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: #fff; width: 92%; max-width: 480px; padding: 20px; border-radius: 16px; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 4px; font-weight: 700; font-size: 13px; color: #333; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; font-size: 13px; }
-        .btn-save { background: var(--talabat-main); color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 10px; font-size: 15px; }
-        .btn-cancel { background: #888; color: #fff; border: none; padding: 10px; width: 100%; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 6px; }
+        /* نافذة التعديل المطابقة تماماً للمرفق */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: flex-end; }
+        .modal-content { background: #fff; width: 100%; max-width: 600px; height: 92vh; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; overflow-y: auto; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; justify-content: space-between; }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .modal-title { font-size: 18px; font-weight: 800; color: #111; }
+        .close-modal-x { background: none; border: none; font-size: 22px; cursor: pointer; color: #333; }
+
+        /* صندوق الصورة التفاعلي مثل المرفق */
+        .image-picker-container { position: relative; width: 100%; height: 160px; border-radius: 14px; overflow: hidden; background: #eee; cursor: pointer; margin-bottom: 20px; border: 1px solid #ddd; }
+        .image-picker-container img { width: 100%; height: 100%; object-fit: cover; }
+        .camera-floating-btn { position: absolute; bottom: 12px; left: 12px; background: var(--talabat-main); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3); font-size: 18px; }
+
+        .form-section-title { font-size: 16px; font-weight: 800; color: #222; margin: 15px 0 10px; }
+        .custom-input-box { border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 15px; background: #fff; }
+        .custom-input-box label { display: block; font-size: 11px; color: #777; margin-bottom: 4px; font-weight: 700; }
+        .custom-input-box input, .custom-input-box textarea, .custom-input-box select { width: 100%; border: none; outline: none; font-size: 14px; font-weight: 600; color: #222; background: transparent; }
+        .custom-input-box textarea { resize: none; height: 60px; }
+
+        .btn-confirm { background: #f0f0f0; color: #888; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; text-align: center; margin-top: 10px; }
+        .btn-confirm.active { background: var(--talabat-main); color: #fff; }
 
         .stats-box { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); text-align: center; }
         .stats-box h3 { color: var(--talabat-main); font-size: 24px; margin-top: 5px; }
@@ -58,7 +72,7 @@
     <!-- تبويب إدارة القائمة -->
     <div id="menuTab" class="tab-content active">
         <button class="top-add-btn" onclick="openAddCategoryModal()">+ إضافة فئة جديدة</button>
-        <button class="reset-btn" onclick="resetToDefaultMenu()">🔄 استرجاع المنيو الأصلي الكامل (30 صنف)</button>
+        <button class="reset-btn" onclick="resetToDefaultMenu()">🔄 استرجاع القائمة الأصلية كاملة (30 صنف)</button>
         <div id="categoriesContainer"></div>
     </div>
 
@@ -70,7 +84,7 @@
         </div>
     </div>
 
-    <!-- تبويب لوحة المعلومات والتحليلات الحقيقية -->
+    <!-- تبويب لوحة المعلومات -->
     <div id="statsTab" class="tab-content">
         <h2 style="color:var(--talabat-main); margin-bottom:15px; text-align:center;">📊 التحليل الحقيقي للمبيعات</h2>
         <div class="stats-box">
@@ -81,7 +95,7 @@
             <p>إجمالي أرباح المبيعات (ج.م)</p>
             <h3 id="totalSalesAmount">0.00</h3>
         </div>
-        <h3 style="margin: 20px 0 10px; font-size:15px;">🔥 الأصناف الأكثر طلباً وحفظاً:</h3>
+        <h3 style="margin: 20px 0 10px; font-size:15px;">🔥 الأصناف الأكثر طلباً:</h3>
         <div id="topItemsContainer">
             <p style="color:#777; text-align:center;">لا توجد طلبات مسجلة للحساب بعد.</p>
         </div>
@@ -107,40 +121,54 @@
     <button class="nav-item" onclick="switchTab('statsTab', this)"><span>📊</span>لوحة المعلومات</button>
 </div>
 
-<!-- نافذة Modal -->
+<!-- نافذة التعديل المطابقة تماماً للمرفق -->
 <div id="itemModal" class="modal">
     <div class="modal-content">
-        <h3 id="modalTitle" style="color:var(--talabat-main); margin-bottom:15px; text-align:center;">إدارة المنتج</h3>
-        <input type="hidden" id="editCatIdx" value="-1">
-        <input type="hidden" id="editItemIdx" value="-1">
+        <div>
+            <div class="modal-header">
+                <button class="close-modal-x" onclick="closeModal()">✕</button>
+                <div class="modal-title" id="modalHeaderTitle">تعديل المنتج</div>
+                <div style="width:20px;"></div>
+            </div>
 
-        <div class="form-group">
-            <label>الفئة / القسم:</label>
-            <select id="modalCategorySelect"></select>
+            <!-- صندوق الصورة مع إمكانية رفعها من الجهاز أو استخدام رابط -->
+            <div class="image-picker-container" onclick="document.getElementById('deviceImageInput').click()">
+                <img id="modalImagePreview" src="" alt="صورة المنتج">
+                <div class="camera-floating-btn">📷</div>
+            </div>
+            <input type="file" id="deviceImageInput" accept="image/*" style="display:none;" onchange="handleDeviceImageUpload(event)">
+            <input type="hidden" id="modalImgUrl">
+
+            <div class="form-section-title">التفاصيل</div>
+            
+            <input type="hidden" id="editCatIdx" value="-1">
+            <input type="hidden" id="editItemIdx" value="-1">
+
+            <div class="custom-input-box">
+                <label>اسم المنتج *</label>
+                <input type="text" id="modalName" placeholder="أدخل اسم المنتج..." oninput="validateForm()">
+            </div>
+
+            <div class="custom-input-box">
+                <label>الوصف التفصيلي *</label>
+                <textarea id="modalDesc" placeholder="أدخل وصف مكونات المنتج..." oninput="validateForm()"></textarea>
+            </div>
+
+            <div class="custom-input-box">
+                <label>الفئة / القسم</label>
+                <select id="modalCategorySelect" style="width:100%; border:none; background:transparent; font-weight:700;"></select>
+            </div>
+
+            <div class="form-section-title">السعر</div>
+            <div class="custom-input-box">
+                <label>السعر (ج.م) *</label>
+                <input type="number" step="0.01" id="modalPrice" placeholder="0.00" oninput="validateForm()">
+            </div>
         </div>
-        <div class="form-group">
-            <label>اسم المنتج:</label>
-            <input type="text" id="modalName" placeholder="مثال: طاجن لحم بالبصل">
+
+        <div>
+            <button class="btn-confirm" id="confirmBtn" onclick="saveProduct()">تأكيد</button>
         </div>
-        <div class="form-group">
-            <label>وصف المنتج التفصيلي:</label>
-            <textarea id="modalDesc" rows="2" placeholder="أدخل مكونات أو وصف المنتج..."></textarea>
-        </div>
-        <div class="form-group">
-            <label>السعر الأساسي (ج.م):</label>
-            <input type="number" step="0.01" id="modalPrice" placeholder="مثال: 120">
-        </div>
-        <div class="form-group">
-            <label>سعر الخصم (اختياري):</label>
-            <input type="number" step="0.01" id="modalDiscount" placeholder="مثال: 99">
-        </div>
-        <div class="form-group">
-            <label>رابط الصورة (URL):</label>
-            <input type="text" id="modalImg" placeholder="رابط صورة المنتج من الإنترنت">
-        </div>
-        
-        <button class="btn-save" onclick="saveProduct()">حفظ التعديلات وتحديث العميل 💾</button>
-        <button class="btn-cancel" onclick="closeModal()">إلغاء ❌</button>
     </div>
 </div>
 
@@ -230,10 +258,10 @@
     }
 
     function resetToDefaultMenu() {
-        if(confirm("هل تريد استرجاع المنيو الأصلي الكامل بجميع الأقسام والصور؟")) {
+        if(confirm("هل تريد استرجاع القائمة الأصلية كاملة؟")) {
             saveMenuData(fullDefaultCategories);
             renderCategories();
-            alert("تم استرجاع المنيو بنجاح!");
+            alert("تم استرجاع القائمة بنجاح!");
         }
     }
 
@@ -258,26 +286,23 @@
                         <div class="category-info">${cat.items ? cat.items.length : 0} منتجات</div>
                     </div>
                     <div class="category-actions" onclick="event.stopPropagation()">
-                        <button class="action-icon" onclick="openAddProductModal(${catIdx})" title="إضافة صنف">+ </button>
+                        <button class="action-icon" onclick="openAddProductModal(${catIdx})" title="إضافة صنف">+</button>
                         <button class="action-icon" onclick="editCategoryName(${catIdx})" title="تعديل اسم الفئة">✏️</button>
                         <button class="action-icon action-icon-delete" onclick="deleteCategory(${catIdx})" title="حذف الفئة">🗑</button>
                     </div>
                 </div>
                 <div class="products-list">
                     ${cat.items && cat.items.length > 0 ? cat.items.map((item, itemIdx) => `
-                        <div class="product-item">
-                            <img src="${item.img || 'https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg'}" class="product-thumb" alt="${item.name}">
+                        <div class="product-item" onclick="openEditProductModal(${catIdx},${itemIdx})">
+                            <img src="${item.img \vert{}\vert{} 'https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg'}" class="product-thumb" alt="${item.name}">
                             <div class="product-info-box">
                                 <div class="product-name">${item.name}</div>
                                 <div class="product-desc">${item.desc || 'لا يوجد وصف'}</div>
-                                <div class="product-price-tag">${item.price} ج.م ${item.discountPrice ? `<span style="color:red; font-size:11px; text-decoration:line-through; margin-right:5px;">${item.discountPrice} ج.م</span>` : ''}</div>
+                                <div class="product-price-tag">${item.price} ج.م</div>
                             </div>
-                            <div style="display:flex; gap:4px;">
-                                <button class="action-icon" onclick="openEditProductModal(${catIdx}, ${itemIdx})" title="تعديل">✏️</button>
-                                <button class="action-icon action-icon-delete" onclick="deleteProduct(${catIdx}, ${itemIdx})" title="حذف">🗑</button>
-                            </div>
+                            <div style="font-size:12px; color:var(--talabat-main); font-weight:700;">تعديل ✎</div>
                         </div>
-                    `).join('') : '<p style="font-size:12px; color:#999; padding:10px 0;">لا توجد منتجات في هذه الفئة حالياً</p>'}
+                    `).join('') : '<p style="font-size:12px; color:#999; padding:10px 0;">لا توجد منتجات</p>'}
                 </div>
             </div>
         `).join('');
@@ -309,7 +334,7 @@
     }
 
     function deleteCategory(catIdx) {
-        if(confirm("هل أنت متأكد من حذف هذه الفئة بالكامل بكل منتجاتها؟")) {
+        if(confirm("هل أنت متأكد من حذف هذه الفئة بالكامل؟")) {
             let data = getMenuData();
             data.splice(catIdx, 1);
             saveMenuData(data);
@@ -327,15 +352,17 @@
 
     function openAddProductModal(catIdx) {
         populateCategorySelect(catIdx);
-        document.getElementById("modalTitle").innerText = "إضافة منتج جديد ➕";
+        document.getElementById("modalHeaderTitle").innerText = "إضافة منتج جديد";
         document.getElementById("editCatIdx").value = catIdx;
         document.getElementById("editItemIdx").value = "-1";
         document.getElementById("modalName").value = "";
         document.getElementById("modalDesc").value = "";
         document.getElementById("modalPrice").value = "";
-        document.getElementById("modalDiscount").value = "";
-        document.getElementById("modalImg").value = "";
+        let defaultImg = "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg";
+        document.getElementById("modalImagePreview").src = defaultImg;
+        document.getElementById("modalImgUrl").value = defaultImg;
         document.getElementById("itemModal").style.display = "flex";
+        validateForm();
     }
 
     function openEditProductModal(catIdx, itemIdx) {
@@ -343,33 +370,62 @@
         let data = getMenuData();
         let item = data[catIdx].items[itemIdx];
 
-        document.getElementById("modalTitle").innerText = "تعديل المنتج ✏️";
+        document.getElementById("modalHeaderTitle").innerText = "تعديل المنتج";
         document.getElementById("editCatIdx").value = catIdx;
         document.getElementById("editItemIdx").value = itemIdx;
         document.getElementById("modalName").value = item.name || "";
         document.getElementById("modalDesc").value = item.desc || "";
         document.getElementById("modalPrice").value = item.price || "";
-        document.getElementById("modalDiscount").value = item.discountPrice || "";
-        document.getElementById("modalImg").value = item.img || "";
+        
+        let img = item.img || "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg";
+        document.getElementById("modalImagePreview").src = img;
+        document.getElementById("modalImgUrl").value = img;
+        
         document.getElementById("itemModal").style.display = "flex";
+        validateForm();
     }
 
     function closeModal() {
         document.getElementById("itemModal").style.display = "none";
     }
 
+    function handleDeviceImageUpload(event) {
+        let file = event.target.files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let base64String = e.target.result;
+                document.getElementById("modalImagePreview").src = base64String;
+                document.getElementById("modalImgUrl").value = base64String;
+                validateForm();
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function validateForm() {
+        let name = document.getElementById("modalName").value.trim();
+        let price = document.getElementById("modalPrice").value.trim();
+        let btn = document.getElementById("confirmBtn");
+
+        if (name && price && !isNaN(price)) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    }
+
     function saveProduct() {
-        let name = document.getElementById("modalName").value;
-        let desc = document.getElementById("modalDesc").value;
+        let name = document.getElementById("modalName").value.trim();
+        let desc = document.getElementById("modalDesc").value.trim();
         let price = parseFloat(document.getElementById("modalPrice").value);
-        let discountPrice = document.getElementById("modalDiscount").value;
-        let img = document.getElementById("modalImg").value;
+        let img = document.getElementById("modalImgUrl").value;
         let targetCatIdx = parseInt(document.getElementById("modalCategorySelect").value);
         let editCatIdx = parseInt(document.getElementById("editCatIdx").value);
         let editItemIdx = parseInt(document.getElementById("editItemIdx").value);
 
         if (!name || isNaN(price)) {
-            alert("من فضلك أدخل اسم المنتج والسعر الأساسي بشكل صحيح");
+            alert("من فضلك أدخل اسم المنتج والسعر على الأقل");
             return;
         }
 
@@ -379,8 +435,8 @@
             name: name,
             desc: desc,
             price: price,
-            discountPrice: discountPrice ? parseFloat(discountPrice) : "",
-            img: img || "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg"
+            discountPrice: "",
+            img: img
         };
 
         if (editItemIdx !== -1) {
@@ -394,20 +450,11 @@
         closeModal();
     }
 
-    function deleteProduct(catIdx, itemIdx) {
-        if(confirm("هل أنت متأكد من حذف هذا المنتج؟")) {
-            let data = getMenuData();
-            data[catIdx].items.splice(itemIdx, 1);
-            saveMenuData(data);
-            renderCategories();
-        }
-    }
-
     function loadOrders() {
         let orders = JSON.parse(localStorage.getItem(ORDERS_MASTER_KEY) || "[]");
         let container = document.getElementById("ordersListContainer");
         if(orders.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:#777;">لا توجد طلبات حقيقية مسجلة حتى الآن.</p>`;
+            container.innerHTML = `<p style="text-align:center; color:#777;">لا توجد طلبات مسجلة حتى الآن.</p>`;
             return;
         }
         container.innerHTML = orders.map(o => `
@@ -418,7 +465,7 @@
                 </div>
                 <p><b>العميل:</b> ${o.customer_name} | <b>الهاتف:</b> ${o.phone}</p>
                 <p><b>العنوان:</b> ${o.address}</p>
-                ${o.location_url ? `<p><a href="${o.location_url}" target="_blank" style="color:green; text-decoration:none; font-weight:700;">📍 فتح موقع الـ GPS على الخريطة</a></p>` : ''}
+                ${o.location_url ? `<p><a href="${o.location_url}" target="_blank" style="color:green; text-decoration:none; font-weight:700;">📍 فتح موقع الـ GPS</a></p>` : ''}
                 <hr style="margin:8px 0; border:none; border-top:1px dashed #ddd;">
                 <p><b>الطلبات:</b></p>
                 <ul style="padding-right:20px; font-size:12px; margin-bottom:5px;">
@@ -452,7 +499,7 @@
                 </div>
             `).join('');
         } else {
-            topDiv.innerHTML = '<p style="color:#777; text-align:center;">لا توجد طلبات كافية بعد للحسابات.</p>';
+            topDiv.innerHTML = '<p style="color:#777; text-align:center;">لا توجد طلبات كافية بعد.</p>';
         }
     }
 
