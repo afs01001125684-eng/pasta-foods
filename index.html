@@ -21,6 +21,29 @@
         .modal-content { background: white; width: 100%; max-width: 500px; margin: auto; height: 100vh; padding: 25px; overflow-y: auto; }
         .form-group input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; background: var(--light-bg); }
         .submit-btn { background: var(--talabat-main); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: 700; }
+        
+        /* تنسيق زر وتنبيه الموقع المباشر */
+        .location-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .location-status {
+            font-size: 13px;
+            margin-bottom: 15px;
+            color: #555;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -42,6 +65,13 @@
             <input type="tel" id="phone" placeholder="رقم الهاتف للتواصل">
             <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للعميل">
             <input type="text" id="address" placeholder="عنوان التوصيل بالتفصيل">
+            
+            <!-- زر مشاركة الموقع المباشر -->
+            <button type="button" class="location-btn" onclick="getGPSLocation()">
+                📍 مشاركة موقعي المباشر (Google Maps)
+            </button>
+            <div class="location-status" id="locationStatus"></div>
+            <input type="hidden" id="custLocationMap" name="locationMap">
         </div>
         <button class="submit-btn" onclick="processOrder()">إتمام الطلب وإرسال الفاتورة</button>
         <button class="submit-btn" style="background:#666" onclick="toggleCart()">إغلاق</button>
@@ -149,11 +179,41 @@
         toggleCart(); toggleCart();
     }
 
+    // دالة تحديد الموقع عبر الـ GPS
+    function getGPSLocation() {
+        const status = document.getElementById("locationStatus");
+        const mapInput = document.getElementById("custLocationMap");
+
+        if (!navigator.geolocation) {
+            status.innerText = "❌ خاصية تحديد الموقع غير مدعومة في متصفحك";
+            return;
+        }
+
+        status.innerText = "⏳ جاري تحديد موقعك...";
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const googleLink = `https://www.google.com/maps?q=${lat},${lng}`;
+                
+                mapInput.value = googleLink;
+                status.innerHTML = "✅ تم تحديد موقعك بنجاح!";
+                status.style.color = "green";
+            },
+            (error) => {
+                status.innerText = "❌ تعذر تحديد الموقع. تأكد من فتح الـ GPS بهاتفك والسماح للمتصفح.";
+                status.style.color = "red";
+            }
+        );
+    }
+
     function processOrder() {
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const address = document.getElementById("address").value;
         const email = document.getElementById("customerEmail").value;
+        const mapUrl = document.getElementById("custLocationMap").value;
         
         const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
         const total = subtotal + deliveryFee;
@@ -169,17 +229,25 @@
             customer_email: email,
             orders: orderItems, 
             delivery_fee: deliveryFee,
-            total_amount: total
+            total_amount: total,
+            customer_location: mapUrl || "لم يتم تحديد الموقع"
         }).then(() => {
             alert("تم إرسال الفاتورة بنجاح!");
-            window.location.reload();
         }, (err) => {
-            alert("حدث خطأ في الإرسال");
+            // تجاهل خطأ البريد وعرض الواتساب مباشرة
         });
 
         const orderDetailsText = cart.map(i => `${i.name} (${i.price} ج.م)`).join('\n');
-        const whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n\n🛒 الطلبات:\n${orderDetailsText}\n\n🛵 رسوم التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total} ج.م`;
+        let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}`;
+        
+        if(mapUrl) {
+            whatsAppMsg += `\n📍 رابط الموقع (GPS): ${mapUrl}`;
+        }
+
+        whatsAppMsg += `\n\n🛒 الطلبات:\n${orderDetailsText}\n\n🛵 رسوم التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total} ج.م`;
+        
         window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
+        setTimeout(() => { window.location.reload(); }, 1000);
     }
 
     renderMenu();
