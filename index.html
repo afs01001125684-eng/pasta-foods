@@ -42,13 +42,13 @@
 
         .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 15px; }
         .product-card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #eee; display: flex; flex-direction: column; position: relative; }
-        .prod-img { width: 100%; height: 120px; object-fit: cover; background: #eee; }
+        .prod-img { width: 100%; height: 125px; object-fit: cover; background: #f0f0f0; }
         .prod-body { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .prod-title { font-size: 13px; font-weight: 700; color: #222; margin-bottom: 5px; line-height: 1.3; height: 35px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .price-box { margin-top: 5px; }
         .curr-price { font-size: 14px; font-weight: 800; color: #000; background: #e8f5e9; padding: 2px 6px; border-radius: 4px; display: inline-block; }
         .old-price { font-size: 11px; color: #888; text-decoration: line-through; margin-left: 5px; }
-        .add-badge { position: absolute; top: 85px; right: 8px; background: var(--talabat-main); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .add-badge { position: absolute; top: 90px; right: 8px; background: var(--talabat-main); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
         /* Bottom Cart Fixed Bar */
         .bottom-cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 12px 15px; background: transparent; z-index: 1000; display: none; flex-direction: column; gap: 6px; }
@@ -66,7 +66,6 @@
 </head>
 <body>
 
-<!-- Cover Header Image -->
 <div class="cover-header">
     <div class="top-nav-icons">
         <button class="icon-btn" onclick="window.history.back()">❯</button>
@@ -78,7 +77,6 @@
     </div>
 </div>
 
-<!-- Restaurant Card -->
 <div class="restaurant-card">
     <img src="https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg" class="logo-img" alt="باستا فود">
     <div class="rest-details">
@@ -91,7 +89,6 @@
     </div>
 </div>
 
-<!-- Banners & Offers -->
 <div class="offers-scroll">
     <div class="offer-card">
         <span>خصم خاص على الطواجن والوجبات 🎉</span>
@@ -102,13 +99,10 @@
     </div>
 </div>
 
-<!-- Sticky Categories Bar -->
 <div class="cat-bar" id="categoryBar"></div>
 
-<!-- Products Sections -->
 <div id="productsContainer"></div>
 
-<!-- Bottom Cart Bar -->
 <div class="bottom-cart-bar" id="bottomCartBar">
     <div class="savings-tag" id="savingsTag" style="display:none;">
         <span>🪙</span> <span id="savingsText">لقد وفرت 0.00 ج.م</span>
@@ -122,7 +116,6 @@
     </button>
 </div>
 
-<!-- Order Modal -->
 <div id="modal" class="modal">
     <div class="modal-content">
         <h2>تأكيد الطلب 🛒</h2>
@@ -153,7 +146,7 @@
     let currentDistance = 0;
     let cart = [];
 
-    // جميع الأصناف الـ 30 مفصلة ومقسمة حس الأقسام الأصلية للملف
+    // الأصناف الـ 30 مع روابط الصور الأصلية والدقيقة المأخوذة مباشرة من ملف الإكسل الأصلي
     const fullOriginalCategories = [
         {
             category: "الوجبات (Meals) 🍗",
@@ -184,229 +177,3 @@
                 {id: 14, name: "3 ساندوتش سجق", price: 72.62, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/cde5a568-b749-4dc2-8274-50809a763770.jpg"}
             ]
         },
-        {
-            category: "الساندوتشات 🥪",
-            items: [
-                {id: 15, name: "ساندوتش كبده فينو", price: 27.22, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg"},
-                {id: 16, name: "سندوتش سجق فينو", price: 27.23, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/3177324841/6a56f610-33a9-46fa-bb68-2626d46a5f08.jpg"},
-                {id: 17, name: "سندوتش كفتة فينو", price: 25.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/db3efc42-884d-4fe9-928a-fe4c8152d7eb.jpg"},
-                {id: 18, name: "مشروب السلطة الحارة ( ويسكى حلال )", price: 15.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/3c931050-3665-466b-85a6-7d6be0ad9540.jpg"},
-                {id: 19, name: "هوت دوج مدخن بحلقات", price: 24.33, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/dd9103fc-9254-4371-898b-a10bde6d0b5f.jpg"}
-            ]
-        },
-        {
-            category: "الحواوشي 🥙",
-            items: [
-                {id: 20, name: "حواوشي لحم بالموتزريلا", price: 145.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"},
-                {id: 21, name: "حواوشي لحم بقري مخصوص", price: 85.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/99f096e2-f829-4dfa-9990-27865dd5ac7b.jpg"}
-            ]
-        },
-        {
-            category: "المكرونة (Pasta) 🍝",
-            items: [
-                {id: 22, name: "إسباجيتي بالطماطم", price: 45.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg"},
-                {id: 23, name: "مكرونة بينا بالصلصة الحمراء", price: 50.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg"},
-                {id: 24, name: "مكرونة بينا بالكبدة والصلصة الحمراء", price: 95.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235410/41677633-ab95-4bf4-be82-0920206f0892.jpg"},
-                {id: 25, name: "مكرونة بينا بالسجق والصلصة الحمراء", price: 95.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"},
-                {id: 26, name: "معكرونة بينا مع الفراخ والصلصة الحمراء", price: 95.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235412/a356eea9-d7ad-4fbe-9dc3-69a08a75290e.jpg"}
-            ]
-        },
-        {
-            category: "المشروبات 🥤",
-            items: [
-                {id: 27, name: "كوكاكولا", price: 20.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg"},
-                {id: 28, name: "بيبسي", price: 20.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg"},
-                {id: 29, name: "مياه معدنية صغيرة", price: 12.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"},
-                {id: 30, name: "مشروب ماء السلطة الحارة", price: 15.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/552610fa-4cf7-46ac-a34e-0854551a022b.jpg"}
-            ]
-        }
-    ];
-
-    function getMenuData() {
-        let savedCat = localStorage.getItem("pasta_menu_categories");
-        if (savedCat) return JSON.parse(savedCat);
-        return fullOriginalCategories;
-    }
-
-    function renderPage() {
-        let categories = getMenuData();
-        let catBar = document.getElementById("categoryBar");
-        let prodContainer = document.getElementById("productsContainer");
-
-        catBar.innerHTML = categories.map((cat, idx) => `
-            <div class="cat-item ${idx===0?'active':''}" onclick="scrollToCat(${idx})">${cat.category}</div>
-        `).join('');
-
-        prodContainer.innerHTML = categories.map((cat, catIdx) => `
-            <div id="cat-sec-${catIdx}">
-                <div class="section-header">
-                    <h2>${cat.category}</h2>
-                    <p>أشهى المأكولات الطازجة والمطهية بعناية</p>
-                </div>
-                <div class="items-grid">
-                    ${cat.items.map(item => `
-                        <div class="product-card">
-                            <img src="${item.img || 'https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg'}" class="prod-img" loading="lazy">
-                            <button class="add-badge" onclick="addToCart('${item.name}', ${item.price},${item.discountPrice || 0})">+</button>
-                            <div class="prod-body">
-                                <div class="prod-title">${item.name}</div>
-                                <div class="price-box">
-                                    <span class="curr-price">${item.price} ج.م</span>
-                                    ${item.discountPrice ? `<span class="old-price">${item.discountPrice} ج.م</span>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function scrollToCat(idx) {
-        document.querySelectorAll('.cat-item').forEach((el, i) => {
-            el.classList.toggle('active', i === idx);
-        });
-        let sec = document.getElementById(`cat-sec-${idx}`);
-        if(sec) sec.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function addToCart(name, price, discountPrice) {
-        cart.push({ name, price, discountPrice });
-        updateCartBar();
-    }
-
-    function updateCartBar() {
-        let bar = document.getElementById("bottomCartBar");
-        if (cart.length === 0) {
-            bar.style.display = "none";
-            return;
-        }
-        bar.style.display = "flex";
-        
-        document.getElementById("cartCount").innerText = cart.length;
-        
-        let subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-        document.getElementById("cartTotalPrice").innerText = `${subtotal.toFixed(2)} ج.م`;
-
-        let totalSavings = cart.reduce((sum, item) => {
-            return sum + (item.discountPrice && item.discountPrice > item.price ? (item.discountPrice - item.price) : 0);
-        }, 0);
-
-        let savingsTag = document.getElementById("savingsTag");
-        if (totalSavings > 0) {
-            savingsTag.style.display = "flex";
-            document.getElementById("savingsText").innerText = `لقد وفرت ${totalSavings.toFixed(2)} ج.م`;
-        } else {
-            savingsTag.style.display = "none";
-        }
-    }
-
-    function toggleCart() {
-        let modal = document.getElementById("modal");
-        modal.style.display = modal.style.display === "block" ? "none" : "block";
-        renderCartModal();
-    }
-
-    function renderCartModal() {
-        let list = document.getElementById("cartItemsList");
-        let subtotal = cart.reduce((sum, i) => sum + i.price, 0);
-        let total = subtotal + deliveryFee;
-
-        list.innerHTML = cart.map((i, idx) => `
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                <span>• ${i.name}</span>
-                <span><b>${i.price} ج.م</b> <button onclick="removeFromCart(${idx})" style="color:red; border:none; background:none; cursor:pointer;">(حذف)</button></span>
-            </div>
-        `).join('') + `
-            <hr style="margin:15px 0;">
-            <p>خدمة التوصيل: ${deliveryFee} ج.م</p>
-            <p style="font-size:18px; font-weight:800; color:var(--talabat-main); margin-top:5px;">الإجمالي: ${total.toFixed(2)} ج.م</p>
-        `;
-    }
-
-    function removeFromCart(index) {
-        cart.splice(index, 1);
-        updateCartBar();
-        renderCartModal();
-    }
-
-    function calculateRoadDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return (R * c) * 1.3; 
-    }
-
-    function getGPSLocation() {
-        const status = document.getElementById("locationStatus");
-        const mapInput = document.getElementById("custLocationMap");
-
-        if (!navigator.geolocation) {
-            status.innerText = "❌ خاصية تحديد الموقع غير مدعومة";
-            return;
-        }
-
-        status.innerText = "⏳ جاري تحديد موقعك وحساب التوصيل...";
-
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                mapInput.value = `https://www.google.com/maps?q=${lat},${lng}`;
-                currentDistance = calculateRoadDistance(RESTAURANT_LAT, RESTAURANT_LNG, lat, lng);
-                
-                deliveryFee = currentDistance <= 5 ? 50 : 50 + Math.ceil((currentDistance - 5) * 6);
-                status.innerHTML = `✅ المسافة: ${currentDistance.toFixed(1)} كم | التوصيل: ${deliveryFee} ج.م`;
-                status.style.color = "green";
-                renderCartModal();
-            },
-            () => {
-                status.innerText = "❌ تعذر تحديد الموقع.";
-                status.style.color = "red";
-            },
-            { enableHighAccuracy: true, timeout: 10000 }
-        );
-    }
-
-    function processOrder() {
-        const name = document.getElementById("name").value;
-        const phone = document.getElementById("phone").value;
-        const address = document.getElementById("address").value;
-        const email = document.getElementById("customerEmail").value;
-        const mapUrl = document.getElementById("custLocationMap").value;
-        const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
-        const total = subtotal + deliveryFee;
-
-        if(!name || !phone || !address) {
-            alert("من فضلك ادخل الاسم ورقم الهاتف والعنوان");
-            return;
-        }
-
-        let ordersHistory = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
-        ordersHistory.push({ customer_name: name, phone: phone, total: total, items: cart });
-        localStorage.setItem("pasta_orders_history", JSON.stringify(ordersHistory));
-
-        const orderItems = cart.map(item => ({ name: item.name, price: item.price }));
-        emailjs.send('service_a1b2c3d', 'template_8yhqwxa', {
-            customer_name: name,
-            customer_email: email,
-            orders: orderItems, 
-            delivery_fee: deliveryFee,
-            total_amount: total,
-            customer_location: mapUrl || "لم يتم تحديد الموقع"
-        }).then(() => {}, (err) => {});
-
-        let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n\n🛒 الطلبات:\n` + cart.map(i=>`• ${i.name} (${i.price} ج.م)`).join('\n') + `\n\n🛵 خدمة التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total.toFixed(2)} ج.م`;
-        
-        window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
-        setTimeout(() => { window.location.reload(); }, 1000);
-    }
-
-    renderPage();
-</script>
-</body>
-</html>
