@@ -6,6 +6,8 @@
     <title>لوحة التحكم الشاملة - باستا فود | Enterprise POS Style</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- مكتبة قراءة وتصدير ملفات الإكسل (SheetJS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --talabat-orange: #FF5A00;
@@ -102,12 +104,19 @@
         }
         .card-box h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); }
 
-        .menu-toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-        .search-box { flex-grow: 1; }
+        .menu-toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+        .search-box { flex-grow: 1; min-width: 200px; }
         .search-box input {
             width: 100%; padding: 10px 16px; border: 1px solid var(--border-color);
             border-radius: var(--radius-md); font-size: 13px; background: var(--surface-card); color: var(--text-primary);
         }
+
+        .excel-btn {
+            background: var(--talabat-orange); color: white; padding: 10px 14px; border-radius: var(--radius-md);
+            font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; border: none;
+            transition: background 0.2s; text-decoration: none;
+        }
+        .excel-btn:hover { background: var(--talabat-orange-hover); }
 
         .category-card {
             background: var(--surface-card);
@@ -178,7 +187,6 @@
             border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-main); color: var(--text-primary); text-align: center;
         }
 
-        /* iOS Toggle Switch */
         .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
@@ -310,6 +318,15 @@
             <div class="search-box">
                 <input type="text" id="menuSearchInput" oninput="renderMenu()" placeholder="🔍 ابحث عن أي وجبة في القائمة...">
             </div>
+            <!-- زر رفع الإكسل -->
+            <label class="excel-btn">
+                📂 رفع منيو إكسل
+                <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" onchange="handleExcelUpload(event)" style="display: none;">
+            </label>
+            <!-- زر تحميل/تصدير الإكسل -->
+            <button class="excel-btn" style="background: #059669;" onclick="exportMenuToExcel()">
+                📥 تحميل المنيو إكسل
+            </button>
         </div>
         <div id="menuContainer"></div>
     </section>
@@ -509,6 +526,94 @@
         container.style.display = "block";
         window.print();
         container.style.display = "none";
+    }
+
+    /* ميزة رفع ملف الإكسل وتحديث المنيو */
+    function handleExcelUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                if (jsonData.length === 0) {
+                    alert("الملف فارغ أو غير منسق بشكل صحيح!");
+                    return;
+                }
+
+                let newMenuMap = {};
+
+                jsonData.forEach(row => {
+                    let categoryName = row['القسم'] || row['Category'] || 'أصناف عامة';
+                    let itemName = row['اسم الوجبة'] || row['Name'] || 'وجبة بدون اسم';
+                    let itemPrice = parseFloat(row['السعر'] || row['Price'] || 0);
+                    let itemDesc = row['الوصف'] || row['Description'] || '';
+                    let itemImg = row['الصورة'] || row['Image'] || presetImages[0];
+                    let itemTag = row['الشارة'] || row['Tag'] || '';
+
+                    if (!newMenuMap[categoryName]) {
+                        newMenuMap[categoryName] = {
+                            category: categoryName,
+                            collapsed: false,
+                            showAddForm: false,
+                            items: []
+                        };
+                    }
+
+                    newMenuMap[categoryName].items.push({
+                        id: Date.now() + Math.random(),
+                        name: itemName,
+                        price: itemPrice,
+                        desc: itemDesc,
+                        img: itemImg,
+                        tag: itemTag,
+                        available: true
+                    });
+                });
+
+                menu = Object.values(newMenuMap);
+                saveMenu();
+                alert("✅ تم استيراد وتحديث المنيو بنجاح من ملف الإكسل!");
+                event.target.value = '';
+            } catch (error) {
+                console.error(error);
+                alert("حدث خطأ أثناء قراءة ملف الإكسل. تأكد من تطابق أعمدة الملف.");
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    /* ميزة تحميل/تصدير المنيو الحالي إلى ملف إكسل */
+    function exportMenuToExcel() {
+        let flatData = [];
+        menu.forEach(cat => {
+            (cat.items || []).forEach(item => {
+                flatData.push({
+                    "القسم": cat.category,
+                    "اسم الوجبة": item.name,
+                    "السعر": item.price,
+                    "الوصف": item.desc || "",
+                    "الشارة": item.tag || "",
+                    "الصورة": item.img || ""
+                });
+            });
+        });
+
+        if(flatData.length === 0) {
+            alert("لا توجد أصناف في القائمة لتصديرها!");
+            return;
+        }
+
+        const worksheet = XLSX.utils.json_to_sheet(flatData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Menu");
+        XLSX.writeFile(workbook, "PastaFood_Menu.xlsx");
     }
 
     function toggleCategoryCollapse(catIdx) {
