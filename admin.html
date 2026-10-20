@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - باستا فود | Talabat Partner Style</title>
+    <title>إدارة القائمة - باستا فود | Talabat Partner Style</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -12,7 +12,7 @@
             --text-main: #1c1c1c;
             --text-sub: #686b78;
             --border-color: #e9ecef;
-            --card-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.04);
             --sidebar-width: 240px;
         }
 
@@ -75,6 +75,7 @@
             flex-grow: 1;
             padding: 20px 25px;
             width: calc(100% - var(--sidebar-width));
+            max-width: 800px;
         }
 
         /* Top Bar Header */
@@ -86,115 +87,178 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .branch-status {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #e8f5e9;
-            color: #2e7d32;
+            background: #f8d7da;
+            color: #842029;
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 700;
         }
 
-        .status-dot { width: 8px; height: 8px; background: #2e7d32; border-radius: 50%; }
+        .status-dot { width: 8px; height: 8px; background: #842029; border-radius: 50%; }
 
-        /* Dashboard Overview Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: #fff;
-            padding: 18px;
-            border-radius: 12px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .stat-title { font-size: 12px; color: var(--text-sub); font-weight: 700; margin-bottom: 8px; }
-        .stat-value { font-size: 22px; font-weight: 800; color: var(--text-main); }
-
-        /* Section Cards & Tabs */
+        /* Tabs Content */
         .content-tab { display: none; }
         .content-tab.active { display: block; }
 
-        .card-box {
+        /* Menu Management UI like Talabat App */
+        .cat-card {
             background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--card-shadow);
+            border-radius: 14px;
             border: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
         }
 
-        .card-box h3 {
-            font-size: 16px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-main);
+        .cat-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            background: #fff;
         }
+
+        .cat-title-box { display: flex; align-items: center; gap: 10px; }
+        .cat-title { font-size: 18px; font-weight: 800; color: #111; }
+        .count-badge {
+            background: #6c757d;
+            color: #fff;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .edit-icon-btn {
+            background: #f1f3f5;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .cat-body {
+            border-top: 1px solid var(--border-color);
+            padding: 15px;
+            background: #fff;
+        }
+
+        .btn-add-item-dashed {
+            width: 100%;
+            padding: 12px;
+            background: #fff;
+            border: 1px dashed #ffb085;
+            border-radius: 10px;
+            color: var(--talabat-orange);
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Product Item Card */
+        .item-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            gap: 15px;
+        }
+        .item-card:last-child { border-bottom: none; }
+
+        .item-details { flex-grow: 1; }
+        .item-name { font-size: 15px; font-weight: 800; color: #111; margin-bottom: 4px; }
+        .item-desc { font-size: 12px; color: var(--text-sub); margin-bottom: 10px; line-height: 1.4; }
+        .item-price { font-size: 15px; font-weight: 800; color: #222; }
+
+        .btn-promo {
+            border: 1px solid var(--talabat-orange);
+            color: var(--talabat-orange);
+            background: #fff;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .item-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .item-img {
+            width: 75px;
+            height: 75px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #eee;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .3s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #2e7d32; }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         /* Forms Styling */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 15px;
+        .card-box {
+            background: #fff; border-radius: 12px; padding: 20px;
+            box-shadow: var(--card-shadow); border: 1px solid var(--border-color); margin-bottom: 20px;
         }
-
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 5px; }
-        input, select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-family: 'Cairo';
-            font-size: 13px;
-            background: #fafafa;
-        }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Cairo'; font-size: 13px; }
 
-        .btn-primary {
-            background: var(--talabat-orange);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 800;
-            cursor: pointer;
-            font-size: 13px;
-            transition: opacity 0.2s;
-        }
-        .btn-primary:hover { opacity: 0.9; }
+        .btn-primary { background: var(--talabat-orange); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; }
+        .btn-danger { background: #dc3545; color: #fff; border: none; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
-        .btn-danger {
-            background: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+        /* Modal for adding product */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; }
+        .modal-content { background: #fff; width: 90%; max-width: 500px; margin: 50px auto; padding: 20px; border-radius: 14px; }
 
-        /* Responsive Table */
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th { background: #f8f9fa; color: var(--text-sub); padding: 12px; text-align: right; border-bottom: 1px solid var(--border-color); }
-        td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        .img-thumb { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
-
-        /* Responsive Mobile Drawer */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(100%); }
             .sidebar.open { transform: translateX(0); }
@@ -213,8 +277,8 @@
         <strong style="font-size:14px;">باستا فود 🍝</strong>
     </div>
     <ul class="sidebar-menu">
-        <li class="active"><a href="#" onclick="switchTab(event, 'tab-dashboard')">📊 لوحة المعلومات</a></li>
-        <li><a href="#" onclick="switchTab(event, 'tab-menu')">🍔 إدارة القائمة (المنيو)</a></li>
+        <li><a href="#" onclick="switchTab(event, 'tab-dashboard')">📊 لوحة المعلومات</a></li>
+        <li class="active"><a href="#" onclick="switchTab(event, 'tab-menu')">📙 إدارة القائمة</a></li>
         <li><a href="#" onclick="switchTab(event, 'tab-settings')">⚙️ إعدادات التوصيل</a></li>
         <li><a href="#" onclick="switchTab(event, 'tab-orders')">🛍️ الطلبات المباشرة</a></li>
         <li style="margin-top: auto; border-top: 1px solid var(--border-color);">
@@ -229,113 +293,32 @@
     <header class="top-header">
         <div style="display:flex; align-items:center; gap:12px;">
             <button class="toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-            <h2 style="font-size:18px; font-weight:800;" id="pageTitle">لوحة المعلومات</h2>
+            <h2 style="font-size:18px; font-weight:800;" id="pageTitle">إدارة القائمة</h2>
         </div>
         <div class="branch-status">
             <span class="status-dot"></span>
-            <span>المطعم مفتوح ويستقبل الطلبات</span>
+            <span>أنت مغلق</span>
         </div>
     </header>
 
-    <!-- TAB 1: Dashboard Overview -->
-    <section id="tab-dashboard" class="content-tab active">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-title">إجمالي المبيعات التقديرية</div>
-                <div class="stat-value" id="dashSales">0.00 ج.م</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">عدد الطلبات المستلمة</div>
-                <div class="stat-value" id="dashOrdersCount">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">رسوم التوصيل الحالية</div>
-                <div class="stat-value" id="dashDeliveryFee">0 ج.م</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">الحد الأدنى للتوصيل المجاني</div>
-                <div class="stat-value" id="dashFreeThreshold">0 ج.م</div>
-            </div>
+    <!-- TAB: Menu Management (Talabat Style) -->
+    <section id="tab-menu" class="content-tab active">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <button class="btn-primary" onclick="openAddCatModal()">+ إضافة قسم جديد</button>
         </div>
 
+        <div id="menuAccordionContainer"></div>
+    </section>
+
+    <!-- TAB: Dashboard -->
+    <section id="tab-dashboard" class="content-tab">
         <div class="card-box">
-            <h3>📈 أحدث الطلبات الواردة</h3>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>العميل</th>
-                            <th>الهاتف</th>
-                            <th>طريقة الدفع</th>
-                            <th>الإجمالي</th>
-                            <th>العنوان والتفاصيل</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dashOrdersTable"></tbody>
-                </table>
-            </div>
+            <h3>📊 ملخص الأداء</h3>
+            <p>إجمالي المبيعات والطلبات الواردة يعرض هنا.</p>
         </div>
     </section>
 
-    <!-- TAB 2: Menu Management -->
-    <section id="tab-menu" class="content-tab">
-        <!-- Add New Category -->
-        <div class="card-box">
-            <h3>📂 إضافة قسم جديد للقائمة</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>اسم القسم الجديد</label>
-                    <input type="text" id="newCatInput" placeholder="مثال: المشويات، الحلويات...">
-                </div>
-            </div>
-            <button class="btn-primary" onclick="addNewCategory()">+ إضافة القسم</button>
-        </div>
-
-        <!-- Add New Product -->
-        <div class="card-box">
-            <h3>🍲 إضافة وجبة جديدة للمنيو</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>اختر القسم</label>
-                    <select id="itemCatSelect"></select>
-                </div>
-                <div class="form-group">
-                    <label>اسم الوجبة</label>
-                    <input type="text" id="itemNameInput" placeholder="اسم الوجبة بالكامل">
-                </div>
-                <div class="form-group">
-                    <label>السعر (ج.م)</label>
-                    <input type="number" id="itemPriceInput" placeholder="السعر">
-                </div>
-                <div class="form-group">
-                    <label>رابط الصورة (URL)</label>
-                    <input type="text" id="itemImgInput" placeholder="https://example.com/image.jpg">
-                </div>
-            </div>
-            <button class="btn-primary" onclick="addNewItem()">+ إضافة الوجبة للمنيو</button>
-        </div>
-
-        <!-- Menu Table List -->
-        <div class="card-box">
-            <h3>📋 قائمة المنتجات الحالية</h3>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الصورة</th>
-                            <th>اسم الوجبة</th>
-                            <th>القسم</th>
-                            <th>السعر</th>
-                            <th>إجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminMenuTable"></tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <!-- TAB 3: Delivery Settings -->
+    <!-- TAB: Settings -->
     <section id="tab-settings" class="content-tab">
         <div class="card-box">
             <h3>⚙️ إعدادات التوصيل والحد الأدنى</h3>
@@ -353,46 +336,72 @@
         </div>
     </section>
 
-    <!-- TAB 4: Orders History -->
+    <!-- TAB: Orders -->
     <section id="tab-orders" class="content-tab">
         <div class="card-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="margin:0; border:none;">🛍️ جميع الطلبات المسجلة</h3>
-                <button class="btn-danger" onclick="clearOrdersHistory()">مسح السجل</button>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>اسم العميل</th>
-                            <th>الهاتف</th>
-                            <th>طريقة الدفع</th>
-                            <th>الإجمالي</th>
-                            <th>الطلبات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fullOrdersTable"></tbody>
-                </table>
-            </div>
+            <h3>🛍️ جميع الطلبات</h3>
+            <div id="ordersList"></div>
         </div>
     </section>
 </div>
 
+<!-- Modal: Add Category -->
+<div id="addCatModal" class="modal">
+    <div class="modal-content">
+        <h3>إضافة قسم جديد</h3>
+        <div class="form-group" style="margin:15px 0;">
+            <label>اسم القسم (مثال: الحواوشي، الطواجن...)</label>
+            <input type="text" id="newCatInput">
+        </div>
+        <button class="btn-primary" onclick="addNewCategory()">إضافة</button>
+        <button class="btn-danger" onclick="closeModal('addCatModal')">إلغاء</button>
+    </div>
+</div>
+
+<!-- Modal: Add Item -->
+<div id="addItemModal" class="modal">
+    <div class="modal-content">
+        <h3>إضافة وجبة جديدة</h3>
+        <input type="hidden" id="selectedCatIdx">
+        <div class="form-group" style="margin:10px 0;">
+            <label>اسم الوجبة</label>
+            <input type="text" id="itemNameInput">
+        </div>
+        <div class="form-group" style="margin:10px 0;">
+            <label>الوصف (اختياري)</label>
+            <textarea id="itemDescInput" rows="2"></textarea>
+        </div>
+        <div class="form-group" style="margin:10px 0;">
+            <label>السعر (ج.م)</label>
+            <input type="number" id="itemPriceInput">
+        </div>
+        <div class="form-group" style="margin:10px 0;">
+            <label>رابط الصورة (URL)</label>
+            <input type="text" id="itemImgInput">
+        </div>
+        <button class="btn-primary" onclick="addNewItem()">إضافة الصنف</button>
+        <button class="btn-danger" onclick="closeModal('addItemModal')">إلغاء</button>
+    </div>
+</div>
+
 <script>
-    // Default Fallback Menu
     const defaultMenu = [
         {
-            category: "الوجبات (Meals) 🍗",
+            category: "الحواوشي",
             items: [
-                {id: 1, name: "وجبة أرز وربع فرخة فرن", price: 185.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
-                {id: 2, name: "مكرونة مع ربع فرخة فرن", price: 180.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"}
+                {id: 1, name: "حواوشي لحم بالموتزريلا", desc: "حواوشي لحم طازج ممزوج بالموتزريلا...", price: 145.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg", active: true},
+                {id: 2, name: "حواوشي لحم بقري مخصوص", desc: "حواوشي لحم اسبشيل مميزة محضرة...", price: 85.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/99f096e2-f829-4dfa-9990-27865dd5ac7b.jpg", active: true}
             ]
         },
         {
-            category: "المكرونة (Pasta) 🍝",
+            category: "مكرونة",
             items: [
-                {id: 22, name: "إسباجيتي بالطماطم", price: 45.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg"}
+                {id: 3, name: "إسباجيتي بالطماطم", desc: "إسباجيتي بطماطم طازجة...", price: 45.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg", active: true}
             ]
+        },
+        {
+            category: "الطواجن المطهية على الفخار",
+            items: []
         }
     ];
 
@@ -400,11 +409,7 @@
     let settings = JSON.parse(localStorage.getItem("pasta_settings")) || { deliveryFee: 50, freeThreshold: 250 };
 
     function init() {
-        renderDashboard();
-        renderCategorySelect();
-        renderMenuTable();
-        renderOrdersTables();
-        
+        renderMenuAccordion();
         document.getElementById("settingFeeInput").value = settings.deliveryFee;
         document.getElementById("settingThresholdInput").value = settings.freeThreshold;
     }
@@ -419,7 +424,7 @@
 
         const titles = {
             'tab-dashboard': 'لوحة المعلومات',
-            'tab-menu': 'إدارة القائمة (المنيو)',
+            'tab-menu': 'إدارة القائمة',
             'tab-settings': 'إعدادات التوصيل',
             'tab-orders': 'الطلبات المباشرة'
         };
@@ -427,109 +432,107 @@
         document.getElementById('sidebar').classList.remove('open');
     }
 
-    function renderDashboard() {
-        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
-        const totalSales = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-
-        document.getElementById("dashSales").innerText = `${totalSales.toFixed(2)} ج.م`;
-        document.getElementById("dashOrdersCount").innerText = orders.length;
-        document.getElementById("dashDeliveryFee").innerText = `${settings.deliveryFee} ج.م`;
-        document.getElementById("dashFreeThreshold").innerText = `${settings.freeThreshold} ج.م`;
+    function renderMenuAccordion() {
+        const container = document.getElementById("menuAccordionContainer");
+        container.innerHTML = menu.map((cat, catIdx) => `
+            <div class="cat-card">
+                <div class="cat-header" onclick="toggleAccordion(${catIdx})">
+                    <div class="cat-title-box">
+                        <span class="cat-title">${cat.category}</span>
+                        <span class="count-badge">${cat.items.length}</span>
+                    </div>
+                    <button class="edit-icon-btn" onclick="event.stopPropagation(); deleteCategory(${catIdx})">🗑️</button>
+                </div>
+                <div class="cat-body" id="cat-body-${catIdx}">
+                    <button class="btn-add-item-dashed" onclick="openAddItemModal(${catIdx})">
+                        <span>＋</span> <span>إضافة</span>
+                    </button>
+                    <div class="items-list">
+                        ${cat.items.map((item, itemIdx) => `
+                            <div class="item-card">
+                                <div class="item-left">
+                                    <label class="switch">
+                                        <input type="checkbox" ${item.active !== false ? 'checked' : ''} onchange="toggleItemStatus(${catIdx},${itemIdx})">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <img src="${item.img}" class="item-img" alt="${item.name}">
+                                </div>
+                                <div class="item-details">
+                                    <div class="item-name">${item.name}</div>
+                                    <div class="item-desc">${item.desc || ''}</div>
+                                    <div class="item-price">${item.price.toFixed(2)} ج.م</div>
+                                    <button class="btn-promo">إنشاء العرض الترويجي</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `).join('');
     }
 
-    function renderCategorySelect() {
-        const select = document.getElementById("itemCatSelect");
-        select.innerHTML = menu.map((cat, i) => `<option value="${i}">${cat.category}</option>`).join('');
+    function toggleAccordion(idx) {
+        const el = document.getElementById(`cat-body-${idx}`);
+        el.style.display = el.style.display === "none" ? "block" : "none";
     }
+
+    function toggleItemStatus(catIdx, itemIdx) {
+        menu[catIdx].items[itemIdx].active = !menu[catIdx].items[itemIdx].active;
+        saveMenu();
+    }
+
+    function openAddCatModal() { document.getElementById("addCatModal").style.display = "block"; }
+    function openAddItemModal(catIdx) {
+        document.getElementById("selectedCatIdx").value = catIdx;
+        document.getElementById("addItemModal").style.display = "block";
+    }
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
     function addNewCategory() {
-        const val = document.getElementById("newCatInput").value.trim();
-        if(!val) return alert("يرجى إدخال اسم القسم!");
-        menu.push({ category: val, items: [] });
+        const name = document.getElementById("newCatInput").value.trim();
+        if(!name) return alert("يرجى إدخال اسم القسم!");
+        menu.push({ category: name, items: [] });
         saveMenu();
+        closeModal("addCatModal");
         document.getElementById("newCatInput").value = "";
-        alert("✅ تم إضافة القسم الجديد بنجاح!");
     }
 
     function addNewItem() {
-        const catIdx = document.getElementById("itemCatSelect").value;
+        const catIdx = document.getElementById("selectedCatIdx").value;
         const name = document.getElementById("itemNameInput").value.trim();
+        const desc = document.getElementById("itemDescInput").value.trim();
         const price = parseFloat(document.getElementById("itemPriceInput").value);
         const img = document.getElementById("itemImgInput").value.trim() || "https://via.placeholder.com/150";
 
         if(!name || isNaN(price)) return alert("يرجى إدخال اسم الوجبة والسعر!");
 
-        menu[catIdx].items.push({ id: Date.now(), name, price, img });
+        menu[catIdx].items.push({ id: Date.now(), name, desc, price, img, active: true });
         saveMenu();
+        closeModal("addItemModal");
 
         document.getElementById("itemNameInput").value = "";
+        document.getElementById("itemDescInput").value = "";
         document.getElementById("itemPriceInput").value = "";
         document.getElementById("itemImgInput").value = "";
-        alert("✅ تمت إضافة الوجبة للمنيو!");
     }
 
-    function deleteItem(catIdx, itemIdx) {
-        if(confirm("هل أنت متأكد من حذف هذا الصنف؟")) {
-            menu[catIdx].items.splice(itemIdx, 1);
+    function deleteCategory(catIdx) {
+        if(confirm("هل أنت متأكد من حذف هذا القسم بالكامل؟")) {
+            menu.splice(catIdx, 1);
             saveMenu();
         }
     }
 
     function saveMenu() {
         localStorage.setItem("pasta_menu", JSON.stringify(menu));
-        renderCategorySelect();
-        renderMenuTable();
-    }
-
-    function renderMenuTable() {
-        const tbody = document.getElementById("adminMenuTable");
-        let html = "";
-        menu.forEach((cat, catIdx) => {
-            cat.items.forEach((item, itemIdx) => {
-                html += `
-                    <tr>
-                        <td><img src="${item.img}" class="img-thumb"></td>
-                        <td><b>${item.name}</b></td>
-                        <td>${cat.category}</td>
-                        <td><b>${item.price} ج.م</b></td>
-                        <td><button class="btn-danger" onclick="deleteItem(${catIdx}, ${itemIdx})">حذف</button></td>
-                    </tr>
-                `;
-            });
-        });
-        tbody.innerHTML = html || "<tr><td colspan='5' style='text-align:center;'>لا توجد أصناف حالياً</td></tr>";
+        renderMenuAccordion();
     }
 
     function saveSettings() {
         settings.deliveryFee = parseFloat(document.getElementById("settingFeeInput").value) || 0;
         settings.freeThreshold = parseFloat(document.getElementById("settingThresholdInput").value) || 0;
         localStorage.setItem("pasta_settings", JSON.stringify(settings));
-        renderDashboard();
         alert("✅ تم حفظ إعدادات التوصيل والحد الأدنى!");
-    }
-
-    function renderOrdersTables() {
-        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]").reverse();
-        const rows = orders.map(o => `
-            <tr>
-                <td><b>${o.customer_name}</b></td>
-                <td>${o.phone}</td>
-                <td>${o.payment || 'كاش'}</td>
-                <td><b>${o.total ? o.total.toFixed(2) : '0.00'} ج.م</b></td>
-                <td><small>${o.items ? o.items.map(i=>i.name+' ('+i.qty+')').join(', ') : ''}</small></td>
-            </tr>
-        `).join('') || "<tr><td colspan='5' style='text-align:center;'>لا توجد طلبات سابقة</td></tr>";
-
-        document.getElementById("dashOrdersTable").innerHTML = rows;
-        document.getElementById("fullOrdersTable").innerHTML = rows;
-    }
-
-    function clearOrdersHistory() {
-        if(confirm("هل تريد مسح جميع الطلبات من السجل؟")) {
-            localStorage.removeItem("pasta_orders_history");
-            renderOrdersTables();
-            renderDashboard();
-        }
     }
 
     init();
