@@ -11,9 +11,10 @@
         body { background: #f4f6f8; color: var(--text-dark); padding-bottom: 80px; }
         .container { max-width: 650px; margin: 0 auto; padding: 15px; }
         
-        /* زر إضافة فئة */
-        .top-add-btn { background: #fff; border: 2px dashed var(--talabat-main); color: var(--talabat-main); padding: 12px; border-radius: 12px; width: 100%; font-weight: 800; text-align: center; cursor: pointer; margin-bottom: 20px; font-size: 16px; }
-        
+        /* زر إضافة فئة وزر إعادة الضبط */
+        .top-add-btn { background: #fff; border: 2px dashed var(--talabat-main); color: var(--talabat-main); padding: 12px; border-radius: 12px; width: 100%; font-weight: 800; text-align: center; cursor: pointer; margin-bottom: 10px; font-size: 16px; }
+        .reset-btn { background: #fff3ec; border: 1px solid #ffd8c2; color: #d84315; padding: 8px; border-radius: 8px; width: 100%; font-weight: 700; text-align: center; cursor: pointer; margin-bottom: 20px; font-size: 13px; }
+
         /* كروت الأقسام */
         .category-card { background: #fff; border-radius: 14px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border-color); }
         .category-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
@@ -24,13 +25,12 @@
         .action-icon-delete { background: #ffebee; color: #c62828; }
         
         /* قائمة المنتجات تحت كل فئة */
-        .products-list { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px; display: none; }
-        .products-list.open { display: block; }
+        .products-list { margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px; display: block; }
         .product-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f5f5; gap: 10px; }
         .product-thumb { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; }
         .product-info-box { flex-grow: 1; }
         .product-name { font-size: 14px; font-weight: 700; color: #222; }
-        .product-desc { font-size: 11px; color: #777; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-desc { font-size: 11px; color: #777; margin-top: 2px; }
         .product-price-tag { font-size: 13px; font-weight: 800; color: var(--talabat-main); margin-top: 2px; }
 
         /* شريط التنقل السفلي */
@@ -39,11 +39,10 @@
         .nav-item.active { color: var(--talabat-main); }
         .nav-item span { display: block; font-size: 18px; margin-bottom: 2px; }
 
-        /* التبويبات */
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* نافذة التعديل أو الإضافة (Modal) */
+        /* نافذة Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: #fff; width: 92%; max-width: 480px; padding: 20px; border-radius: 16px; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
         .form-group { margin-bottom: 12px; }
@@ -63,6 +62,7 @@
     <!-- تبويب إدارة القائمة -->
     <div id="menuTab" class="tab-content active">
         <button class="top-add-btn" onclick="openAddCategoryModal()">+ إضافة فئة جديدة</button>
+        <button class="reset-btn" onclick="resetToDefaultMenu()">🔄 استرجاع المنيو الأصلي الكامل (30 صنف)</button>
         <div id="categoriesContainer"></div>
     </div>
 
@@ -111,7 +111,7 @@
     <button class="nav-item" onclick="switchTab('statsTab', this)"><span>📊</span>لوحة المعلومات</button>
 </div>
 
-<!-- نافذة إضافة أو تعديل الصنف بالكامل -->
+<!-- نافذة Modal -->
 <div id="itemModal" class="modal">
     <div class="modal-content">
         <h3 id="modalTitle" style="color:var(--talabat-main); margin-bottom:15px; text-align:center;">إدارة المنتج</h3>
@@ -149,7 +149,6 @@
 </div>
 
 <script>
-    // القائمة الكاملة مع الوصف والأسعار والصور
     const fullDefaultCategories = [
         {
             category: "🍗 الوجبات (Meals)",
@@ -220,7 +219,7 @@
 
     function getMenuData() {
         let saved = localStorage.getItem("pasta_menu_categories");
-        if (!saved) {
+        if (!saved || JSON.parse(saved).length === 0) {
             localStorage.setItem("pasta_menu_categories", JSON.stringify(fullDefaultCategories));
             return fullDefaultCategories;
         }
@@ -229,6 +228,14 @@
 
     function saveMenuData(data) {
         localStorage.setItem("pasta_menu_categories", JSON.stringify(data));
+    }
+
+    function resetToDefaultMenu() {
+        if(confirm("هل تريد استرجاع المنيو الأصلي الكامل بجميع الأقسام والصور؟")) {
+            localStorage.setItem("pasta_menu_categories", JSON.stringify(fullDefaultCategories));
+            renderCategories();
+            alert("تم استرجاع المنيو بنجاح!");
+        }
     }
 
     function switchTab(tabId, btn) {
@@ -255,7 +262,6 @@
                         <button class="action-icon" onclick="openAddProductModal(${catIdx})" title="إضافة صنف">+ </button>
                         <button class="action-icon" onclick="editCategoryName(${catIdx})" title="تعديل اسم الفئة">✏️</button>
                         <button class="action-icon action-icon-delete" onclick="deleteCategory(${catIdx})" title="حذف الفئة">🗑</button>
-                        <span style="font-size:16px; margin-right:4px;">⌄</span>
                     </div>
                 </div>
                 <div class="products-list">
@@ -280,7 +286,7 @@
 
     function toggleCategory(headerEl) {
         let list = headerEl.nextElementSibling;
-        list.classList.toggle('open');
+        list.style.display = list.style.display === "none" ? "block" : "none";
     }
 
     function openAddCategoryModal() {
@@ -379,11 +385,9 @@
         };
 
         if (editItemIdx !== -1) {
-            // حذف من القسم القديم إذا تغير القسم
             data[editCatIdx].items.splice(editItemIdx, 1);
         }
 
-        // إضافة للقسم المختار
         data[targetCatIdx].items.push(productObj);
 
         saveMenuData(data);
@@ -437,6 +441,7 @@
         `).join('');
     }
 
+    // تشغيل وعرض القائمة فوراً
     renderCategories();
 </script>
 </body>
