@@ -29,8 +29,17 @@
             --sidebar-width: 260px;
         }
 
+        body.dark-mode {
+            --bg-main: #111827;
+            --surface-card: #1F2937;
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+            --border-color: #374151;
+            --talabat-orange-light: rgba(255, 90, 0, 0.15);
+        }
+
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background: var(--bg-main); color: var(--text-primary); display: flex; min-height: 100vh; overflow-x: hidden; }
+        body { background: var(--bg-main); color: var(--text-primary); display: flex; min-height: 100vh; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
 
         /* Login Screen Overlay */
         .login-overlay {
@@ -45,13 +54,14 @@
             padding: 20px;
         }
         .login-card {
-            background: #fff;
+            background: var(--surface-card);
             padding: 32px;
             border-radius: var(--radius-lg);
             width: 100%;
             max-width: 400px;
             text-align: center;
             box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
         }
 
         /* Sidebar Navigation */
@@ -219,6 +229,7 @@
             font-size: 13px;
             font-weight: 600;
             background: var(--surface-card);
+            color: var(--text-primary);
             outline: none;
         }
         .search-box input:focus { border-color: var(--talabat-orange); }
@@ -262,7 +273,7 @@
             color: var(--text-primary);
             transition: border-color 0.2s;
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--talabat-orange); background: #fff; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--talabat-orange); background: var(--surface-card); outline: none; }
 
         /* Buttons Component */
         .btn {
@@ -290,7 +301,7 @@
         /* Tables Component */
         .table-responsive { overflow-x: auto; border-radius: var(--radius-md); }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background: #F9FAFB; color: var(--text-secondary); padding: 14px 16px; text-align: right; font-weight: 800; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-main); color: var(--text-secondary); padding: 14px 16px; text-align: right; font-weight: 800; border-bottom: 1px solid var(--border-color); }
         td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
         tr:last-child td { border-bottom: none; }
         .img-thumb { width: 54px; height: 54px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color); }
@@ -298,7 +309,7 @@
         .desc-text { max-width: 240px; color: var(--text-secondary); font-size: 12px; line-height: 1.5; }
 
         /* Late Order Highlight */
-        .order-row.late { background: #FEF2F2; }
+        .order-row.late { background: var(--danger-bg); }
 
         /* Badges Component */
         .status-badge {
@@ -336,12 +347,13 @@
         }
         .modal-overlay.active { display: flex; }
         .modal-card {
-            background: #fff;
+            background: var(--surface-card);
             border-radius: var(--radius-lg);
             width: 100%;
             max-width: 520px;
             padding: 24px;
             box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
             animation: modalUp 0.2s ease-out;
         }
         @keyframes modalUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -351,7 +363,7 @@
             body * { visibility: hidden; }
             #printableReceipt, #printableReceipt * { visibility: visible; }
             #printableReceipt {
-                position: absolute; left: 0; top: 0; width: 80mm; font-family: 'Cairo'; padding: 10px; color: #000;
+                position: absolute; left: 0; top: 0; width: 80mm; font-family: 'Cairo'; padding: 10px; color: #000; background: #fff;
             }
         }
 
@@ -401,9 +413,12 @@
             <button class="toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
             <h2 class="page-title" id="pageTitle">لوحة المعلومات</h2>
         </div>
-        <div class="branch-status open" id="branchStatusBtn" onclick="toggleBranchStatus()">
-            <span class="status-dot"></span>
-            <span id="branchStatusText">المطعم مفتوح ويستقبل الطلبات</span>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <button class="btn btn-secondary" onclick="toggleDarkMode()" style="border-radius:20px; padding:6px 14px; font-size:12px;">🌙 الوضع الداكن</button>
+            <div class="branch-status open" id="branchStatusBtn" onclick="toggleBranchStatus()">
+                <span class="status-dot"></span>
+                <span id="branchStatusText">المطعم مفتوح ويستقبل الطلبات</span>
+            </div>
         </div>
     </header>
 
@@ -439,9 +454,10 @@
                             <th>العميل</th>
                             <th>الهاتف</th>
                             <th>التوقيت</th>
+                            <th>الطيار المسؤول</th>
                             <th>الإجمالي</th>
                             <th>حالة الطلب</th>
-                            <th>طباعة الإيصال</th>
+                            <th>خيارات الطباعة</th>
                         </tr>
                     </thead>
                     <tbody id="dashOrdersTable"></tbody>
@@ -589,11 +605,12 @@
                             <th>اسم العميل</th>
                             <th>الهاتف</th>
                             <th>التوقيت</th>
+                            <th>الطيار المسؤول</th>
                             <th>طريقة الدفع</th>
                             <th>الإجمالي</th>
                             <th>حالة الطلب</th>
-                            <th>التفاصيل والعنوان</th>
-                            <th>الإيصال</th>
+                            <th>التفاصيل والملاحظات</th>
+                            <th>الطباعة</th>
                         </tr>
                     </thead>
                     <tbody id="fullOrdersTable"></tbody>
@@ -711,6 +728,7 @@
     let isRestaurantOpen = JSON.parse(localStorage.getItem("pasta_is_open")) !== false;
     let lastOrdersCount = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]").length;
     let activeCategoryFilter = "ALL";
+    let alertLoopInterval = null;
 
     function checkAdminPassword() {
         const pass = document.getElementById("adminPassInput").value;
@@ -719,6 +737,10 @@
         } else {
             alert("⚠️ كلمة المرور غير صحيحة!");
         }
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
     }
 
     function init() {
@@ -734,7 +756,7 @@
         document.getElementById("settingThresholdInput").value = settings.freeThreshold;
 
         setInterval(checkForNewOrders, 3000);
-        setInterval(renderOrdersTables, 30000); // تحديث توقيت ودقائق الطلبات كل نصف دقيقة
+        setInterval(renderOrdersTables, 30000);
     }
 
     function toggleBranchStatus() {
@@ -772,8 +794,13 @@
 
     function checkForNewOrders() {
         const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
-        if(orders.length > lastOrdersCount) {
+        const pendingOrders = orders.filter(o => (o.status || 'قيد المراجعة') === 'قيد المراجعة');
+
+        if(pendingOrders.length > 0) {
             playNotificationSound();
+        }
+
+        if(orders.length > lastOrdersCount) {
             lastOrdersCount = orders.length;
             renderDashboard();
             renderOrdersTables();
@@ -933,7 +960,7 @@
                         <td><img src="${item.img}" class="img-thumb" alt="${item.name}"></td>
                         <td class="item-title-cell">${item.name}</td>
                         <td class="desc-text">${item.desc || 'لا يوجد وصف'}</td>
-                        <td><span style="background:#F3F4F6; padding:4px 8px; border-radius:6px; font-weight:700;">${cat.category}</span></td>
+                        <td><span style="background:var(--bg-main); padding:4px 8px; border-radius:6px; font-weight:700;">${cat.category}</span></td>
                         <td><b>${item.price.toFixed(2)} ج.م</b></td>
                         <td>
                             <button class="btn btn-warning" onclick="openEditModal(${catIdx}, ${itemIdx})">تعديل ✏️</button>
@@ -964,7 +991,7 @@
                     <tr>
                         <td><img src="${item.img}" class="img-thumb" alt="${item.name}"></td>
                         <td class="item-title-cell">${item.name}</td>
-                        <td><span style="background:#F3F4F6; padding:4px 8px; border-radius:6px; font-weight:700;">${cat.category}</span></td>
+                        <td><span style="background:var(--bg-main); padding:4px 8px; border-radius:6px; font-weight:700;">${cat.category}</span></td>
                         <td><b>${item.price.toFixed(2)} ج.م</b></td>
                         <td>
                             <span class="status-badge ${isAvail ? 'available' : 'unavailable'}" 
@@ -999,7 +1026,17 @@
         }
     }
 
-    function printReceipt(index) {
+    function updateOrderDriver(index, driverName) {
+        let orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        let actualIndex = orders.length - 1 - index;
+        if(orders[actualIndex]) {
+            orders[actualIndex].driver = driverName;
+            localStorage.setItem("pasta_orders_history", JSON.stringify(orders));
+        }
+    }
+
+    // طباعة إيصال العميل الشامل
+    function printCustomerReceipt(index) {
         const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
         const actualIndex = orders.length - 1 - index;
         const order = orders[actualIndex];
@@ -1008,20 +1045,19 @@
         const receiptHtml = `
             <div style="text-align:center; border-bottom:1px dashed #000; padding-bottom:8px; margin-bottom:8px;">
                 <h2 style="font-size:16px; margin:0;">باستا فود 🍝</h2>
-                <small>إيصال تجهيز طلب - Talabat Partner</small><br>
+                <small>إيصال حساب العميل - Talabat Partner</small><br>
                 <small>التاريخ: ${new Date(order.id).toLocaleTimeString('ar-EG')}</small>
             </div>
-            <div>
+            <div style="font-size:12px;">
                 <b>العميل:</b> ${order.customer_name}<br>
                 <b>الهاتف:</b> ${order.phone}<br>
-                <b>العنوان:</b> ${order.address || 'استلام'}<br>
-                <b>طريقة الدفع:</b> ${order.payment || 'كاش'}
+                <b>العنوان:</b> ${order.address || 'استلام من الفرع'}<br>
+                <b>طريقة الدفع:</b> ${order.payment || 'كاش'}<br>
+                <b>الطيار:</b> ${order.driver || 'غير محدد'}
             </div>
             <hr style="border:none; border-top:1px dashed #000; margin:8px 0;">
             <table style="width:100%; font-size:11px; text-align:right;">
-                <thead>
-                    <tr><th>الصنف</th><th>الكمية</th><th>الإجمالي</th></tr>
-                </thead>
+                <thead><tr><th>الصنف</th><th>الكمية</th><th>الإجمالي</th></tr></thead>
                 <tbody>
                     ${(order.items || []).map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${(i.price*i.qty).toFixed(2)}</td></tr>`).join('')}
                 </tbody>
@@ -1039,13 +1075,44 @@
         pContainer.style.display = "none";
     }
 
+    // طباعة بون المطبخ (بدون أسعار)
+    function printKitchenTicket(index) {
+        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        const actualIndex = orders.length - 1 - index;
+        const order = orders[actualIndex];
+        if(!order) return;
+
+        const ticketHtml = `
+            <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:8px;">
+                <h2 style="font-size:18px; margin:0;">👨‍🍳 بون تجهيز المطبخ</h2>
+                <small>طلب رقم: #${order.id.toString().slice(-4)}</small>
+            </div>
+            <div style="font-size:12px; margin-bottom:10px;">
+                <b>العميل:</b> ${order.customer_name}<br>
+                <b>التوقيت:</b> ${new Date(order.id).toLocaleTimeString('ar-EG')}
+            </div>
+            <table style="width:100%; font-size:13px; font-weight:800; border-collapse:collapse;" border="1">
+                <thead><tr><th style="padding:4px;">الصنف</th><th style="padding:4px;">الكمية</th></tr></thead>
+                <tbody>
+                    ${(order.items || []).map(i => `<tr><td style="padding:6px;">${i.name}</td><td style="padding:6px; text-align:center;">${i.qty}</td></tr>`).join('')}
+                </tbody>
+            </table>
+        `;
+
+        const pContainer = document.getElementById("printableReceipt");
+        pContainer.innerHTML = ticketHtml;
+        pContainer.style.display = "block";
+        window.print();
+        pContainer.style.display = "none";
+    }
+
     function exportOrdersToCSV() {
         const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
         if(orders.length === 0) return alert("لا توجد طلبات لتصديرها!");
 
-        let csvContent = "\uFEFFالاسم,الهاتف,التوصيل والعنوان,طريقة الدفع,الإجمالي,الحالة\n";
+        let csvContent = "\uFEFFالاسم,الهاتف,التوصيل والعنوان,طريقة الدفع,الطيار,الإجمالي,الحالة\n";
         orders.forEach(o => {
-            csvContent += `"${o.customer_name}","${o.phone}","${o.address || ''}","${o.payment || 'كاش'}","${o.total || 0}","${o.status || 'قيد المراجعة'}"\n`;
+            csvContent += `"${o.customer_name}","${o.phone}","${o.address || ''}","${o.payment || 'كاش'}","${o.driver || ''}","${o.total || 0}","${o.status || 'قيد المراجعة'}"\n`;
         });
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1072,10 +1139,15 @@
                     <td><b>${o.customer_name}</b></td>
                     <td>${o.phone}</td>
                     <td><small>${elapsedMins} دقيقة مضت</small> ${isLate ? '⚠️' : ''}</td>
+                    <td>
+                        <input type="text" placeholder="اسم الطيار" value="${o.driver || ''}" 
+                               onchange="updateOrderDriver(${idx}, this.value)" 
+                               style="padding:4px 8px; font-size:12px; width:110px;">
+                    </td>
                     <td>${o.payment || 'كاش'}</td>
                     <td><b>${o.total ? o.total.toFixed(2) : '0.00'} ج.م</b></td>
                     <td>
-                        <select onchange="updateOrderStatus(${idx}, this.value)" style="padding:6px 10px; font-weight:800; border-radius:8px;">
+                        <select onchange="updateOrderStatus(${idx}, this.value)" style="padding:6px 8px; font-weight:800; border-radius:8px;">
                             <option value="قيد المراجعة" ${currentStatus==='قيد المراجعة'?'selected':''}>⏳ قيد المراجعة</option>
                             <option value="قيد التحضير" ${currentStatus==='قيد التحضير'?'selected':''}>👨‍🍳 قيد التحضير</option>
                             <option value="جاري التوصيل" ${currentStatus==='جاري التوصيل'?'selected':''}>🛵 جاري التوصيل</option>
@@ -1084,10 +1156,15 @@
                         </select>
                     </td>
                     <td><small>${o.items ? o.items.map(i=>i.name+' ('+i.qty+')').join(', ') : ''} ${o.address ? ' | العنوان: '+o.address : ''}</small></td>
-                    <td><button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="printReceipt(${idx})">طباعة 🖨️</button></td>
+                    <td>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="printCustomerReceipt(${idx})">عميل 📄</button>
+                            <button class="btn btn-warning" style="padding:4px 8px; font-size:11px;" onclick="printKitchenTicket(${idx})">مطبخ 👨‍🍳</button>
+                        </div>
+                    </td>
                 </tr>
             `;
-        }).join('') || "<tr><td colspan='8' style='text-align:center; padding:30px; color:#9CA3AF;'>لا توجد طلبات سابقة في السجل</td></tr>";
+        }).join('') || "<tr><td colspan='9' style='text-align:center; padding:30px; color:#9CA3AF;'>لا توجد طلبات سابقة في السجل</td></tr>";
 
         document.getElementById("dashOrdersTable").innerHTML = rows;
         document.getElementById("fullOrdersTable").innerHTML = rows;
