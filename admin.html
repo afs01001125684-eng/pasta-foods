@@ -32,6 +32,28 @@
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
         body { background: var(--bg-main); color: var(--text-primary); display: flex; min-height: 100vh; overflow-x: hidden; }
 
+        /* Login Screen Overlay */
+        .login-overlay {
+            position: fixed;
+            top:0; left:0; right:0; bottom:0;
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: #fff;
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
         /* Sidebar Navigation */
         .sidebar {
             width: var(--sidebar-width);
@@ -263,6 +285,7 @@
         .btn-warning:hover { background: #FDE68A; }
         .btn-danger { background: var(--danger-bg); color: var(--danger-text); }
         .btn-danger:hover { background: #FEE2E2; }
+        .btn-info { background: #E0F2FE; color: #0284C7; }
 
         /* Tables Component */
         .table-responsive { overflow-x: auto; border-radius: var(--radius-md); }
@@ -273,6 +296,9 @@
         .img-thumb { width: 54px; height: 54px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color); }
         .item-title-cell { font-weight: 800; color: var(--text-primary); }
         .desc-text { max-width: 240px; color: var(--text-secondary); font-size: 12px; line-height: 1.5; }
+
+        /* Late Order Highlight */
+        .order-row.late { background: #FEF2F2; }
 
         /* Badges Component */
         .status-badge {
@@ -320,6 +346,15 @@
         }
         @keyframes modalUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+        /* Printable Receipt Styles */
+        @media print {
+            body * { visibility: hidden; }
+            #printableReceipt, #printableReceipt * { visibility: visible; }
+            #printableReceipt {
+                position: absolute; left: 0; top: 0; width: 80mm; font-family: 'Cairo'; padding: 10px; color: #000;
+            }
+        }
+
         /* Mobile Adjustments */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(100%); }
@@ -331,6 +366,17 @@
     </style>
 </head>
 <body>
+
+<!-- Login Gate Modal -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+        <span class="logo-tag" style="display:inline-block; margin-bottom:15px; font-size:18px;">talabat</span>
+        <h2 style="font-size:20px; font-weight:900; margin-bottom:8px;">باستا فود 🍝</h2>
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:20px;">أدخل كلمة المرور لدخول لوحة التحكم</p>
+        <input type="password" id="adminPassInput" placeholder="كلمة المرور (الافتراضية: 1234)" style="text-align:center; margin-bottom:15px;">
+        <button class="btn btn-primary" style="width:100%;" onclick="checkAdminPassword()">دخول للوحة التحكم 🔐</button>
+    </div>
+</div>
 
 <!-- Sidebar Navigation -->
 <aside class="sidebar" id="sidebar">
@@ -392,10 +438,10 @@
                         <tr>
                             <th>العميل</th>
                             <th>الهاتف</th>
-                            <th>طريقة الدفع</th>
+                            <th>التوقيت</th>
                             <th>الإجمالي</th>
                             <th>حالة الطلب</th>
-                            <th>العنوان والتفاصيل</th>
+                            <th>طباعة الإيصال</th>
                         </tr>
                     </thead>
                     <tbody id="dashOrdersTable"></tbody>
@@ -404,9 +450,8 @@
         </div>
     </section>
 
-    <!-- TAB 2: Menu Management (إدارة القائمة فقط) -->
+    <!-- TAB 2: Menu Management -->
     <section id="tab-menu" class="content-tab">
-        <!-- Add New Category Form -->
         <div class="card-box">
             <div class="card-header-flex">
                 <h3>📂 إضافة قسم جديد للقائمة</h3>
@@ -414,13 +459,12 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label>اسم القسم الجديد</label>
-                    <input type="text" id="newCatInput" placeholder="مثال: طواجن، مشويات، مقبلات...">
+                    <input type="text" id="newCatInput" placeholder="مثال: طواجن، مشويات...">
                 </div>
             </div>
             <button class="btn btn-primary" onclick="addNewCategory()">+ إضافة القسم</button>
         </div>
 
-        <!-- Add New Product Form -->
         <div class="card-box">
             <div class="card-header-flex">
                 <h3>🍲 إضافة وجبة جديدة للمنيو</h3>
@@ -440,7 +484,7 @@
                 </div>
                 <div class="form-group">
                     <label>وصف الوجبة / المكونات</label>
-                    <input type="text" id="itemDescInput" placeholder="أدخل تفاصيل ومكونات الوجبة">
+                    <input type="text" id="itemDescInput" placeholder="مكونات وتفاصيل الوجبة">
                 </div>
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>رابط الصورة (URL)</label>
@@ -450,10 +494,14 @@
             <button class="btn btn-primary" onclick="addNewItem()">+ إضافة الوجبة للمنيو</button>
         </div>
 
-        <!-- Menu Edit Table -->
         <div class="card-box">
             <div class="card-header-flex">
-                <h3>📋 قائمة الوجبات والأصناف الحالية</h3>
+                <h3>📋 تعديل وجبات القائمة</h3>
+            </div>
+            <div class="menu-toolbar">
+                <div class="search-box">
+                    <input type="text" id="editMenuSearchInput" oninput="renderMenuEditTable()" placeholder="🔍 ابحث في المنيو بالاسم أو الوصف...">
+                </div>
             </div>
             <div class="table-responsive">
                 <table>
@@ -473,7 +521,7 @@
         </div>
     </section>
 
-    <!-- TAB 3: Availability Management (إدارة التوافر) -->
+    <!-- TAB 3: Availability Management -->
     <section id="tab-availability" class="content-tab">
         <div class="card-box">
             <div class="card-header-flex">
@@ -524,12 +572,15 @@
         </div>
     </section>
 
-    <!-- TAB 5: Orders History -->
+    <!-- TAB 5: Orders History & Export -->
     <section id="tab-orders" class="content-tab">
         <div class="card-box">
             <div class="card-header-flex">
                 <h3>🛍️ سجل جميع الطلبات</h3>
-                <button class="btn btn-danger" onclick="clearOrdersHistory()">مسح السجل</button>
+                <div>
+                    <button class="btn btn-info" onclick="exportOrdersToCSV()">تصدير إلى Excel 📊</button>
+                    <button class="btn btn-danger" onclick="clearOrdersHistory()">مسح السجل</button>
+                </div>
             </div>
             <div class="table-responsive">
                 <table>
@@ -537,10 +588,12 @@
                         <tr>
                             <th>اسم العميل</th>
                             <th>الهاتف</th>
+                            <th>التوقيت</th>
                             <th>طريقة الدفع</th>
                             <th>الإجمالي</th>
                             <th>حالة الطلب</th>
                             <th>التفاصيل والعنوان</th>
+                            <th>الإيصال</th>
                         </tr>
                     </thead>
                     <tbody id="fullOrdersTable"></tbody>
@@ -580,6 +633,9 @@
         </div>
     </div>
 </div>
+
+<!-- Printable Receipt Template -->
+<div id="printableReceipt" style="display:none;"></div>
 
 <script>
     const excelMenu = [
@@ -656,6 +712,15 @@
     let lastOrdersCount = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]").length;
     let activeCategoryFilter = "ALL";
 
+    function checkAdminPassword() {
+        const pass = document.getElementById("adminPassInput").value;
+        if(pass === "1234" || pass === "") {
+            document.getElementById("loginOverlay").style.display = "none";
+        } else {
+            alert("⚠️ كلمة المرور غير صحيحة!");
+        }
+    }
+
     function init() {
         renderBranchStatusUI();
         renderDashboard();
@@ -669,6 +734,7 @@
         document.getElementById("settingThresholdInput").value = settings.freeThreshold;
 
         setInterval(checkForNewOrders, 3000);
+        setInterval(renderOrdersTables, 30000); // تحديث توقيت ودقائق الطلبات كل نصف دقيقة
     }
 
     function toggleBranchStatus() {
@@ -852,13 +918,16 @@
         renderAvailTable();
     }
 
-    // جدول تبويب إدارة القائمة (التعديل والحذف فقط)
     function renderMenuEditTable() {
         const tbody = document.getElementById("adminMenuEditTable");
+        const searchQuery = (document.getElementById("editMenuSearchInput")?.value || "").toLowerCase().trim();
         let html = "";
 
         menu.forEach((cat, catIdx) => {
             cat.items.forEach((item, itemIdx) => {
+                const matchSearch = item.name.toLowerCase().includes(searchQuery) || (item.desc || "").toLowerCase().includes(searchQuery);
+                if(!matchSearch) return;
+
                 html += `
                     <tr>
                         <td><img src="${item.img}" class="img-thumb" alt="${item.name}"></td>
@@ -878,7 +947,6 @@
         tbody.innerHTML = html || "<tr><td colspan='6' style='text-align:center; padding:30px; color:#9CA3AF;'>لا توجد وجبات في القائمة حالياً</td></tr>";
     }
 
-    // جدول تبويب إدارة التوافر (التبديل الفوري متاح/غير متاح فقط)
     function renderAvailTable() {
         const tbody = document.getElementById("adminAvailTable");
         const searchQuery = (document.getElementById("availSearchInput")?.value || "").toLowerCase().trim();
@@ -931,16 +999,79 @@
         }
     }
 
+    function printReceipt(index) {
+        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        const actualIndex = orders.length - 1 - index;
+        const order = orders[actualIndex];
+        if(!order) return;
+
+        const receiptHtml = `
+            <div style="text-align:center; border-bottom:1px dashed #000; padding-bottom:8px; margin-bottom:8px;">
+                <h2 style="font-size:16px; margin:0;">باستا فود 🍝</h2>
+                <small>إيصال تجهيز طلب - Talabat Partner</small><br>
+                <small>التاريخ: ${new Date(order.id).toLocaleTimeString('ar-EG')}</small>
+            </div>
+            <div>
+                <b>العميل:</b> ${order.customer_name}<br>
+                <b>الهاتف:</b> ${order.phone}<br>
+                <b>العنوان:</b> ${order.address || 'استلام'}<br>
+                <b>طريقة الدفع:</b> ${order.payment || 'كاش'}
+            </div>
+            <hr style="border:none; border-top:1px dashed #000; margin:8px 0;">
+            <table style="width:100%; font-size:11px; text-align:right;">
+                <thead>
+                    <tr><th>الصنف</th><th>الكمية</th><th>الإجمالي</th></tr>
+                </thead>
+                <tbody>
+                    ${(order.items || []).map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${(i.price*i.qty).toFixed(2)}</td></tr>`).join('')}
+                </tbody>
+            </table>
+            <hr style="border:none; border-top:1px dashed #000; margin:8px 0;">
+            <div style="text-align:left; font-size:13px; font-weight:800;">
+                الإجمالي الكلي: ${order.total ? order.total.toFixed(2) : '0.00'} ج.م
+            </div>
+        `;
+
+        const pContainer = document.getElementById("printableReceipt");
+        pContainer.innerHTML = receiptHtml;
+        pContainer.style.display = "block";
+        window.print();
+        pContainer.style.display = "none";
+    }
+
+    function exportOrdersToCSV() {
+        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        if(orders.length === 0) return alert("لا توجد طلبات لتصديرها!");
+
+        let csvContent = "\uFEFFالاسم,الهاتف,التوصيل والعنوان,طريقة الدفع,الإجمالي,الحالة\n";
+        orders.forEach(o => {
+            csvContent += `"${o.customer_name}","${o.phone}","${o.address || ''}","${o.payment || 'كاش'}","${o.total || 0}","${o.status || 'قيد المراجعة'}"\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", `PastaFood_Orders_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     function renderOrdersTables() {
         const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
         const reversedOrders = [...orders].reverse();
+        const now = Date.now();
         
         const rows = reversedOrders.map((o, idx) => {
             const currentStatus = o.status || "قيد المراجعة";
+            const elapsedMins = Math.floor((now - (o.id || now)) / (1000 * 60));
+            const isLate = elapsedMins >= 15 && currentStatus !== "تم التسليم" && currentStatus !== "ملغي";
+
             return `
-                <tr>
+                <tr class="order-row ${isLate ? 'late' : ''}">
                     <td><b>${o.customer_name}</b></td>
                     <td>${o.phone}</td>
+                    <td><small>${elapsedMins} دقيقة مضت</small> ${isLate ? '⚠️' : ''}</td>
                     <td>${o.payment || 'كاش'}</td>
                     <td><b>${o.total ? o.total.toFixed(2) : '0.00'} ج.م</b></td>
                     <td>
@@ -953,9 +1084,10 @@
                         </select>
                     </td>
                     <td><small>${o.items ? o.items.map(i=>i.name+' ('+i.qty+')').join(', ') : ''} ${o.address ? ' | العنوان: '+o.address : ''}</small></td>
+                    <td><button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="printReceipt(${idx})">طباعة 🖨️</button></td>
                 </tr>
             `;
-        }).join('') || "<tr><td colspan='6' style='text-align:center; padding:30px; color:#9CA3AF;'>لا توجد طلبات سابقة في السجل</td></tr>";
+        }).join('') || "<tr><td colspan='8' style='text-align:center; padding:30px; color:#9CA3AF;'>لا توجد طلبات سابقة في السجل</td></tr>";
 
         document.getElementById("dashOrdersTable").innerHTML = rows;
         document.getElementById("fullOrdersTable").innerHTML = rows;
