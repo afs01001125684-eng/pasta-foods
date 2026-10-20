@@ -10,7 +10,8 @@
         :root { --talabat-main: #FF5A00; --text-dark: #191919; --light-bg: #f5f5f5; --border-color: #efefef; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
         body { background: #fff; color: var(--text-dark); padding-bottom: 80px; }
-        header { padding: 20px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.04); text-align: center; }
+        header { padding: 20px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.04); text-align: center; position: relative; }
+        .admin-link { position: absolute; top: 15px; left: 15px; background: #eee; padding: 6px 12px; border-radius: 6px; font-size: 12px; text-decoration: none; color: #333; font-weight: 700; }
         .menu-container { max-width: 800px; margin: 0 auto; padding: 15px; }
         .item-card { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
         .item-info { flex-grow: 1; padding-left: 15px; }
@@ -47,7 +48,11 @@
 </head>
 <body>
 
-<header><h1>باستا فود 🍝</h1><p>أسرع دليفري للأكل المظبوط 🏍</p></header>
+<header>
+    <a href="admin.html" class="admin-link">⚙️ لوحة التحكم</a>
+    <h1>باستا فود 🍝</h1>
+    <p>أسرع دليفري للأكل المظبوط 🏍</p>
+</header>
 <div class="menu-container" id="menu"></div>
 
 <div id="cart-bar" onclick="toggleCart()">
@@ -79,25 +84,24 @@
 <script>
     (function(){ emailjs.init("BV7OIpSk4gMWrTJCy"); })();
 
-    // إحداثيات موقع المطعم (بولاق الدكرور - ترعة عبد العال)
     const RESTAURANT_LAT = 30.0264; 
     const RESTAURANT_LNG = 31.1811; 
 
     let deliveryFee = 50; 
     let currentDistance = 0;
 
-    // المنيو المحدث بالكامل بناءً على الملف المرفق
-    const menuItems = [
+    // جلب الأصناف المحدثة من لوحة التحكم (أو الافتراضية)
+    let defaultMenuItems = [
         {"id": 1, "name": "وجبة أرز وربع فرخة فرن", "price": 185.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
         {"id": 2, "name": "مكرونة مع ربع فرخة فرن", "price": 180.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"},
         {"id": 3, "name": "أرز بالكبدة", "price": 85.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg"},
-        {"id": 4, "name": "وجبة أرز ولحم بالفرن مع البصل", "price": 300.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3625125693/a0ff3dfa-fb27-42c4-918d-2466de908754.jpg"},
-        {"id": 5, "name": "طاجن لحم بالبطاطس والبصل", "price": 295.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c96d49e1-6184-4140-8252-ac2207708705.jpg"},
-        {"id": 6, "name": "طاجن اللحم بالبصل", "price": 270.56, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/a32473f6-69d1-46f4-a0a4-d1862d75af0e.jpg"},
-        {"id": 7, "name": "ملوخية ساده", "price": 79.45, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3b4b046a-8f37-454b-b1a5-172abc2aa0fc.jpg"},
-        {"id": 8, "name": "طاجن بشاميل باللحم المفروم", "price": 82.75, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/fbd5481a-43e3-4b7b-b78f-b268851dd7d3.jpg"},
-        {"id": 9, "name": "شوربه لسان عصفور", "price": 27.43, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c3b2879a-e624-4a00-8f2e-c4ed404ad69d.jpg"},
-        {"id": 10, "name": "طبق رز بالشعرية لفرد واحد", "price": 40.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/83cc602a-1ec0-4b71-b532-5205e8fc2b7d.jpg"},
+        {"id": 4, "name": "وجبة أرز ولحم بالفرن مع البصل", "price": 300.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/1102296/product/3625125693/a0ff3dfa-fb27-42c4-918d-2466de908754.jpg"},
+        {"id": 5, "name": "طاجن لحم بالبطاطس والبصل", "price": 295.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/1102296/product/c96d49e1-6184-4140-8252-ac2207708705.jpg"},
+        {"id": 6, "name": "طاجن اللحم بالبصل", "price": 270.56, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/1102296/product/a32473f6-69d1-46f4-a0a4-d1862d75af0e.jpg"},
+        {"id": 7, "name": "ملوخية ساده", "price": 79.45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/1102296/product/3b4b046a-8f37-454b-b1a5-172abc2aa0fc.jpg"},
+        {"id": 8, "name": "طاجن بشاميل باللحم المفروم", "price": 82.75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/1102296/product/fbd5481a-43e3-4b7b-b78f-b268851dd7d3.jpg"},
+        {"id": 9, "name": "شوربه لسان عصفور", "price": 27.43, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/1102296/product/c3b2879a-e624-4a00-8f2e-c4ed404ad69d.jpg"},
+        {"id": 10, "name": "طبق رز بالشعرية لفرد واحد", "price": 40.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/1102296/product/83cc602a-1ec0-4b71-b532-5205e8fc2b7d.jpg"},
         {"id": 11, "name": "3 سندوتشات كبدة طازجة", "price": 73.50, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/7d932c55-7d1e-485e-a245-3b364d615ab5.jpg"},
         {"id": 12, "name": "3 ساندوتش سجق مدخن", "price": 73.60, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/36f53f97-3773-4e19-a848-98d63ea4d416.jpg"},
         {"id": 13, "name": "3سندوتشات كفنه", "price": 75.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/99d3e0f9-3317-4cec-a34b-b4553f1afad7.jpg"},
@@ -120,6 +124,12 @@
         {"id": 30, "name": "مشروب ماء السلطة الحارة", "price": 15.00, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"}
     ];
 
+    function getMenuItems() {
+        let saved = localStorage.getItem("pasta_menu_items");
+        return saved ? JSON.parse(saved) : defaultMenuItems;
+    }
+
+    const menuItems = getMenuItems();
     let cart = [];
 
     function renderMenu() {
@@ -173,7 +183,6 @@
         renderCartModal();
     }
 
-    // حساب مسافة الشوارع الفعلية (ضرب المسافة الجوية في 1.3)
     function calculateRoadDistance(lat1, lon1, lat2, lon2) {
         const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -182,9 +191,7 @@
                   Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                   Math.sin(dLon/2) * Math.sin(dLon/2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        
-        const straightDistance = R * c; 
-        return straightDistance * 1.3; 
+        return (R * c) * 1.3; 
     }
 
     function getGPSLocation() {
@@ -205,10 +212,8 @@
                 const googleLink = `https://www.google.com/maps?q=${lat},${lng}`;
                 
                 mapInput.value = googleLink;
-
                 currentDistance = calculateRoadDistance(RESTAURANT_LAT, RESTAURANT_LNG, lat, lng);
                 
-                // حساب التوصيل: أول 5 كم بـ 50 ج، وكل كيلو زيادة بـ 6 ج
                 if (currentDistance <= 5) {
                     deliveryFee = 50;
                 } else {
