@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم باستا فود 👨‍🍳</title>
+    <title>لوحة التحكم - باستا فود 👨‍🍳</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --talabat-main: #FF5A00; --text-dark: #191919; --light-bg: #f8f9fa; --border-color: #e5e5e5; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background: #f4f6f8; color: var(--text-dark); padding-bottom: 80px; }
-        .container { max-width: 650px; margin: 0 auto; padding: 15px; }
+        body { background: #f4f6f8; color: var(--text-dark); padding: 15px; padding-bottom: 80px; }
+        .container { max-width: 650px; margin: 0 auto; }
         
-        .top-add-btn { background: #fff; border: 2px dashed var(--talabat-main); color: var(--talabat-main); padding: 12px; border-radius: 12px; width: 100%; font-weight: 800; text-align: center; cursor: pointer; margin-bottom: 10px; font-size: 16px; }
+        .top-add-btn { background: #fff; border: 2px dashed var(--talabat-main); color: var(--talabat-main); padding: 14px; border-radius: 12px; width: 100%; font-weight: 800; text-align: center; cursor: pointer; margin-bottom: 15px; font-size: 16px; }
         .reset-btn { background: #fff3ec; border: 1px solid #ffd8c2; color: #d84315; padding: 8px; border-radius: 8px; width: 100%; font-weight: 700; text-align: center; cursor: pointer; margin-bottom: 20px; font-size: 13px; }
 
+        .section-title { font-size: 18px; font-weight: 800; color: var(--talabat-main); margin: 20px 0 10px; }
+        
+        .order-card { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        
         .category-card { background: #fff; border-radius: 14px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border-color); }
         .category-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .category-title { font-size: 17px; font-weight: 800; color: #222; }
@@ -27,111 +31,55 @@
         .product-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; }
         .product-info-box { flex-grow: 1; }
         .product-name { font-size: 14px; font-weight: 700; color: #222; }
-        .product-desc { font-size: 11px; color: #777; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-desc { font-size: 11px; color: #777; margin-top: 2px; }
         .product-price-tag { font-size: 13px; font-weight: 800; color: var(--talabat-main); margin-top: 2px; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000; box-shadow: 0 -2px 8px rgba(0,0,0,0.05); }
-        .nav-item { text-align: center; color: #777; text-decoration: none; font-size: 11px; font-weight: 700; cursor: pointer; background: none; border: none; flex: 1; }
-        .nav-item.active { color: var(--talabat-main); }
-        .nav-item span { display: block; font-size: 18px; margin-bottom: 2px; }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* نافذة التعديل المطابقة تماماً للمرفق */
+        /* نافذة المودال */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: flex-end; }
-        .modal-content { background: #fff; width: 100%; max-width: 600px; height: 92vh; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; overflow-y: auto; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; justify-content: space-between; }
+        .modal-content { background: #fff; width: 100%; max-width: 600px; height: 92vh; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; justify-content: space-between; }
         
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .modal-title { font-size: 18px; font-weight: 800; color: #111; }
-        .close-modal-x { background: none; border: none; font-size: 22px; cursor: pointer; color: #333; }
-
-        /* صندوق الصورة التفاعلي مثل المرفق */
         .image-picker-container { position: relative; width: 100%; height: 160px; border-radius: 14px; overflow: hidden; background: #eee; cursor: pointer; margin-bottom: 20px; border: 1px solid #ddd; }
         .image-picker-container img { width: 100%; height: 100%; object-fit: cover; }
         .camera-floating-btn { position: absolute; bottom: 12px; left: 12px; background: var(--talabat-main); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3); font-size: 18px; }
 
-        .form-section-title { font-size: 16px; font-weight: 800; color: #222; margin: 15px 0 10px; }
         .custom-input-box { border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 15px; background: #fff; }
         .custom-input-box label { display: block; font-size: 11px; color: #777; margin-bottom: 4px; font-weight: 700; }
         .custom-input-box input, .custom-input-box textarea, .custom-input-box select { width: 100%; border: none; outline: none; font-size: 14px; font-weight: 600; color: #222; background: transparent; }
         .custom-input-box textarea { resize: none; height: 60px; }
 
-        .btn-confirm { background: #f0f0f0; color: #888; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; text-align: center; margin-top: 10px; }
-        .btn-confirm.active { background: var(--talabat-main); color: #fff; }
-
-        .stats-box { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); text-align: center; }
-        .stats-box h3 { color: var(--talabat-main); font-size: 24px; margin-top: 5px; }
-        .order-card { background:#fff; padding:12px; border-radius:10px; margin-bottom:10px; border:1px solid #ddd; }
+        .btn-confirm { background: var(--talabat-main); color: #fff; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <h2 style="text-align:center; color:var(--talabat-main); margin-bottom:15px;">👨‍🍳 لوحة إدارة مطعم باستا فود</h2>
 
-    <!-- تبويب إدارة القائمة -->
-    <div id="menuTab" class="tab-content active">
-        <button class="top-add-btn" onclick="openAddCategoryModal()">+ إضافة فئة جديدة</button>
-        <button class="reset-btn" onclick="resetToDefaultMenu()">🔄 استرجاع القائمة الأصلية كاملة (30 صنف)</button>
-        <div id="categoriesContainer"></div>
+    <!-- قسم الطلبات الواردة -->
+    <div class="section-title">📦 الطلبات الواردة الحية</div>
+    <div id="ordersListContainer">
+        <p style="text-align:center; color:#777; margin-bottom:20px;">لا توجد طلبات جديدة حالياً.</p>
     </div>
 
-    <!-- تبويب الطلبات المباشرة -->
-    <div id="ordersTab" class="tab-content">
-        <h2 style="color:var(--talabat-main); margin-bottom:15px; text-align:center;">📦 الطلبات المباشرة الحقيقية</h2>
-        <div id="ordersListContainer">
-            <p style="text-align:center; color:#777;">لا توجد طلبات مسجلة حتى الآن.</p>
-        </div>
-    </div>
+    <hr style="margin:20px 0; border:none; border-top:1px solid #ddd;">
 
-    <!-- تبويب لوحة المعلومات -->
-    <div id="statsTab" class="tab-content">
-        <h2 style="color:var(--talabat-main); margin-bottom:15px; text-align:center;">📊 التحليل الحقيقي للمبيعات</h2>
-        <div class="stats-box">
-            <p>إجمالي الطلبات الفعلية</p>
-            <h3 id="totalOrdersCount">0</h3>
-        </div>
-        <div class="stats-box">
-            <p>إجمالي أرباح المبيعات (ج.م)</p>
-            <h3 id="totalSalesAmount">0.00</h3>
-        </div>
-        <h3 style="margin: 20px 0 10px; font-size:15px;">🔥 الأصناف الأكثر طلباً:</h3>
-        <div id="topItemsContainer">
-            <p style="color:#777; text-align:center;">لا توجد طلبات مسجلة للحساب بعد.</p>
-        </div>
-    </div>
-
-    <!-- تبويب المزيد -->
-    <div id="moreTab" class="tab-content">
-        <h2 style="color:var(--talabat-main); margin-bottom:15px; text-align:center;">⚙️ إعدادات المتجر</h2>
-        <div class="stats-box" style="text-align: right;">
-            <p><b>اسم المطعم:</b> باستا فود - Pasta Food</p>
-            <p style="margin-top:10px;"><b>العنوان:</b> بولاق الدكرور، الجيزة</p>
-            <p style="margin-top:15px;"><a href="index.html" style="color:var(--talabat-main); text-decoration:none; font-weight:800;">⬅ الانتقال إلى صفحة العميل الرئيسية</a></p>
-        </div>
-    </div>
-
+    <!-- قسم إدارة القائمة والأصناف -->
+    <div class="section-title">📖 إدارة المنيو والأصناف</div>
+    <button class="top-add-btn" onclick="openAddCategoryModal()">+ إضافة فئة جديدة</button>
+    <button class="reset-btn" onclick="resetToDefaultMenu()">🔄 استرجاع القائمة الافتراضية كاملة (30 صنف)</button>
+    <div id="adminCategoriesContainer"></div>
 </div>
 
-<!-- شريط التنقل السفلي -->
-<div class="bottom-nav">
-    <button class="nav-item" onclick="switchTab('moreTab', this)"><span>⚙️</span>المزيد</button>
-    <button class="nav-item active" onclick="switchTab('menuTab', this)"><span>📖</span>إدارة القائمة</button>
-    <button class="nav-item" onclick="switchTab('ordersTab', this)"><span>🛍️</span>الطلبات المباشرة</button>
-    <button class="nav-item" onclick="switchTab('statsTab', this)"><span>📊</span>لوحة المعلومات</button>
-</div>
-
-<!-- نافذة التعديل المطابقة تماماً للمرفق -->
+<!-- نافذة تعديل / إضافة صنف -->
 <div id="itemModal" class="modal">
     <div class="modal-content">
         <div>
-            <div class="modal-header">
-                <button class="close-modal-x" onclick="closeModal()">✕</button>
-                <div class="modal-title" id="modalHeaderTitle">تعديل المنتج</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                <button onclick="closeModal()" style="background:none; border:none; font-size:22px; cursor:pointer;">✕</button>
+                <div style="font-size: 18px; font-weight: 800;" id="modalHeaderTitle">تعديل المنتج</div>
                 <div style="width:20px;"></div>
             </div>
 
-            <!-- صندوق الصورة مع إمكانية رفعها من الجهاز أو استخدام رابط -->
             <div class="image-picker-container" onclick="document.getElementById('deviceImageInput').click()">
                 <img id="modalImagePreview" src="" alt="صورة المنتج">
                 <div class="camera-floating-btn">📷</div>
@@ -139,19 +87,17 @@
             <input type="file" id="deviceImageInput" accept="image/*" style="display:none;" onchange="handleDeviceImageUpload(event)">
             <input type="hidden" id="modalImgUrl">
 
-            <div class="form-section-title">التفاصيل</div>
-            
             <input type="hidden" id="editCatIdx" value="-1">
             <input type="hidden" id="editItemIdx" value="-1">
 
             <div class="custom-input-box">
                 <label>اسم المنتج *</label>
-                <input type="text" id="modalName" placeholder="أدخل اسم المنتج..." oninput="validateForm()">
+                <input type="text" id="modalName" placeholder="أدخل اسم المنتج...">
             </div>
 
             <div class="custom-input-box">
                 <label>الوصف التفصيلي *</label>
-                <textarea id="modalDesc" placeholder="أدخل وصف مكونات المنتج..." oninput="validateForm()"></textarea>
+                <textarea id="modalDesc" placeholder="أدخل وصف مكونات المنتج..."></textarea>
             </div>
 
             <div class="custom-input-box">
@@ -159,98 +105,102 @@
                 <select id="modalCategorySelect" style="width:100%; border:none; background:transparent; font-weight:700;"></select>
             </div>
 
-            <div class="form-section-title">السعر</div>
             <div class="custom-input-box">
                 <label>السعر (ج.م) *</label>
-                <input type="number" step="0.01" id="modalPrice" placeholder="0.00" oninput="validateForm()">
+                <input type="number" step="0.01" id="modalPrice" placeholder="0.00">
             </div>
         </div>
 
         <div>
-            <button class="btn-confirm" id="confirmBtn" onclick="saveProduct()">تأكيد</button>
+            <button class="btn-confirm" onclick="saveProduct()">تأكيد الحفظ</button>
         </div>
     </div>
 </div>
 
 <script>
-    const MENU_MASTER_KEY = "pasta_menu_master_data";
-    const ORDERS_MASTER_KEY = "pasta_orders_master_data";
+    const MENU_MASTER_KEY = "pasta_menu_master_v6";
+    const ORDERS_MASTER_KEY = "pasta_orders_master_v6";
 
     const fullDefaultCategories = [
         {
             category: "🍗 الوجبات (Meals)",
             items: [
-                {id: 1, name: "وجبة أرز وربع فرخة فرن", desc: "أرز بشعرية طازج مع ربع فرخة محمرة بالفرن", price: 185.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
-                {id: 2, name: "مكرونة مع ربع فرخة فرن", desc: "مكرونة بالصلصة الحمراء مع ربع فرخة", price: 180.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"},
-                {id: 3, name: "أرز بالكبدة", desc: "طبق أرز مبهر يعلوه كبدة بلدي طازجة", price: 85.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg"},
-                {id: 4, name: "وجبة أرز ولحم بالفرن مع البصل", desc: "قطع لحم مطبوخة بالفرن مع البصل المكرمل والأرز", price: 300.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3625125693/a0ff3dfa-fb27-42c4-918d-2466de908754.jpg"}
+                {id: 1, name: "وجبة أرز وربع فرخة فرن", desc: "أرز بشعرية طازج مع ربع فرخة محمرة بالفرن", price: 185.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
+                {id: 2, name: "مكرونة مع ربع فرخة فرن", desc: "مكرونة بالصلصة الحمراء مع ربع فرخة", price: 180.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"},
+                {id: 3, name: "أرز بالكبدة", desc: "طبق أرز مبهر يعلوه كبدة بلدي طازجة", price: 85.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg"},
+                {id: 4, name: "وجبة أرز ولحم بالفرن مع البصل", desc: "قطع لحم مطبوخة بالفرن مع البصل المكرمل والأرز", price: 300.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3625125693/a0ff3dfa-fb27-42c4-918d-2466de908754.jpg"}
             ]
         },
         {
             category: "🥘 الطواجن والمشوربات",
             items: [
-                {id: 5, name: "طاجن لحم بالبطاطس والبصل", desc: "لحم بقري بلدي مطهو بالطاجن مع شرائح البطاطس", price: 295.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c96d49e1-6184-4140-8252-ac2207708705.jpg"},
-                {id: 6, name: "طاجن اللحم بالبصل", desc: "طاجن لحم بلدي مخصوص ببصل مكرمل وشوربة مركزة", price: 270.56, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/a32473f6-69d1-46f4-a0a4-d1862d75af0e.jpg"},
-                {id: 7, name: "ملوخية ساده", desc: "ملوخية خضراء طازجة مع التقلية المصرية", price: 79.45, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3b4b046a-8f37-454b-b1a5-172abc2aa0fc.jpg"},
-                {id: 8, name: "طاجن بشاميل باللحم المفروم", desc: "مكرونة بشاميل غنية باللحم المفروم والجبنة", price: 82.75, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/fbd5481a-43e3-4b7b-b78f-b268851dd7d3.jpg"},
-                {id: 9, name: "شوربه لسان عصفور", desc: "شوربة لسان عصفور سخنة وشهية", price: 27.43, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c3b2879a-e624-4a00-8f2e-c4ed404ad69d.jpg"},
-                {id: 10, name: "طبق رز بالشعرية لفرد واحد", desc: "طبق أرز ابيض بالشعرية طازج", price: 40.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/83cc602a-1ec0-4b71-b532-5205e8fc2b7d.jpg"}
+                {id: 5, name: "طاجن لحم بالبطاطس والبصل", desc: "لحم بقري بلدي مطهو بالطاجن مع شرائح البطاطس", price: 295.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c96d49e1-6184-4140-8252-ac2207708705.jpg"},
+                {id: 6, name: "طاجن اللحم بالبصل", desc: "طاجن لحم بلدي مخصوص ببصل مكرمل وشوربة مركزة", price: 270.56, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/a32473f6-69d1-46f4-a0a4-d1862d75af0e.jpg"},
+                {id: 7, name: "ملوخية ساده", desc: "ملوخية خضراء طازجة مع التقلية المصرية", price: 79.45, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3b4b046a-8f37-454b-b1a5-172abc2aa0fc.jpg"},
+                {id: 8, name: "طاجن بشاميل باللحم المفروم", desc: "مكرونة بشاميل غنية باللحم المفروم والجبنة", price: 82.75, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/fbd5481a-43e3-4b7b-b78f-b268851dd7d3.jpg"},
+                {id: 9, name: "شوربه لسان عصفور", desc: "شوربة لسان عصفور سخنة وشهية", price: 27.43, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c3b2879a-e624-4a00-8f2e-c4ed404ad69d.jpg"},
+                {id: 10, name: "طبق رز بالشعرية لفرد واحد", desc: "طبق أرز ابيض بالشعرية طازج", price: 40.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/83cc602a-1ec0-4b71-b532-5205e8fc2b7d.jpg"}
             ]
         },
         {
             category: "🔥 العروض الخاصة",
             items: [
-                {id: 11, name: "3 سندوتشات كبدة طازجة", desc: "عروض 3 سندوتش كبدة فينو طازج", price: 73.50, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3215656768/5f3eb9a3-342b-4fc9-8a93-84cadc0e5496.jpg"},
-                {id: 12, name: "3 ساندوتش سجق مدخن", desc: "عرض 3 ساندوتش سجق بلدي مدخن", price: 73.60, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3215656789/6427d46f-7411-4a4f-a278-c5d05516410e.jpg"},
-                {id: 13, name: "3سندوتشات كفته", desc: "عرض 3 ساندوتش كفتة مشوية", price: 75.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/99d3e0f9-3317-4cec-a34b-b4553f1afad7.jpg"},
-                {id: 14, name: "3 ساندوتش سجق", desc: "عرض 3 ساندوتش سجق بالخلطة", price: 72.62, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/cde5a568-b749-4dc2-8274-50809a763770.jpg"}
+                {id: 11, name: "3 سندوتشات كبدة طازجة", desc: "عروض 3 سندوتش كبدة فينو طازج", price: 73.50, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3215656768/5f3eb9a3-342b-4fc9-8a93-84cadc0e5496.jpg"},
+                {id: 12, name: "3 ساندوتش سجق مدخن", desc: "عرض 3 ساندوتش سجق بلدي مدخن", price: 73.60, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3215656789/6427d46f-7411-4a4f-a278-c5d05516410e.jpg"},
+                {id: 13, name: "3سندوتشات كفته", desc: "عرض 3 ساندوتش كفتة مشوية", price: 75.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/99d3e0f9-3317-4cec-a34b-b4553f1afad7.jpg"},
+                {id: 14, name: "3 ساندوتش سجق", desc: "عرض 3 ساندوتش سجق بالخلطة", price: 72.62, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/cde5a568-b749-4dc2-8274-50809a763770.jpg"}
             ]
         },
         {
             category: "🥪 الساندوتشات",
             items: [
-                {id: 15, name: "ساندوتش كبده فينو", desc: "كبدة بالخلطة والفلفل الأخضر في خبز فينو طازج", price: 27.22, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg"},
-                {id: 16, name: "سندوتش سجق فينو", desc: "سجق بلدي بالصلصة والبهارات في خبز فينو", price: 27.23, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/3177324841/6a56f610-33a9-46fa-bb68-2626d46a5f08.jpg"},
-                {id: 17, name: "سندوتش كفتة فينو", desc: "كفتة مشوية على الفحم مع الطحينة", price: 25.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/db3efc42-884d-4fe9-928a-fe4c8152d7eb.jpg"},
-                {id: 18, name: "مشروب السلطة الحارة ( ويسكى حلال )", desc: "مشروب ماء السلطة البلدي الحار مع التوابل", price: 15.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/3c931050-3665-466b-85a6-7d6be0ad9540.jpg"},
-                {id: 19, name: "هوت دوج مدخن بحلقات", desc: "هوت دوج مدخن مع حلقات البصل والصوصات", price: 24.33, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/dd9103fc-9254-4371-898b-a10bde6d0b5f.jpg"}
+                {id: 15, name: "ساندوتش كبده فينو", desc: "كبدة بالخلطة والفلفل الأخضر في خبز فينو طازج", price: 27.22, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg"},
+                {id: 16, name: "سندوتش سجق فينو", desc: "سجق بلدي بالصلصة والبهارات في خبز فينو", price: 27.23, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/3177324841/6a56f610-33a9-46fa-bb68-2626d46a5f08.jpg"},
+                {id: 17, name: "سندوتش كفتة فينو", desc: "كفتة مشوية على الفحم مع الطحينة", price: 25.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/db3efc42-884d-4fe9-928a-fe4c8152d7eb.jpg"},
+                {id: 18, name: "مشروب السلطة الحارة ( ويسكى حلال )", desc: "مشروب ماء السلطة البلدي الحار مع التوابل", price: 15.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/3c931050-3665-466b-85a6-7d6be0ad9540.jpg"},
+                {id: 19, name: "هوت دوج مدخن بحلقات", desc: "هوت دوج مدخن مع حلقات البصل والصوصات", price: 24.33, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/dd9103fc-9254-4371-898b-a10bde6d0b5f.jpg"}
             ]
         },
         {
             category: "🥙 الحواوشي",
             items: [
-                {id: 20, name: "حواوشي لحم بالموتزريلا", desc: "حواوشي لحم بلدي مع جبنة موتزريلا دايبة", price: 145.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"},
-                {id: 21, name: "حواوشي لحم بقري مخصوص", desc: "رغيف حواوشي بلدي مقرمش باللحم المفروم والبهارات", price: 85.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/99f096e2-f829-4dfa-9990-27865dd5ac7b.jpg"}
+                {id: 20, name: "حواوشي لحم بالموتزريلا", desc: "حواوشي لحم بلدي مع جبنة موتزريلا دايبة", price: 145.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"},
+                {id: 21, name: "حواوشي لحم بقري مخصوص", desc: "رغيف حواوشي بلدي مقرمش باللحم المفروم والبهارات", price: 85.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/99f096e2-f829-4dfa-9990-27865dd5ac7b.jpg"}
             ]
         },
         {
             category: "🍝 المكرونة (Pasta)",
             items: [
-                {id: 22, name: "إسباجيتي بالطماطم", desc: "مكرونة إسباجيتي مع صلصة الطماطم الإيطالية", price: 45.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg"},
-                {id: 23, name: "مكرونة بينا بالصلصة الحمراء", desc: "مكرونة بينا مع الصلصة الحمراء والبهارات", price: 50.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg"},
-                {id: 24, name: "مكرونة بينا بالكبدة والصلصة الحمراء", desc: "مكرونة بينا غنية بقطع الكبدة والصلصة", price: 95.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235410/41677633-ab95-4bf4-be82-0920206f0892.jpg"},
-                {id: 25, name: "مكرونة بينا بالسجق والصلصة الحمراء", desc: "مكرونة بينا بقطع السجق البلدي المميز", price: 95.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"},
-                {id: 26, name: "معكرونة بينا مع الفراخ والصلصة الحمراء", desc: "مكرونة بينا بقطع الدجاج الطازج", price: 95.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235412/a356eea9-d7ad-4fbe-9dc3-69a08a75290e.jpg"}
+                {id: 22, name: "إسباجيتي بالطماطم", desc: "مكرونة إسباجيتي مع صلصة الطماطم الإيطالية", price: 45.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg"},
+                {id: 23, name: "مكرونة بينا بالصلصة الحمراء", desc: "مكرونة بينا مع الصلصة الحمراء والبهارات", price: 50.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg"},
+                {id: 24, name: "مكرونة بينا بالكبدة والصلصة الحمراء", desc: "مكرونة بينا غنية بقطع الكبدة والصلصة", price: 95.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235410/41677633-ab95-4bf4-be82-0920206f0892.jpg"},
+                {id: 25, name: "مكرونة بينا بالسجق والصلصة الحمراء", desc: "مكرونة بينا بقطع السجق البلدي المميز", price: 95.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"},
+                {id: 26, name: "معكرونة بينا مع الفراخ والصلصة الحمراء", desc: "مكرونة بينا بقطع الدجاج الطازج", price: 95.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235412/a356eea9-d7ad-4fbe-9dc3-69a08a75290e.jpg"}
             ]
         },
         {
             category: "🥤 المشروبات",
             items: [
-                {id: 27, name: "كوكاكولا", desc: "كانز كوكاكولا بارد 330 مل", price: 20.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg"},
-                {id: 28, name: "بيبسي", desc: "كانز بيبسي بارد 330 مل", price: 20.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg"},
-                {id: 29, name: "مياه معدنية صغيرة", desc: "زجاجة مياه معدنية 500 مل", price: 12.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"},
-                {id: 30, name: "مشروب ماء السلطة الحارة", desc: "مشروب السلطة البلدي الحار", price: 15.00, discountPrice: "", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/552610fa-4cf7-46ac-a34e-0854551a022b.jpg"}
+                {id: 27, name: "كوكاكولا", desc: "كانز كوكاكولا بارد 330 مل", price: 20.00, img: "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg"},
+                {id: 28, name: "بيبسي", desc: "كانز بيبسي بارد 330 مل", price: 20.00, img: "https://talabat.dhmedia.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg"},
+                {id: 29, name: "مياه معدنية صغيرة", desc: "زجاجة مياه معدنية 500 مل", price: 12.00, img: "https://talabat.dhmedia.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"},
+                {id: 30, name: "مشروب ماء السلطة الحارة", desc: "مشروب السلطة البلدي الحار", price: 15.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/552610fa-4cf7-46ac-a34e-0854551a022b.jpg"}
             ]
         }
     ];
 
     function getMenuData() {
-        let saved = localStorage.getItem(MENU_MASTER_KEY);
-        if (!saved) {
-            localStorage.setItem(MENU_MASTER_KEY, JSON.stringify(fullDefaultCategories));
+        try {
+            let saved = localStorage.getItem(MENU_MASTER_KEY);
+            if (!saved) {
+                localStorage.setItem(MENU_MASTER_KEY, JSON.stringify(fullDefaultCategories));
+                return fullDefaultCategories;
+            }
+            let parsed = JSON.parse(saved);
+            return (parsed && parsed.length > 0) ? parsed : fullDefaultCategories;
+        } catch(e) {
             return fullDefaultCategories;
         }
-        return JSON.parse(saved);
     }
 
     function saveMenuData(data) {
@@ -258,26 +208,16 @@
     }
 
     function resetToDefaultMenu() {
-        if(confirm("هل تريد استرجاع القائمة الأصلية كاملة؟")) {
+        if(confirm("هل تريد استرجاع القائمة الافتراضية كاملة (30 صنف)؟")) {
             saveMenuData(fullDefaultCategories);
-            renderCategories();
-            alert("تم استرجاع القائمة بنجاح!");
+            renderAdmin();
+            alert("تم الاسترجاع بنجاح!");
         }
     }
 
-    function switchTab(tabId, btn) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        btn.classList.add('active');
-        if(tabId === 'statsTab') loadStats();
-        if(tabId === 'ordersTab') loadOrders();
-    }
-
-    function renderCategories() {
+    function renderAdmin() {
         let data = getMenuData();
-        let container = document.getElementById("categoriesContainer");
-        
+        let container = document.getElementById("adminCategoriesContainer");
         container.innerHTML = data.map((cat, catIdx) => `
             <div class="category-card">
                 <div class="category-header" onclick="toggleCategory(this)">
@@ -286,18 +226,18 @@
                         <div class="category-info">${cat.items ? cat.items.length : 0} منتجات</div>
                     </div>
                     <div class="category-actions" onclick="event.stopPropagation()">
-                        <button class="action-icon" onclick="openAddProductModal(${catIdx})" title="إضافة صنف">+</button>
-                        <button class="action-icon" onclick="editCategoryName(${catIdx})" title="تعديل اسم الفئة">✏️</button>
-                        <button class="action-icon action-icon-delete" onclick="deleteCategory(${catIdx})" title="حذف الفئة">🗑</button>
+                        <button class="action-icon" onclick="openAddProductModal(${catIdx})">+</button>
+                        <button class="action-icon" onclick="editCategoryName(${catIdx})">✏️</button>
+                        <button class="action-icon action-icon-delete" onclick="deleteCategory(${catIdx})">🗑</button>
                     </div>
                 </div>
                 <div class="products-list">
                     ${cat.items && cat.items.length > 0 ? cat.items.map((item, itemIdx) => `
-                        <div class="product-item" onclick="openEditProductModal(${catIdx},${itemIdx})">
-                            <img src="${item.img \vert{}\vert{} 'https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg'}" class="product-thumb" alt="${item.name}">
+                        <div class="product-item" onclick="openEditProductModal(${catIdx}, ${itemIdx})">
+                            <img src="${item.img || ''}" class="product-thumb" alt="${item.name}">
                             <div class="product-info-box">
                                 <div class="product-name">${item.name}</div>
-                                <div class="product-desc">${item.desc || 'لا يوجد وصف'}</div>
+                                <div class="product-desc">${item.desc || ''}</div>
                                 <div class="product-price-tag">${item.price} ج.م</div>
                             </div>
                             <div style="font-size:12px; color:var(--talabat-main); font-weight:700;">تعديل ✎</div>
@@ -306,6 +246,8 @@
                 </div>
             </div>
         `).join('');
+
+        loadOrders();
     }
 
     function toggleCategory(headerEl) {
@@ -314,32 +256,66 @@
     }
 
     function openAddCategoryModal() {
-        let catName = prompt("أدخل اسم الفئة / القسم الجديد:");
+        let catName = prompt("أدخل اسم القسم الجديد:");
         if (catName) {
             let data = getMenuData();
             data.push({ category: catName, items: [] });
             saveMenuData(data);
-            renderCategories();
+            renderAdmin();
         }
     }
 
     function editCategoryName(catIdx) {
         let data = getMenuData();
-        let newName = prompt("تعديل اسم الفئة:", data[catIdx].category);
+        let newName = prompt("تعديل اسم القسم:", data[catIdx].category);
         if (newName) {
             data[catIdx].category = newName;
             saveMenuData(data);
-            renderCategories();
+            renderAdmin();
         }
     }
 
     function deleteCategory(catIdx) {
-        if(confirm("هل أنت متأكد من حذف هذه الفئة بالكامل؟")) {
+        if(confirm("هل أنت متأكد من حذف هذا القسم؟")) {
             let data = getMenuData();
             data.splice(catIdx, 1);
             saveMenuData(data);
-            renderCategories();
+            renderAdmin();
         }
+    }
+
+    function openEditProductModal(catIdx, itemIdx) {
+        let data = getMenuData();
+        let item = data[catIdx].items[itemIdx];
+        populateCategorySelect(catIdx);
+
+        document.getElementById("editCatIdx").value = catIdx;
+        document.getElementById("editItemIdx").value = itemIdx;
+        document.getElementById("modalName").value = item.name || "";
+        document.getElementById("modalDesc").value = item.desc || "";
+        document.getElementById("modalPrice").value = item.price || "";
+        
+        let img = item.img || "";
+        document.getElementById("modalImagePreview").src = img;
+        document.getElementById("modalImgUrl").value = img;
+        
+        document.getElementById("itemModal").style.display = "flex";
+    }
+
+    function openAddProductModal(catIdx) {
+        populateCategorySelect(catIdx);
+        document.getElementById("editCatIdx").value = catIdx;
+        document.getElementById("editItemIdx").value = "-1";
+        document.getElementById("modalName").value = "";
+        document.getElementById("modalDesc").value = "";
+        document.getElementById("modalPrice").value = "";
+        document.getElementById("modalImagePreview").src = "";
+        document.getElementById("modalImgUrl").value = "";
+        document.getElementById("itemModal").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("itemModal").style.display = "none";
     }
 
     function populateCategorySelect(selectedIdx) {
@@ -350,68 +326,16 @@
         `).join('');
     }
 
-    function openAddProductModal(catIdx) {
-        populateCategorySelect(catIdx);
-        document.getElementById("modalHeaderTitle").innerText = "إضافة منتج جديد";
-        document.getElementById("editCatIdx").value = catIdx;
-        document.getElementById("editItemIdx").value = "-1";
-        document.getElementById("modalName").value = "";
-        document.getElementById("modalDesc").value = "";
-        document.getElementById("modalPrice").value = "";
-        let defaultImg = "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg";
-        document.getElementById("modalImagePreview").src = defaultImg;
-        document.getElementById("modalImgUrl").value = defaultImg;
-        document.getElementById("itemModal").style.display = "flex";
-        validateForm();
-    }
-
-    function openEditProductModal(catIdx, itemIdx) {
-        populateCategorySelect(catIdx);
-        let data = getMenuData();
-        let item = data[catIdx].items[itemIdx];
-
-        document.getElementById("modalHeaderTitle").innerText = "تعديل المنتج";
-        document.getElementById("editCatIdx").value = catIdx;
-        document.getElementById("editItemIdx").value = itemIdx;
-        document.getElementById("modalName").value = item.name || "";
-        document.getElementById("modalDesc").value = item.desc || "";
-        document.getElementById("modalPrice").value = item.price || "";
-        
-        let img = item.img || "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg";
-        document.getElementById("modalImagePreview").src = img;
-        document.getElementById("modalImgUrl").value = img;
-        
-        document.getElementById("itemModal").style.display = "flex";
-        validateForm();
-    }
-
-    function closeModal() {
-        document.getElementById("itemModal").style.display = "none";
-    }
-
     function handleDeviceImageUpload(event) {
         let file = event.target.files[0];
         if (file) {
             let reader = new FileReader();
             reader.onload = function(e) {
-                let base64String = e.target.result;
-                document.getElementById("modalImagePreview").src = base64String;
-                document.getElementById("modalImgUrl").value = base64String;
-                validateForm();
+                let base64 = e.target.result;
+                document.getElementById("modalImagePreview").src = base64;
+                document.getElementById("modalImgUrl").value = base64;
             };
             reader.readAsDataURL(file);
-        }
-    }
-
-    function validateForm() {
-        let name = document.getElementById("modalName").value.trim();
-        let price = document.getElementById("modalPrice").value.trim();
-        let btn = document.getElementById("confirmBtn");
-
-        if (name && price && !isNaN(price)) {
-            btn.classList.add("active");
-        } else {
-            btn.classList.remove("active");
         }
     }
 
@@ -425,7 +349,7 @@
         let editItemIdx = parseInt(document.getElementById("editItemIdx").value);
 
         if (!name || isNaN(price)) {
-            alert("من فضلك أدخل اسم المنتج والسعر على الأقل");
+            alert("من فضلك أدخل الاسم والسعر على الأقل");
             return;
         }
 
@@ -435,18 +359,16 @@
             name: name,
             desc: desc,
             price: price,
-            discountPrice: "",
             img: img
         };
 
         if (editItemIdx !== -1) {
             data[editCatIdx].items.splice(editItemIdx, 1);
         }
-
         data[targetCatIdx].items.push(productObj);
 
         saveMenuData(data);
-        renderCategories();
+        renderAdmin();
         closeModal();
     }
 
@@ -454,7 +376,7 @@
         let orders = JSON.parse(localStorage.getItem(ORDERS_MASTER_KEY) || "[]");
         let container = document.getElementById("ordersListContainer");
         if(orders.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:#777;">لا توجد طلبات مسجلة حتى الآن.</p>`;
+            container.innerHTML = `<p style="text-align:center; color:#777;">لا توجد طلبات جديدة حالياً.</p>`;
             return;
         }
         container.innerHTML = orders.map(o => `
@@ -465,45 +387,21 @@
                 </div>
                 <p><b>العميل:</b> ${o.customer_name} | <b>الهاتف:</b> ${o.phone}</p>
                 <p><b>العنوان:</b> ${o.address}</p>
-                ${o.location_url ? `<p><a href="${o.location_url}" target="_blank" style="color:green; text-decoration:none; font-weight:700;">📍 فتح موقع الـ GPS</a></p>` : ''}
+                ${o.location_url ? `<p><a href="${o.location_url}" target="_blank" style="color:green; font-weight:700;">📍 فتح موقع العميل على الخريطة</a></p>` : ''}
                 <hr style="margin:8px 0; border:none; border-top:1px dashed #ddd;">
                 <p><b>الطلبات:</b></p>
                 <ul style="padding-right:20px; font-size:12px; margin-bottom:5px;">
                     ${o.items.map(i => `<li>${i.name} × ${i.qty} (${(i.price * i.qty).toFixed(2)} ج.م)</li>`).join('')}
                 </ul>
-                <div style="display:flex; justify-content:space-between; font-weight:800; font-size:14px; margin-top:5px; color:#222;">
-                    <span>التوصيل: ${o.delivery_fee} ج.م</span>
-                    <span>الإجمالي: ${o.total.toFixed(2)} ج.م</span>
+                <div style="display:flex; justify-content:space-between; font-weight:800; font-size:14px; margin-top:5px;">
+                    <span>الإجمالي:</span>
+                    <span style="color:var(--talabat-main);">${o.total.toFixed(2)} ج.م</span>
                 </div>
             </div>
         `).join('');
     }
 
-    function loadStats() {
-        let orders = JSON.parse(localStorage.getItem(ORDERS_MASTER_KEY) || "[]");
-        document.getElementById("totalOrdersCount").innerText = orders.length;
-        let totalSales = orders.reduce((sum, o) => sum + o.total, 0);
-        document.getElementById("totalSalesAmount").innerText = totalSales.toFixed(2);
-        
-        let counts = {};
-        orders.forEach(o => {
-            if(o.items) o.items.forEach(i => counts[i.name] = (counts[i.name]||0) + (i.qty || 1));
-        });
-        let sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-        let topDiv = document.getElementById("topItemsContainer");
-        if(sorted.length > 0) {
-            topDiv.innerHTML = sorted.map(([name, count], idx) => `
-                <div style="background:#fff; padding:10px; margin-bottom:6px; border-radius:8px; border:1px solid #ddd; display:flex; justify-content:space-between;">
-                    <span><b>#${idx+1}</b> ${name}</span>
-                    <span style="color:var(--talabat-main); font-weight:700;">${count} قطعة</span>
-                </div>
-            `).join('');
-        } else {
-            topDiv.innerHTML = '<p style="color:#777; text-align:center;">لا توجد طلبات كافية بعد.</p>';
-        }
-    }
-
-    renderCategories();
+    renderAdmin();
 </script>
 </body>
 </html>
