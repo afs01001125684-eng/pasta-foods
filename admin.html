@@ -182,16 +182,41 @@
         }
         .btn-primary:hover { opacity: 0.9; }
 
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+
         .btn-danger {
             background: #dc3545;
             color: #fff;
             border: none;
-            padding: 4px 10px;
+            padding: 5px 10px;
             border-radius: 6px;
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
         }
+
+        /* Availability Badge */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-block;
+            user-select: none;
+        }
+        .status-badge.available { background: #e8f5e9; color: #2e7d32; }
+        .status-badge.unavailable { background: #ffebee; color: #c62828; }
 
         /* Responsive Table */
         .table-responsive { overflow-x: auto; }
@@ -324,7 +349,7 @@
 
         <!-- Menu Table List -->
         <div class="card-box">
-            <h3>📋 قائمة المنتجات الحالية</h3>
+            <h3>📋 قائمة المنتجات الحالية والإتاحة</h3>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -333,7 +358,8 @@
                             <th>اسم الوجبة</th>
                             <th>القسم</th>
                             <th>السعر</th>
-                            <th>إجراء</th>
+                            <th>الإتاحة</th>
+                            <th>إجراء تعديل / حذف</th>
                         </tr>
                     </thead>
                     <tbody id="adminMenuTable"></tbody>
@@ -392,21 +418,21 @@
         {
             category: "الوجبات (Meals) 🍗",
             items: [
-                {id: 1, name: "وجبة أرز وربع فرخة فرن", price: 185.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
-                {id: 2, name: "مكرونة مع ربع فرخة فرن", price: 180.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"}
+                {id: 1, name: "وجبة أرز وربع فرخة فرن", price: 185.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg", available: true},
+                {id: 2, name: "مكرونة مع ربع فرخة فرن", price: 180.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg", available: true}
             ]
         },
         {
             category: "المكرونة (Pasta) 🍝",
             items: [
-                {id: 22, name: "إسباجيتي بالطماطم", price: 45.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg"}
+                {id: 22, name: "إسباجيتي بالطماطم", price: 45.00, img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg", available: true}
             ]
         }
     ];
 
     let menu = JSON.parse(localStorage.getItem("pasta_menu")) || defaultMenu;
     let settings = JSON.parse(localStorage.getItem("pasta_settings")) || { deliveryFee: 50, freeThreshold: 250 };
-    let isRestaurantOpen = JSON.parse(localStorage.getItem("pasta_is_open")) !== false; // الافتراضي مفتوح
+    let isRestaurantOpen = JSON.parse(localStorage.getItem("pasta_is_open")) !== false;
     let lastOrdersCount = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]").length;
 
     function init() {
@@ -419,7 +445,6 @@
         document.getElementById("settingFeeInput").value = settings.deliveryFee;
         document.getElementById("settingThresholdInput").value = settings.freeThreshold;
 
-        // مراقبة الطلبات الجديدة كل 3 ثوانٍ لتشغيل التنبيه الصوتي
         setInterval(checkForNewOrders, 3000);
     }
 
@@ -447,7 +472,7 @@
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // نوتة D5
+            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
             gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
@@ -518,13 +543,43 @@
 
         if(!name || isNaN(price)) return alert("يرجى إدخال اسم الوجبة والسعر!");
 
-        menu[catIdx].items.push({ id: Date.now(), name, price, img });
+        menu[catIdx].items.push({ id: Date.now(), name, price, img, available: true });
         saveMenu();
 
         document.getElementById("itemNameInput").value = "";
         document.getElementById("itemPriceInput").value = "";
         document.getElementById("itemImgInput").value = "";
         alert("✅ تمت إضافة الوجبة للمنيو!");
+    }
+
+    // التبديل بين متاح/غير متاح
+    function toggleItemAvailability(catIdx, itemIdx) {
+        let current = menu[catIdx].items[itemIdx].available !== false;
+        menu[catIdx].items[itemIdx].available = !current;
+        saveMenu();
+    }
+
+    // تعديل بيانات الوجبة
+    function editItem(catIdx, itemIdx) {
+        const item = menu[catIdx].items[itemIdx];
+        const newName = prompt("تعديل اسم الوجبة:", item.name);
+        if (newName === null) return;
+
+        const newPrice = prompt("تعديل السعر (ج.م):", item.price);
+        if (newPrice === null) return;
+
+        const newImg = prompt("تعديل رابط الصورة:", item.img);
+        if (newImg === null) return;
+
+        if (newName.trim() !== "" && !isNaN(parseFloat(newPrice))) {
+            item.name = newName.trim();
+            item.price = parseFloat(newPrice);
+            item.img = newImg.trim() || item.img;
+            saveMenu();
+            alert("✅ تم تعديل الوجبة بنجاح!");
+        } else {
+            alert("⚠️ البيانات المدخلة غير صالحة!");
+        }
     }
 
     function deleteItem(catIdx, itemIdx) {
@@ -545,18 +600,29 @@
         let html = "";
         menu.forEach((cat, catIdx) => {
             cat.items.forEach((item, itemIdx) => {
+                const isAvail = item.available !== false;
                 html += `
                     <tr>
                         <td><img src="${item.img}" class="img-thumb"></td>
                         <td><b>${item.name}</b></td>
                         <td>${cat.category}</td>
                         <td><b>${item.price} ج.م</b></td>
-                        <td><button class="btn-danger" onclick="deleteItem(${catIdx}, ${itemIdx})">حذف</button></td>
+                        <td>
+                            <span class="status-badge ${isAvail ? 'available' : 'unavailable'}" 
+                                  onclick="toggleItemAvailability(${catIdx}, ${itemIdx})" 
+                                  title="اضغط لتغيير الإتاحة">
+                                ${isAvail ? '🟢 متاح' : '🔴 غير متاح'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-warning" onclick="editItem(${catIdx}, ${itemIdx})">تعديل ✏️</button>
+                            <button class="btn-danger" onclick="deleteItem(${catIdx}, ${itemIdx})">حذف 🗑️</button>
+                        </td>
                     </tr>
                 `;
             });
         });
-        tbody.innerHTML = html || "<tr><td colspan='5' style='text-align:center;'>لا توجد أصناف حالياً</td></tr>";
+        tbody.innerHTML = html || "<tr><td colspan='6' style='text-align:center;'>لا توجد أصناف حالياً</td></tr>";
     }
 
     function saveSettings() {
@@ -569,7 +635,6 @@
 
     function updateOrderStatus(index, newStatus) {
         let orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
-        // ترتيب العرض معاكس لذا نحسب المؤشر الحقيقي
         let actualIndex = orders.length - 1 - index;
         if(orders[actualIndex]) {
             orders[actualIndex].status = newStatus;
