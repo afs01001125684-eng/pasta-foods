@@ -9,7 +9,7 @@
     <style>
         :root { --talabat-main: #FF5A00; --text-dark: #191919; --light-bg: #f8f9fa; --border-color: #efefef; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background: #f4f6f8; color: var(--text-dark); padding-bottom: 120px; }
+        body { background: #f4f6f8; color: var(--text-dark); padding-bottom: 140px; }
 
         /* Cover Header Image */
         .cover-header { position: relative; height: 180px; background: url('https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg') center/cover no-repeat; }
@@ -49,30 +49,55 @@
         .curr-price { font-size: 14px; font-weight: 800; color: #000; background: #e8f5e9; padding: 2px 6px; border-radius: 4px; display: inline-block; }
         .old-price { font-size: 11px; color: #888; text-decoration: line-through; margin-left: 5px; }
         
-        /* أزرار إضافة وتعديل الكمية على الكارت */
         .add-badge { position: absolute; top: 90px; right: 8px; background: var(--talabat-main); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; border: 2px solid #fff; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .qty-controls-card { position: absolute; top: 90px; right: 8px; background: var(--talabat-main); color: #fff; border-radius: 20px; display: flex; align-items: center; gap: 6px; padding: 2px 8px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .qty-btn-card { background: none; border: none; color: #fff; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0 4px; }
         .qty-num-card { font-size: 13px; font-weight: 800; }
 
-        /* Bottom Cart Fixed Bar */
-        .bottom-cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 12px 15px; background: transparent; z-index: 1000; display: none; flex-direction: column; gap: 6px; }
-        .savings-tag { background: #ffe0b2; color: #d84315; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; align-self: center; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        /* Bottom Cart Fixed Bar & Free Delivery Progress */
+        .bottom-cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 12px 15px; background: #fff; z-index: 1000; display: none; flex-direction: column; gap: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); border-top-left-radius: 16px; border-top-right-radius: 16px; }
+        .free-shipping-progress { font-size: 12px; font-weight: 700; color: #444; background: #fff3ec; padding: 8px 12px; border-radius: 8px; border: 1px solid #ffe2d1; }
+        .progress-bar-bg { width: 100%; height: 6px; background: #ffd0b5; border-radius: 3px; margin-top: 4px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--talabat-main); width: 0%; transition: width 0.3s ease; }
+        
+        .savings-tag { background: #ffe0b2; color: #d84315; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; align-self: center; display: flex; align-items: center; gap: 5px; }
         .cart-main-btn { background: var(--talabat-main); color: #fff; border-radius: 12px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 90, 0, 0.3); border: none; width: 100%; }
         .cart-count-badge { background: #fff; color: var(--talabat-main); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
 
         /* Modal styling */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; }
-        .modal-content { background: white; width: 100%; max-width: 500px; margin: auto; height: 100vh; padding: 25px; overflow-y: auto; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; background: var(--light-bg); font-family: 'Cairo', sans-serif; }
-        .submit-btn { background: var(--talabat-main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: 800; }
+        .modal-content { background: white; width: 100%; max-width: 500px; margin: auto; height: 100vh; padding: 20px; overflow-y: auto; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; background: var(--light-bg); font-family: 'Cairo', sans-serif; }
+        .submit-btn { background: var(--talabat-main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: 800; font-size: 15px; }
         
-        /* عناصر الزيادة والنقصان داخل مودال السلة */
         .modal-cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
         .modal-qty-btn { background: #f0f0f0; border: none; width: 28px; height: 28px; border-radius: 50%; font-weight: 800; cursor: pointer; color: #333; }
+
+        /* Up-selling Section */
+        .upsell-section { background: #fdf8f5; border: 1px dashed #ffb085; border-radius: 12px; padding: 12px; margin: 15px 0; }
+        .upsell-title { font-size: 13px; font-weight: 800; color: #d84315; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+        .upsell-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .upsell-item { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 8px; min-width: 130px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .upsell-item img { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; }
+        .upsell-item-name { font-size: 11px; font-weight: 700; margin: 4px 0 2px; }
+        .upsell-item-price { font-size: 12px; font-weight: 800; color: var(--talabat-main); }
+        .upsell-add-btn { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 800; margin-top: 5px; cursor: pointer; }
+
+        /* Toast Notification Styling */
+        #toastContainer { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 3000; pointer-events: none; }
+        .toast { background: rgba(25, 25, 25, 0.9); color: #fff; padding: 10px 20px; border-radius: 25px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(20px); }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* Payment Methods Grid */
+        .payment-methods-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+        .payment-option { border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 700; background: #fff; }
+        .payment-option.selected { border-color: var(--talabat-main); background: #fff3ec; color: var(--talabat-main); }
     </style>
 </head>
 <body>
+
+<!-- Toast Notification Container -->
+<div id="toastContainer"></div>
 
 <div class="cover-header">
     <div class="top-nav-icons">
@@ -112,6 +137,14 @@
 <div id="productsContainer"></div>
 
 <div class="bottom-cart-bar" id="bottomCartBar">
+    <!-- Minimum Order Value / Free Shipping Bar -->
+    <div class="free-shipping-progress" id="shippingProgressBox">
+        <div id="shippingProgressText">أضف بقيمة 250.00 ج.م للحصول على توصيل مجاني! 🚀</div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+    </div>
+
     <div class="savings-tag" id="savingsTag" style="display:none;">
         <span>🪙</span> <span id="savingsText">لقد وفرت 0.00 ج.م</span>
     </div>
@@ -127,19 +160,50 @@
 <div id="modal" class="modal">
     <div class="modal-content">
         <h2>تأكيد الطلب 🛒</h2>
-        <div id="cartItemsList" style="margin: 20px 0;"></div>
+        <div id="cartItemsList" style="margin: 15px 0 5px;"></div>
+
+        <!-- Cross-Selling / Up-Selling Section -->
+        <div class="upsell-section">
+            <div class="upsell-title">🥤 يكتمل طلبك مع هذه الإضافات:</div>
+            <div class="upsell-grid">
+                <div class="upsell-item">
+                    <img src="https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg" alt="كوكاكولا">
+                    <span class="upsell-item-name">كوكاكولا</span>
+                    <span class="upsell-item-price">20.00 ج.م</span>
+                    <button class="upsell-add-btn" onclick="changeQty('كوكاكولا', 20, 0, 1)">+ إضافة</button>
+                </div>
+                <div class="upsell-item">
+                    <img src="https://talabat.dhmedia.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg" alt="بيبسي">
+                    <span class="upsell-item-name">بيبسي</span>
+                    <span class="upsell-item-price">20.00 ج.م</span>
+                    <button class="upsell-add-btn" onclick="changeQty('بيبسي', 20, 0, 1)">+ إضافة</button>
+                </div>
+                <div class="upsell-item">
+                    <img src="https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/3c931050-3665-466b-85a6-7d6be0ad9540.jpg" alt="ماء سلطة">
+                    <span class="upsell-item-name">مشروب السلطة</span>
+                    <span class="upsell-item-price">15.00 ج.م</span>
+                    <button class="upsell-add-btn" onclick="changeQty('مشروب السلطة الحارة ( ويسكى حلال )', 15, 0, 1)">+ إضافة</button>
+                </div>
+            </div>
+        </div>
+
         <div class="form-group">
             <input type="text" id="name" placeholder="اسم العميل">
             <input type="tel" id="phone" placeholder="رقم الهاتف (مثال: 01012345678)" maxlength="11">
             <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للعميل">
             
-            <!-- حالة تحديد الموقع التلقائي -->
             <div id="locationStatus" style="font-size:13px; text-align:center; margin-bottom:8px; font-weight:700; color:#d84315;">📍 جاري تحديد موقعك وعنوانك تلقائياً...</div>
             
-            <!-- حقل العنوان (يتم ملؤه تلقائياً وقابل للتعديل من قبل العميل) -->
             <input type="text" id="address" placeholder="عنوان التوصيل (يتم كتابته تلقائياً أو يمكنك تعديله)">
             
-            <!-- بند الملاحظات الفارغ -->
+            <!-- Payment Method Selection -->
+            <label style="font-size:12px; font-weight:800; color:#444; margin-bottom:5px; display:block;">اختر طريقة الدفع:</label>
+            <div class="payment-methods-grid">
+                <div class="payment-option selected" id="pay-cod" onclick="selectPayment('الدفع عند الاستلام')">💵 كاش عند الاستلام</div>
+                <div class="payment-option" id="pay-vodafone" onclick="selectPayment('فودافون كاش')">📱 فودافون كاش</div>
+                <div class="payment-option" id="pay-instapay" onclick="selectPayment('InstaPay')">⚡ إنستا باي (InstaPay)</div>
+            </div>
+
             <textarea id="notes" placeholder="ملاحظات إضافية على الطلب (اختياري)..." rows="2"></textarea>
             
             <input type="hidden" id="custLocationMap">
@@ -154,8 +218,10 @@
 
     const RESTAURANT_LAT = 30.0264; 
     const RESTAURANT_LNG = 31.1811; 
+    const FREE_SHIPPING_THRESHOLD = 250; // الحد الأدنى للتوصيل المجاني
     let deliveryFee = 50; 
     let currentDistance = 0;
+    let selectedPaymentMethod = "الدفع عند الاستلام";
     
     let cart = JSON.parse(localStorage.getItem("pasta_cart")) || {};
 
@@ -231,6 +297,30 @@
         return fullOriginalCategories;
     }
 
+    /* Toast Notification System */
+    function showToast(message) {
+        const container = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.innerText = message;
+        container.appendChild(toast);
+
+        setTimeout(() => toast.classList.add("show"), 50);
+        setTimeout(() => {
+            toast.classList.remove("show");
+            setTimeout(() => toast.remove(), 300);
+        }, 2200);
+    }
+
+    /* Select Payment Option */
+    function selectPayment(method) {
+        selectedPaymentMethod = method;
+        document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+        if(method === 'الدفع عند الاستلام') document.getElementById('pay-cod').classList.add('selected');
+        if(method === 'فودافون كاش') document.getElementById('pay-vodafone').classList.add('selected');
+        if(method === 'InstaPay') document.getElementById('pay-instapay').classList.add('selected');
+    }
+
     function renderPage() {
         let categories = getMenuData();
         let catBar = document.getElementById("categoryBar");
@@ -291,11 +381,16 @@
         if (!cart[name]) {
             if (delta > 0) {
                 cart[name] = { name, price, discountPrice, qty: delta };
+                showToast(`🛒 تمت إضافة ${name} إلى السلة`);
             }
         } else {
             cart[name].qty += delta;
+            if (delta > 0) {
+                showToast(`➕ تم زيادة كمية ${name}`);
+            }
             if (cart[name].qty <= 0) {
                 delete cart[name];
+                showToast(`🗑️ تم حذف ${name} من السلة`);
             }
         }
         
@@ -322,6 +417,21 @@
         
         let subtotal = keys.reduce((sum, k) => sum + (cart[k].price * cart[k].qty), 0);
         document.getElementById("cartTotalPrice").innerText = `${subtotal.toFixed(2)} ج.م`;
+
+        /* Update Minimum Order / Free Shipping Progress Bar */
+        let progressText = document.getElementById("shippingProgressText");
+        let progressBarFill = document.getElementById("progressBarFill");
+        
+        if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+            deliveryFee = 0; // تطبيق التوصيل المجاني
+            progressText.innerText = "🎉 تهانينا! حصلت على توصيل مجاني بحد أدنى!";
+            progressBarFill.style.width = "100%";
+        } else {
+            let remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+            let percentage = (subtotal / FREE_SHIPPING_THRESHOLD) * 100;
+            progressText.innerText = `أضف بقيمة ${remaining.toFixed(2)} ج.م للحصول على توصيل مجاني! 🚀`;
+            progressBarFill.style.width = `${percentage}%`;
+        }
 
         let totalSavings = keys.reduce((sum, k) => {
             let item = cart[k];
@@ -360,7 +470,8 @@
         }
 
         let subtotal = keys.reduce((sum, k) => sum + (cart[k].price * cart[k].qty), 0);
-        let total = subtotal + deliveryFee;
+        let actualDeliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : deliveryFee;
+        let total = subtotal + actualDeliveryFee;
 
         list.innerHTML = keys.map(k => {
             let item = cart[k];
@@ -378,9 +489,10 @@
                 </div>
             `;
         }).join('') + `
-            <div style="margin-top:15px; border-top:1px solid #ddd; padding-top:10px;">
-                <p>خدمة التوصيل: ${deliveryFee} ج.م</p>
-                <p style="font-size:18px; font-weight:800; color:var(--talabat-main); margin-top:5px;">الإجمالي: ${total.toFixed(2)} ج.م</p>
+            <div style="margin-top:12px; border-top:1px solid #ddd; padding-top:8px;">
+                <p style="display:flex; justify-content:space-between; font-size:13px;"><span>مجموع المنتجات:</span> <b>${subtotal.toFixed(2)} ج.م</b></p>
+                <p style="display:flex; justify-content:space-between; font-size:13px; color:${actualDeliveryFee === 0 ? 'green':'#444'};"><span>خدمة التوصيل:</span> <b>${actualDeliveryFee === 0 ? 'مجاناً 🚀' : actualDeliveryFee + ' ج.م'}</b></p>
+                <p style="font-size:17px; font-weight:800; color:var(--talabat-main); margin-top:5px; display:flex; justify-content:space-between;"><span>الإجمالي النهائي:</span> <span>${total.toFixed(2)} ج.م</span></p>
             </div>
         `;
     }
@@ -396,7 +508,6 @@
         return (R * c) * 1.3; 
     }
 
-    // دالة التقاط الموقع وجلب اسم العنوان تلقائياً وعرضه في حقل الإدخال
     function autoGetGPSLocation() {
         const status = document.getElementById("locationStatus");
         const mapInput = document.getElementById("custLocationMap");
@@ -420,7 +531,6 @@
                 
                 deliveryFee = currentDistance <= 5 ? 50 : 50 + Math.ceil((currentDistance - 5) * 6);
                 
-                // جلب اسم العنوان النصي من إحداثيات الـ GPS (Reverse Geocoding)
                 fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`)
                     .then(response => response.json())
                     .then(data => {
@@ -434,7 +544,7 @@
                         addressInput.value = `إحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
                     });
 
-                status.innerHTML = `✅ تم جلب الموقع والعنوان بنجاح (التوصيل: ${deliveryFee} ج.م)`;
+                status.innerHTML = `✅ تم جلب الموقع والعنوان بنجاح`;
                 status.style.color = "green";
                 renderCartModal();
             },
@@ -473,12 +583,13 @@
         }
 
         const subtotal = keys.reduce((sum, k) => sum + (cart[k].price * cart[k].qty), 0);
-        const total = subtotal + deliveryFee;
+        const actualDeliveryFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : deliveryFee;
+        const total = subtotal + actualDeliveryFee;
 
         let cartListArray = keys.map(k => cart[k]);
 
         let ordersHistory = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
-        ordersHistory.push({ customer_name: name, phone: phone, total: total, items: cartListArray });
+        ordersHistory.push({ customer_name: name, phone: phone, total: total, items: cartListArray, payment: selectedPaymentMethod });
         localStorage.setItem("pasta_orders_history", JSON.stringify(ordersHistory));
 
         const orderItems = cartListArray.map(item => ({ name: `${item.name} (عدد: ${item.qty})`, price: item.price * item.qty }));
@@ -487,15 +598,16 @@
             customer_name: name,
             customer_email: email,
             orders: orderItems, 
-            delivery_fee: deliveryFee,
+            delivery_fee: actualDeliveryFee,
             total_amount: total,
             customer_location: mapUrl || "لم يتم تحديد الموقع",
+            payment_method: selectedPaymentMethod,
             customer_notes: notes || "لا توجد ملاحظات"
         }).then(() => {}, (err) => {
             console.error("EmailJS Error:", err);
         });
 
-        let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان (قابل للتعديل): ${address}\n📝 ملاحظات: ${notes || 'لا توجد'}\n🗺️ رابط الخريطة: ${mapUrl || 'لم يرسل رابط الخريطة'}\n\n🛒 الطلبات:\n` + cartListArray.map(i=>`• ${i.name} × ${i.qty} (${(i.price * i.qty).toFixed(2)} ج.م)`).join('\n') + `\n\n🛵 خدمة التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total.toFixed(2)} ج.م`;
+        let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n💳 طريقة الدفع: ${selectedPaymentMethod}\n📝 ملاحظات: ${notes || 'لا توجد'}\n🗺️ رابط الخريطة: ${mapUrl || 'لم يرسل رابط الخريطة'}\n\n🛒 الطلبات:\n` + cartListArray.map(i=>`• ${i.name} × ${i.qty} (${(i.price * i.qty).toFixed(2)} ج.م)`).join('\n') + `\n\n🛵 خدمة التوصيل: ${actualDeliveryFee === 0 ? 'مجاناً 🎉' : actualDeliveryFee + ' ج.م'}\n💰 الإجمالي: ${total.toFixed(2)} ج.م`;
         
         window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
         
