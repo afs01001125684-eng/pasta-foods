@@ -75,7 +75,7 @@
             flex-grow: 1;
             padding: 20px 25px;
             width: calc(100% - var(--sidebar-width));
-            max-width: 800px;
+            max-width: 850px;
         }
 
         /* Top Bar Header */
@@ -94,26 +94,38 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #f8d7da;
-            color: #842029;
+            background: #e8f5e9;
+            color: #2e7d32;
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 700;
         }
 
-        .status-dot { width: 8px; height: 8px; background: #842029; border-radius: 50%; }
+        .status-dot { width: 8px; height: 8px; background: #2e7d32; border-radius: 50%; }
 
         /* Tabs Content */
         .content-tab { display: none; }
         .content-tab.active { display: block; }
 
-        /* Menu Management UI like Talabat App */
+        /* Action Top Bar */
+        .action-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Category Card Structure */
         .cat-card {
             background: #fff;
             border-radius: 14px;
             border: 1px solid var(--border-color);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             overflow: hidden;
             box-shadow: var(--card-shadow);
         }
@@ -123,9 +135,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: pointer;
-            user-select: none;
             background: #fff;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .cat-title-box { display: flex; align-items: center; gap: 10px; }
@@ -143,7 +154,9 @@
             font-weight: 800;
         }
 
-        .edit-icon-btn {
+        .cat-actions { display: flex; align-items: center; gap: 8px; }
+
+        .icon-btn {
             background: #f1f3f5;
             border: none;
             width: 32px;
@@ -155,11 +168,12 @@
             cursor: pointer;
             font-size: 14px;
             color: #495057;
+            transition: background 0.2s;
         }
+        .icon-btn:hover { background: #e9ecef; }
 
         .cat-body {
-            border-top: 1px solid var(--border-color);
-            padding: 15px;
+            padding: 15px 20px;
             background: #fff;
         }
 
@@ -167,20 +181,22 @@
             width: 100%;
             padding: 12px;
             background: #fff;
-            border: 1px dashed #ffb085;
+            border: 1px dashed var(--talabat-orange);
             border-radius: 10px;
             color: var(--talabat-orange);
             font-weight: 800;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
+            transition: background 0.2s;
         }
+        .btn-add-item-dashed:hover { background: #fff3ec; }
 
-        /* Product Item Card */
+        /* Product Item Card Design */
         .item-card {
             display: flex;
             justify-content: space-between;
@@ -193,20 +209,17 @@
 
         .item-details { flex-grow: 1; }
         .item-name { font-size: 15px; font-weight: 800; color: #111; margin-bottom: 4px; }
-        .item-desc { font-size: 12px; color: var(--text-sub); margin-bottom: 10px; line-height: 1.4; }
-        .item-price { font-size: 15px; font-weight: 800; color: #222; }
+        .item-desc { font-size: 12px; color: var(--text-sub); margin-bottom: 8px; line-height: 1.4; }
+        .item-price { font-size: 15px; font-weight: 800; color: #111; }
 
-        .btn-promo {
-            border: 1px solid var(--talabat-orange);
-            color: var(--talabat-orange);
-            background: #fff;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
-            margin-top: 8px;
-            display: inline-block;
+        .item-action-btns { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-sm-edit {
+            background: #e3f2fd; color: #0d47a1; border: none; padding: 4px 12px;
+            border-radius: 15px; font-size: 12px; font-weight: 700; cursor: pointer;
+        }
+        .btn-sm-delete {
+            background: #ffebee; color: #c62828; border: none; padding: 4px 12px;
+            border-radius: 15px; font-size: 12px; font-weight: 700; cursor: pointer;
         }
 
         .item-left {
@@ -224,7 +237,12 @@
             border: 1px solid #eee;
         }
 
-        /* Toggle Switch */
+        /* Toggle Switch UI */
+        .switch-box { display: flex; align-items: center; gap: 6px; }
+        .switch-label { font-size: 11px; font-weight: 700; }
+        .switch-label.active { color: #2e7d32; }
+        .switch-label.inactive { color: #d32f2f; }
+
         .switch {
             position: relative;
             display: inline-block;
@@ -243,7 +261,7 @@
         input:checked + .slider { background-color: #2e7d32; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Forms Styling */
+        /* Forms & Cards Styling */
         .card-box {
             background: #fff; border-radius: 12px; padding: 20px;
             box-shadow: var(--card-shadow); border: 1px solid var(--border-color); margin-bottom: 20px;
@@ -253,11 +271,12 @@
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Cairo'; font-size: 13px; }
 
         .btn-primary { background: var(--talabat-orange); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; }
-        .btn-danger { background: #dc3545; color: #fff; border: none; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .btn-secondary { background: #6c757d; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; }
+        .btn-danger { background: #dc3545; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
-        /* Modal for adding product */
+        /* Modal Dialog Styling */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; }
-        .modal-content { background: #fff; width: 90%; max-width: 500px; margin: 50px auto; padding: 20px; border-radius: 14px; }
+        .modal-content { background: #fff; width: 90%; max-width: 500px; margin: 40px auto; padding: 20px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
 
         @media (max-width: 768px) {
             .sidebar { transform: translateX(100%); }
@@ -297,13 +316,18 @@
         </div>
         <div class="branch-status">
             <span class="status-dot"></span>
-            <span>أنت مغلق</span>
+            <span>المطعم يستقبل الطلبات</span>
         </div>
     </header>
 
     <!-- TAB: Menu Management (Talabat Style) -->
     <section id="tab-menu" class="content-tab active">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <!-- Top Action Bar -->
+        <div class="action-top-bar">
+            <div>
+                <h3 style="font-size:15px; font-weight:800;">أقسام المنيو والمنتجات</h3>
+                <p style="font-size:12px; color:var(--text-sub);">تحكم في إضافة وتعديل الأقسام والمنتجات وزر الإتاحة</p>
+            </div>
             <button class="btn-primary" onclick="openAddCatModal()">+ إضافة قسم جديد</button>
         </div>
 
@@ -313,7 +337,7 @@
     <!-- TAB: Dashboard -->
     <section id="tab-dashboard" class="content-tab">
         <div class="card-box">
-            <h3>📊 ملخص الأداء</h3>
+            <h3>📊 ملخص الأداء والإحصائيات</h3>
             <p>إجمالي المبيعات والطلبات الواردة يعرض هنا.</p>
         </div>
     </section>
@@ -345,42 +369,65 @@
     </section>
 </div>
 
-<!-- Modal: Add Category -->
+<!-- Modal: Add New Category -->
 <div id="addCatModal" class="modal">
     <div class="modal-content">
-        <h3>إضافة قسم جديد</h3>
-        <div class="form-group" style="margin:15px 0;">
-            <label>اسم القسم (مثال: الحواوشي، الطواجن...)</label>
+        <h3 style="margin-bottom:15px;">إضافة قسم جديد</h3>
+        <div class="form-group">
+            <label>اسم القسم (مثال: المشويات، الحلويات...)</label>
             <input type="text" id="newCatInput">
         </div>
-        <button class="btn-primary" onclick="addNewCategory()">إضافة</button>
-        <button class="btn-danger" onclick="closeModal('addCatModal')">إلغاء</button>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button class="btn-primary" style="flex-grow:1;" onclick="addNewCategory()">حفظ القسم</button>
+            <button class="btn-secondary" onclick="closeModal('addCatModal')">إلغاء</button>
+        </div>
     </div>
 </div>
 
-<!-- Modal: Add Item -->
-<div id="addItemModal" class="modal">
+<!-- Modal: Edit Category Title -->
+<div id="editCatModal" class="modal">
     <div class="modal-content">
-        <h3>إضافة وجبة جديدة</h3>
-        <input type="hidden" id="selectedCatIdx">
-        <div class="form-group" style="margin:10px 0;">
-            <label>اسم الوجبة</label>
+        <h3 style="margin-bottom:15px;">تعديل اسم القسم</h3>
+        <input type="hidden" id="editCatIdx">
+        <div class="form-group">
+            <label>اسم القسم الجديد</label>
+            <input type="text" id="editCatInput">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button class="btn-primary" style="flex-grow:1;" onclick="saveCatTitle()">تحديث الاسم</button>
+            <button class="btn-secondary" onclick="closeModal('editCatModal')">إلغاء</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add or Edit Product Item -->
+<div id="itemModal" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-bottom:15px;" id="itemModalTitle">إضافة/تعديل صنف</h3>
+        <input type="hidden" id="itemCatIdx">
+        <input type="hidden" id="itemIdx">
+        
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>اسم الوجبة/المنتج</label>
             <input type="text" id="itemNameInput">
         </div>
-        <div class="form-group" style="margin:10px 0;">
-            <label>الوصف (اختياري)</label>
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>وصف المنتج (مثال: حواوشي طازج ممزوج بالموتزريلا...)</label>
             <textarea id="itemDescInput" rows="2"></textarea>
         </div>
-        <div class="form-group" style="margin:10px 0;">
+        <div class="form-group" style="margin-bottom:10px;">
             <label>السعر (ج.م)</label>
-            <input type="number" id="itemPriceInput">
+            <input type="number" id="itemPriceInput" step="0.01">
         </div>
-        <div class="form-group" style="margin:10px 0;">
-            <label>رابط الصورة (URL)</label>
+        <div class="form-group" style="margin-bottom:10px;">
+            <label>رابط صورة المنتج (URL)</label>
             <input type="text" id="itemImgInput">
         </div>
-        <button class="btn-primary" onclick="addNewItem()">إضافة الصنف</button>
-        <button class="btn-danger" onclick="closeModal('addItemModal')">إلغاء</button>
+        
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button class="btn-primary" style="flex-grow:1;" onclick="saveItemData()">حفظ البيانات</button>
+            <button class="btn-secondary" onclick="closeModal('itemModal')">إلغاء</button>
+        </div>
     </div>
 </div>
 
@@ -436,32 +483,46 @@
         const container = document.getElementById("menuAccordionContainer");
         container.innerHTML = menu.map((cat, catIdx) => `
             <div class="cat-card">
-                <div class="cat-header" onclick="toggleAccordion(${catIdx})">
+                <div class="cat-header">
                     <div class="cat-title-box">
                         <span class="cat-title">${cat.category}</span>
                         <span class="count-badge">${cat.items.length}</span>
                     </div>
-                    <button class="edit-icon-btn" onclick="event.stopPropagation(); deleteCategory(${catIdx})">🗑️</button>
+                    <div class="cat-actions">
+                        <button class="icon-btn" title="تعديل اسم القسم" onclick="openEditCatModal(${catIdx})">✏️</button>
+                        <button class="icon-btn" title="حذف القسم بالكامل" onclick="deleteCategory(${catIdx})">🗑️</button>
+                    </div>
                 </div>
-                <div class="cat-body" id="cat-body-${catIdx}">
+                <div class="cat-body">
+                    <!-- زر إضافة منتج بداخل كل قسم -->
                     <button class="btn-add-item-dashed" onclick="openAddItemModal(${catIdx})">
-                        <span>＋</span> <span>إضافة</span>
+                        <span>＋</span> <span>إضافة منتج بهذا القسم</span>
                     </button>
+
                     <div class="items-list">
                         ${cat.items.map((item, itemIdx) => `
                             <div class="item-card">
                                 <div class="item-left">
-                                    <label class="switch">
-                                        <input type="checkbox" ${item.active !== false ? 'checked' : ''} onchange="toggleItemStatus(${catIdx},${itemIdx})">
-                                        <span class="slider"></span>
-                                    </label>
-                                    <img src="${item.img}" class="item-img" alt="${item.name}">
+                                    <!-- مفتاح الإتاحة والعدم إتاحة -->
+                                    <div class="switch-box">
+                                        <span class="switch-label ${item.active !== false ? 'active':'inactive'}">
+                                            ${item.active !== false ? 'متاح':'مغلق'}
+                                        </span>
+                                        <label class="switch">
+                                            <input type="checkbox" ${item.active !== false ? 'checked' : ''} onchange="toggleItemStatus(${catIdx},${itemIdx})">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <img src="${item.img \vert{}\vert{} 'https://via.placeholder.com/150'}" class="item-img" alt="${item.name}">
                                 </div>
                                 <div class="item-details">
                                     <div class="item-name">${item.name}</div>
-                                    <div class="item-desc">${item.desc || ''}</div>
+                                    <div class="item-desc">${item.desc || 'لا يوجد وصف'}</div>
                                     <div class="item-price">${item.price.toFixed(2)} ج.م</div>
-                                    <button class="btn-promo">إنشاء العرض الترويجي</button>
+                                    <div class="item-action-btns">
+                                        <button class="btn-sm-edit" onclick="openEditItemModal(${catIdx},${itemIdx})">✏️ تعديل</button>
+                                        <button class="btn-sm-delete" onclick="deleteItem(${catIdx},${itemIdx})">🗑️ حذف</button>
+                                    </div>
                                 </div>
                             </div>
                         `).join('')}
@@ -471,22 +532,19 @@
         `).join('');
     }
 
-    function toggleAccordion(idx) {
-        const el = document.getElementById(`cat-body-${idx}`);
-        el.style.display = el.style.display === "none" ? "block" : "none";
-    }
-
+    /* التحكم في الإتاحة */
     function toggleItemStatus(catIdx, itemIdx) {
-        menu[catIdx].items[itemIdx].active = !menu[catIdx].items[itemIdx].active;
+        menu[catIdx].items[itemIdx].active = !(menu[catIdx].items[itemIdx].active !== false);
         saveMenu();
     }
 
+    /* التحكم في الأقسام */
     function openAddCatModal() { document.getElementById("addCatModal").style.display = "block"; }
-    function openAddItemModal(catIdx) {
-        document.getElementById("selectedCatIdx").value = catIdx;
-        document.getElementById("addItemModal").style.display = "block";
+    function openEditCatModal(catIdx) {
+        document.getElementById("editCatIdx").value = catIdx;
+        document.getElementById("editCatInput").value = menu[catIdx].category;
+        document.getElementById("editCatModal").style.display = "block";
     }
-    function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
     function addNewCategory() {
         const name = document.getElementById("newCatInput").value.trim();
@@ -497,31 +555,82 @@
         document.getElementById("newCatInput").value = "";
     }
 
-    function addNewItem() {
-        const catIdx = document.getElementById("selectedCatIdx").value;
+    function saveCatTitle() {
+        const catIdx = document.getElementById("editCatIdx").value;
+        const newName = document.getElementById("editCatInput").value.trim();
+        if(!newName) return alert("يرجى كتابة اسم القسم!");
+        menu[catIdx].category = newName;
+        saveMenu();
+        closeModal("editCatModal");
+    }
+
+    function deleteCategory(catIdx) {
+        if(confirm(`هل أنت متأكد من حذف قسم "${menu[catIdx].category}" بجميع منتجاته؟`)) {
+            menu.splice(catIdx, 1);
+            saveMenu();
+        }
+    }
+
+    /* التحكم في المنتجات */
+    function openAddItemModal(catIdx) {
+        document.getElementById("itemModalTitle").innerText = `إضافة منتج جديد لـ (${menu[catIdx].category})`;
+        document.getElementById("itemCatIdx").value = catIdx;
+        document.getElementById("itemIdx").value = "-1";
+        
+        document.getElementById("itemNameInput").value = "";
+        document.getElementById("itemDescInput").value = "";
+        document.getElementById("itemPriceInput").value = "";
+        document.getElementById("itemImgInput").value = "";
+        document.getElementById("itemModal").style.display = "block";
+    }
+
+    function openEditItemModal(catIdx, itemIdx) {
+        const item = menu[catIdx].items[itemIdx];
+        document.getElementById("itemModalTitle").innerText = "تعديل بيانات المنتج";
+        document.getElementById("itemCatIdx").value = catIdx;
+        document.getElementById("itemIdx").value = itemIdx;
+
+        document.getElementById("itemNameInput").value = item.name;
+        document.getElementById("itemDescInput").value = item.desc || "";
+        document.getElementById("itemPriceInput").value = item.price;
+        document.getElementById("itemImgInput").value = item.img || "";
+        document.getElementById("itemModal").style.display = "block";
+    }
+
+    function saveItemData() {
+        const catIdx = document.getElementById("itemCatIdx").value;
+        const itemIdx = parseInt(document.getElementById("itemIdx").value);
+
         const name = document.getElementById("itemNameInput").value.trim();
         const desc = document.getElementById("itemDescInput").value.trim();
         const price = parseFloat(document.getElementById("itemPriceInput").value);
         const img = document.getElementById("itemImgInput").value.trim() || "https://via.placeholder.com/150";
 
-        if(!name || isNaN(price)) return alert("يرجى إدخال اسم الوجبة والسعر!");
+        if(!name || isNaN(price)) return alert("يرجى إدخال الاسم والسعر بشكل صحيح!");
 
-        menu[catIdx].items.push({ id: Date.now(), name, desc, price, img, active: true });
+        if (itemIdx === -1) {
+            // إضافة جديد
+            menu[catIdx].items.push({ id: Date.now(), name, desc, price, img, active: true });
+        } else {
+            // تعديل قائم
+            menu[catIdx].items[itemIdx].name = name;
+            menu[catIdx].items[itemIdx].desc = desc;
+            menu[catIdx].items[itemIdx].price = price;
+            menu[catIdx].items[itemIdx].img = img;
+        }
+
         saveMenu();
-        closeModal("addItemModal");
-
-        document.getElementById("itemNameInput").value = "";
-        document.getElementById("itemDescInput").value = "";
-        document.getElementById("itemPriceInput").value = "";
-        document.getElementById("itemImgInput").value = "";
+        closeModal("itemModal");
     }
 
-    function deleteCategory(catIdx) {
-        if(confirm("هل أنت متأكد من حذف هذا القسم بالكامل؟")) {
-            menu.splice(catIdx, 1);
+    function deleteItem(catIdx, itemIdx) {
+        if(confirm("هل تريد حذف هذا المنتج من القسم؟")) {
+            menu[catIdx].items.splice(itemIdx, 1);
             saveMenu();
         }
     }
+
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
     function saveMenu() {
         localStorage.setItem("pasta_menu", JSON.stringify(menu));
