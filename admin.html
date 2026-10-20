@@ -93,15 +93,21 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #e8f5e9;
-            color: #2e7d32;
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            transition: opacity 0.2s;
         }
+        .branch-status.open { background: #e8f5e9; color: #2e7d32; }
+        .branch-status.closed { background: #ffebee; color: #c62828; }
+        .branch-status:hover { opacity: 0.85; }
 
-        .status-dot { width: 8px; height: 8px; background: #2e7d32; border-radius: 50%; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .branch-status.open .status-dot { background: #2e7d32; }
+        .branch-status.closed .status-dot { background: #c62828; }
 
         /* Dashboard Overview Grid */
         .stats-grid {
@@ -231,9 +237,9 @@
             <button class="toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
             <h2 style="font-size:18px; font-weight:800;" id="pageTitle">لوحة المعلومات</h2>
         </div>
-        <div class="branch-status">
+        <div class="branch-status open" id="branchStatusBtn" onclick="toggleBranchStatus()" title="اضغط لتغيير حالة المطعم">
             <span class="status-dot"></span>
-            <span>المطعم مفتوح ويستقبل الطلبات</span>
+            <span id="branchStatusText">المطعم مفتوح ويستقبل الطلبات</span>
         </div>
     </header>
 
@@ -268,6 +274,7 @@
                             <th>الهاتف</th>
                             <th>طريقة الدفع</th>
                             <th>الإجمالي</th>
+                            <th>حالة الطلب</th>
                             <th>العنوان والتفاصيل</th>
                         </tr>
                     </thead>
@@ -368,6 +375,7 @@
                             <th>الهاتف</th>
                             <th>طريقة الدفع</th>
                             <th>الإجمالي</th>
+                            <th>حالة الطلب</th>
                             <th>الطلبات</th>
                         </tr>
                     </thead>
@@ -398,8 +406,11 @@
 
     let menu = JSON.parse(localStorage.getItem("pasta_menu")) || defaultMenu;
     let settings = JSON.parse(localStorage.getItem("pasta_settings")) || { deliveryFee: 50, freeThreshold: 250 };
+    let isRestaurantOpen = JSON.parse(localStorage.getItem("pasta_is_open")) !== false; // الافتراضي مفتوح
+    let lastOrdersCount = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]").length;
 
     function init() {
+        renderBranchStatusUI();
         renderDashboard();
         renderCategorySelect();
         renderMenuTable();
@@ -407,6 +418,54 @@
         
         document.getElementById("settingFeeInput").value = settings.deliveryFee;
         document.getElementById("settingThresholdInput").value = settings.freeThreshold;
+
+        // مراقبة الطلبات الجديدة كل 3 ثوانٍ لتشغيل التنبيه الصوتي
+        setInterval(checkForNewOrders, 3000);
+    }
+
+    function toggleBranchStatus() {
+        isRestaurantOpen = !isRestaurantOpen;
+        localStorage.setItem("pasta_is_open", JSON.stringify(isRestaurantOpen));
+        renderBranchStatusUI();
+    }
+
+    function renderBranchStatusUI() {
+        const btn = document.getElementById("branchStatusBtn");
+        const txt = document.getElementById("branchStatusText");
+        if(isRestaurantOpen) {
+            btn.className = "branch-status open";
+            txt.innerText = "المطعم مفتوح ويستقبل الطلبات";
+        } else {
+            btn.className = "branch-status closed";
+            txt.innerText = "المطعم مغلق حالياً";
+        }
+    }
+
+    function playNotificationSound() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // نوتة D5
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        } catch(e) {
+            console.log("Audio not supported or blocked");
+        }
+    }
+
+    function checkForNewOrders() {
+        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        if(orders.length > lastOrdersCount) {
+            playNotificationSound();
+            lastOrdersCount = orders.length;
+            renderDashboard();
+            renderOrdersTables();
+        }
     }
 
     function switchTab(e, tabId) {
@@ -508,17 +567,42 @@
         alert("✅ تم حفظ إعدادات التوصيل والحد الأدنى!");
     }
 
+    function updateOrderStatus(index, newStatus) {
+        let orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        // ترتيب العرض معاكس لذا نحسب المؤشر الحقيقي
+        let actualIndex = orders.length - 1 - index;
+        if(orders[actualIndex]) {
+            orders[actualIndex].status = newStatus;
+            localStorage.setItem("pasta_orders_history", JSON.stringify(orders));
+            renderOrdersTables();
+        }
+    }
+
     function renderOrdersTables() {
-        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]").reverse();
-        const rows = orders.map(o => `
-            <tr>
-                <td><b>${o.customer_name}</b></td>
-                <td>${o.phone}</td>
-                <td>${o.payment || 'كاش'}</td>
-                <td><b>${o.total ? o.total.toFixed(2) : '0.00'} ج.م</b></td>
-                <td><small>${o.items ? o.items.map(i=>i.name+' ('+i.qty+')').join(', ') : ''}</small></td>
-            </tr>
-        `).join('') || "<tr><td colspan='5' style='text-align:center;'>لا توجد طلبات سابقة</td></tr>";
+        const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        const reversedOrders = [...orders].reverse();
+        
+        const rows = reversedOrders.map((o, idx) => {
+            const currentStatus = o.status || "قيد المراجعة";
+            return `
+                <tr>
+                    <td><b>${o.customer_name}</b></td>
+                    <td>${o.phone}</td>
+                    <td>${o.payment || 'كاش'}</td>
+                    <td><b>${o.total ? o.total.toFixed(2) : '0.00'} ج.م</b></td>
+                    <td>
+                        <select onchange="updateOrderStatus(${idx}, this.value)" style="padding:4px; font-size:12px; font-weight:700;">
+                            <option value="قيد المراجعة" ${currentStatus==='قيد المراجعة'?'selected':''}>⏳ قيد المراجعة</option>
+                            <option value="قيد التحضير" ${currentStatus==='قيد التحضير'?'selected':''}>👨‍🍳 قيد التحضير</option>
+                            <option value="جاري التوصيل" ${currentStatus==='جاري التوصيل'?'selected':''}>🛵 جاري التوصيل</option>
+                            <option value="تم التسليم" ${currentStatus==='تم التسليم'?'selected':''}>✅ تم التسليم</option>
+                            <option value="ملغي" ${currentStatus==='ملغي'?'selected':''}>❌ ملغي</option>
+                        </select>
+                    </td>
+                    <td><small>${o.items ? o.items.map(i=>i.name+' ('+i.qty+')').join(', ') : ''} ${o.address ? ' | العنوان: '+o.address : ''}</small></td>
+                </tr>
+            `;
+        }).join('') || "<tr><td colspan='6' style='text-align:center;'>لا توجد طلبات سابقة</td></tr>";
 
         document.getElementById("dashOrdersTable").innerHTML = rows;
         document.getElementById("fullOrdersTable").innerHTML = rows;
@@ -527,6 +611,7 @@
     function clearOrdersHistory() {
         if(confirm("هل تريد مسح جميع الطلبات من السجل؟")) {
             localStorage.removeItem("pasta_orders_history");
+            lastOrdersCount = 0;
             renderOrdersTables();
             renderDashboard();
         }
