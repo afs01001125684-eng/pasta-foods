@@ -22,7 +22,6 @@
         .form-group input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; background: var(--light-bg); }
         .submit-btn { background: var(--talabat-main); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: 700; }
         
-        /* تنسيق زر وتنبيه الموقع المباشر */
         .location-btn {
             background: #25D366;
             color: white;
@@ -66,9 +65,9 @@
             <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للعميل">
             <input type="text" id="address" placeholder="عنوان التوصيل بالتفصيل">
             
-            <!-- زر مشاركة الموقع المباشر -->
+            <!-- زر مشاركة الموقع وحساب خدمة التوصيل -->
             <button type="button" class="location-btn" onclick="getGPSLocation()">
-                📍 مشاركة موقعي المباشر (Google Maps)
+                📍 مشاركة موقعي لحساب التوصيل تلقائياً
             </button>
             <div class="location-status" id="locationStatus"></div>
             <input type="hidden" id="custLocationMap" name="locationMap">
@@ -81,7 +80,13 @@
 <script>
     (function(){ emailjs.init("BV7OIpSk4gMWrTJCy"); })();
 
-    const deliveryFee = 50;
+    // إحداثيات المطعم المحدثة (بولاق الدكرور)
+    const RESTAURANT_LAT = 30.0264; 
+    const RESTAURANT_LNG = 31.1811; 
+
+    let deliveryFee = 50; // القيمة المبدئية لحين تحديد الموقع
+    let currentDistance = 0;
+
     const menuItems = [
         {"id": 1, "name": "ثلاثة سندويشات كبدة بالرده", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
         {"id": 2, "name": "3 ساندوتش استربس", "price": 180, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/93c5d7af-05d1-4ab1-8d55-b7b7a8a08eb9.jpg"},
@@ -164,22 +169,44 @@
         if (modal.style.display === "block") { modal.style.display = "none"; } 
         else {
             modal.style.display = "block";
-            const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
-            const total = subtotal + deliveryFee;
-            cartItemsList.innerHTML = cart.map((i, index) => `<p>• ${i.name} - ${i.price} ج.م <button onclick="removeFromCart(${index})" style="color:red; cursor:pointer; border:none; background:none;">(حذف)</button></p>`).join('') + 
-                                     `<hr style="margin:15px 0;"><p><strong>رسوم التوصيل: ${deliveryFee} ج.م</strong></p>` +
-                                     `<p style="font-size:1.3rem; font-weight:800; color:#FF5A00;">الإجمالي: ${total} ج.م</p>`;
+            renderCartModal();
         }
+    }
+
+    function renderCartModal() {
+        const cartItemsList = document.getElementById("cart-items-list");
+        const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+        const total = subtotal + deliveryFee;
+        
+        let distanceText = currentDistance > 0 ? `<p style="font-size:0.9rem; color:#666;">المسافة المحسوبة: ${currentDistance.toFixed(1)} كم</p>` : '';
+
+        cartItemsList.innerHTML = cart.map((i, index) => `<p>• ${i.name} - ${i.price} ج.م <button onclick="removeFromCart(${index})" style="color:red; cursor:pointer; border:none; background:none;">(حذف)</button></p>`).join('') + 
+                                 `<hr style="margin:15px 0;">` +
+                                 distanceText +
+                                 `<p><strong>خدمة التوصيل: ${deliveryFee} ج.م</strong></p>` +
+                                 `<p style="font-size:1.3rem; font-weight:800; color:#FF5A00;">الإجمالي: ${total} ج.م</p>`;
     }
 
     function removeFromCart(index) {
         cart.splice(index, 1);
         document.getElementById("count").innerText = cart.length;
         updateTotal();
-        toggleCart(); toggleCart();
+        renderCartModal();
     }
 
-    // دالة تحديد الموقع عبر الـ GPS
+    // معادلة حساب المسافة بالكيلومترات
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c; 
+    }
+
+    // دالة تحديد الموقع وحساب خدمة التوصيل
     function getGPSLocation() {
         const status = document.getElementById("locationStatus");
         const mapInput = document.getElementById("custLocationMap");
@@ -189,7 +216,7 @@
             return;
         }
 
-        status.innerText = "⏳ جاري تحديد موقعك...";
+        status.innerText = "⏳ جاري تحديد موقعك وحساب التوصيل...";
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -198,11 +225,26 @@
                 const googleLink = `https://www.google.com/maps?q=${lat},${lng}`;
                 
                 mapInput.value = googleLink;
-                status.innerHTML = "✅ تم تحديد موقعك بنجاح!";
+
+                // حساب المسافة بين المطعم وموقع العميل
+                currentDistance = calculateDistance(RESTAURANT_LAT, RESTAURANT_LNG, lat, lng);
+                
+                // حساب خدمة التوصيل: أول 5 كم بـ 50 ج، وكل كيلو زيادة بـ 6 ج
+                if (currentDistance <= 5) {
+                    deliveryFee = 50;
+                } else {
+                    const extraKm = currentDistance - 5;
+                    deliveryFee = 50 + Math.ceil(extraKm * 6);
+                }
+
+                status.innerHTML = `✅ تم تحديد الموقع! المسافة: ${currentDistance.toFixed(1)} كم | خدمة التوصيل: ${deliveryFee} ج.م`;
                 status.style.color = "green";
+
+                updateTotal();
+                renderCartModal();
             },
             (error) => {
-                status.innerText = "❌ تعذر تحديد الموقع. تأكد من فتح الـ GPS بهاتفك والسماح للمتصفح.";
+                status.innerText = "❌ تعذر تحديد الموقع. تأكد من تفعيل الـ GPS بالهاتف والموافقة على الصلاحية.";
                 status.style.color = "red";
             }
         );
@@ -218,7 +260,11 @@
         const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
         const total = subtotal + deliveryFee;
 
-        // تجهيز مصفوفة الطلبات للقالب
+        if(!name || !phone || !address) {
+            alert("من فضلك ادخل الاسم ورقم الهاتف والعنوان");
+            return;
+        }
+
         const orderItems = cart.map(item => ({
             name: item.name,
             price: item.price
@@ -231,20 +277,16 @@
             delivery_fee: deliveryFee,
             total_amount: total,
             customer_location: mapUrl || "لم يتم تحديد الموقع"
-        }).then(() => {
-            alert("تم إرسال الفاتورة بنجاح!");
-        }, (err) => {
-            // تجاهل خطأ البريد وعرض الواتساب مباشرة
-        });
+        }).then(() => {}, (err) => {});
 
         const orderDetailsText = cart.map(i => `${i.name} (${i.price} ج.م)`).join('\n');
         let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}`;
         
         if(mapUrl) {
-            whatsAppMsg += `\n📍 رابط الموقع (GPS): ${mapUrl}`;
+            whatsAppMsg += `\n📍 رابط الموقع (GPS): ${mapUrl}\n📏 المسافة: ${currentDistance.toFixed(1)} كم`;
         }
 
-        whatsAppMsg += `\n\n🛒 الطلبات:\n${orderDetailsText}\n\n🛵 رسوم التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total} ج.م`;
+        whatsAppMsg += `\n\n🛒 الطلبات:\n${orderDetailsText}\n\n🛵 خدمة التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي الكلي: ${total} ج.م`;
         
         window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
         setTimeout(() => { window.location.reload(); }, 1000);
