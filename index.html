@@ -131,7 +131,7 @@
         <div id="cartItemsList" style="margin: 20px 0;"></div>
         <div class="form-group">
             <input type="text" id="name" placeholder="اسم العميل">
-            <input type="tel" id="phone" placeholder="رقم الهاتف للتواصل">
+            <input type="tel" id="phone" placeholder="رقم الهاتف (مثال: 01012345678)" maxlength="11">
             <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للعميل">
             <input type="text" id="address" placeholder="عنوان التوصيل بالتفصيل">
             
@@ -154,8 +154,8 @@
     let deliveryFee = 50; 
     let currentDistance = 0;
     
-    // الهيكل الجديد للسلة كـ Map بدلالة اسم الصنف للتحكم بالكميات
-    let cart = {};
+    // استرجاع السلة المحفوظة مسبقاً من localStorage إن وجدت
+    let cart = JSON.parse(localStorage.getItem("pasta_cart")) || {};
 
     const fullOriginalCategories = [
         {
@@ -226,7 +226,6 @@
     ];
 
     function getMenuData() {
-        localStorage.setItem("pasta_menu_categories", JSON.stringify(fullOriginalCategories));
         return fullOriginalCategories;
     }
 
@@ -297,6 +296,10 @@
                 delete cart[name];
             }
         }
+        
+        // حفظ السلة المحدثة في localStorage
+        localStorage.setItem("pasta_cart", JSON.stringify(cart));
+
         renderPage();
         updateCartBar();
         if (document.getElementById("modal").style.display === "block") {
@@ -419,10 +422,10 @@
     }
 
     function processOrder() {
-        const name = document.getElementById("name").value;
-        const phone = document.getElementById("phone").value;
-        const address = document.getElementById("address").value;
-        const email = document.getElementById("customerEmail").value;
+        const name = document.getElementById("name").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const address = document.getElementById("address").value.trim();
+        const email = document.getElementById("customerEmail").value.trim();
         const mapUrl = document.getElementById("custLocationMap").value;
         
         let keys = Object.keys(cart);
@@ -431,22 +434,31 @@
             return;
         }
 
-        const subtotal = keys.reduce((sum, k) => sum + (cart[k].price * cart[k].qty), 0);
-        const total = subtotal + deliveryFee;
-
         if(!name || !phone || !address) {
-            alert("من فضلك ادخل الاسم ورقم الهاتف والعنوان");
+            alert("من فضلك أدخل الاسم، رقم الهاتف، وعنوان التوصيل بالتفصيل.");
             return;
         }
 
+        // التحقق من صحة رقم الهاتف المصري (يتكون من 11 رقماً ويبدأ بـ 01)
+        const phoneRegex = /^01[0125][0-9]{8}$/;
+        if (!phoneRegex.test(phone)) {
+            alert("رقم الهاتف غير صحيح! يرجى إدخال رقم هاتف محمول مصري صحيح يتكون من 11 رقماً (مثال: 01012345678).");
+            return;
+        }
+
+        const subtotal = keys.reduce((sum, k) => sum + (cart[k].price * cart[k].qty), 0);
+        const total = subtotal + deliveryFee;
+
         let cartListArray = keys.map(k => cart[k]);
 
+        // حفظ سجل الطلبات محلياً
         let ordersHistory = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
         ordersHistory.push({ customer_name: name, phone: phone, total: total, items: cartListArray });
         localStorage.setItem("pasta_orders_history", JSON.stringify(ordersHistory));
 
         const orderItems = cartListArray.map(item => ({ name: `${item.name} (عدد: ${item.qty})`, price: item.price * item.qty }));
         
+        // إرسال الإيميل عبر EmailJS
         emailjs.send('service_a1b2c3d', 'template_8yhqwxa', {
             customer_name: name,
             customer_email: email,
@@ -454,15 +466,22 @@
             delivery_fee: deliveryFee,
             total_amount: total,
             customer_location: mapUrl || "لم يتم تحديد الموقع"
-        }).then(() => {}, (err) => {});
+        }).then(() => {}, (err) => {
+            console.error("EmailJS Error:", err);
+        });
 
         let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n\n🛒 الطلبات:\n` + cartListArray.map(i=>`• ${i.name} × ${i.qty} (${(i.price * i.qty).toFixed(2)} ج.م)`).join('\n') + `\n\n🛵 خدمة التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total.toFixed(2)} ج.م`;
         
         window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
+        
+        // تفريغ السلة من التخزين المحلي بعد إتمام الطلب بنجاح
+        localStorage.removeItem("pasta_cart");
         setTimeout(() => { window.location.reload(); }, 1000);
     }
 
+    // تهيئة الصفحة وتشغيل السلة المحفوظة إن وجدت
     renderPage();
+    updateCartBar();
 </script>
 </body>
 </html>
