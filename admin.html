@@ -16,14 +16,9 @@
             --text-primary: #111827;
             --text-secondary: #6B7280;
             --border-color: #E5E7EB;
-            --success-bg: #ECFDF5;
-            --success-text: #059669;
-            --danger-bg: #FEF2F2;
-            --danger-text: #DC2626;
             --radius-lg: 16px;
             --radius-md: 10px;
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         body.dark-mode {
@@ -64,17 +59,15 @@
             width: 36px; height: 36px; border-radius: 50%;
             background: var(--bg-main); border: 1px solid var(--border-color);
             display: flex; align-items: center; justify-content: center;
-            font-size: 16px; cursor: pointer; color: var(--text-primary);
+            font-size: 16px; cursor: pointer; color: var(--text-primary); text-decoration: none;
         }
 
         .container { max-width: 800px; margin: 0 auto; padding: 16px; }
 
-        /* Tabs Visibility */
         .app-tab { display: none; }
         .app-tab.active { display: block; animation: fadeIn 0.2s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Stats Cards Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -91,7 +84,6 @@
         .stat-title { font-size: 12px; color: var(--text-secondary); font-weight: 700; margin-bottom: 6px; }
         .stat-value { font-size: 20px; font-weight: 900; color: var(--text-primary); }
 
-        /* Card Section Component */
         .card-box {
             background: var(--surface-card);
             border-radius: var(--radius-lg);
@@ -110,7 +102,6 @@
         }
         .card-box h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); }
 
-        /* Search & Toolbar */
         .menu-toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
         .search-box { flex-grow: 1; }
         .search-box input {
@@ -118,7 +109,6 @@
             border-radius: var(--radius-md); font-size: 13px; background: var(--surface-card); color: var(--text-primary);
         }
 
-        /* Category Card Accordion */
         .category-card {
             background: var(--surface-card);
             border-radius: var(--radius-lg);
@@ -162,7 +152,6 @@
         }
         .add-item-btn:hover { background: var(--talabat-orange-light); }
 
-        /* Items List */
         .item-row {
             padding: 14px 20px;
             border-bottom: 1px solid var(--border-color);
@@ -184,19 +173,9 @@
             border-color: var(--talabat-orange); background: var(--bg-main); outline: none;
         }
         .pencil-icon { font-size: 11px; color: var(--text-secondary); }
-        .item-desc { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; line-height: 1.4; }
-        .item-tag-badge {
-            font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px;
-            background: #FEF3C7; color: #D97706; display: inline-block; margin-bottom: 4px;
-        }
         .price-input {
             width: 80px; padding: 4px 6px; font-weight: 900; font-size: 13px;
             border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-main); color: var(--text-primary); text-align: center;
-        }
-        .promo-btn {
-            display: inline-block; margin-top: 6px; border: 1px solid var(--talabat-orange);
-            color: var(--talabat-orange); background: transparent; padding: 2px 8px;
-            border-radius: 20px; font-size: 10px; font-weight: 800; cursor: pointer;
         }
 
         /* iOS Toggle Switch */
@@ -213,12 +192,10 @@
         input:checked + .slider { background-color: var(--talabat-orange); }
         input:checked + .slider:before { transform: translateX(18px); }
 
-        /* Gallery Picker */
         .gallery-picker { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0; margin-top: 4px; }
         .gallery-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; cursor: pointer; border: 2px solid transparent; }
         .gallery-thumb:hover { border-color: var(--talabat-orange); }
 
-        /* Add Item Form */
         .add-form-container { padding: 14px 20px; background: var(--bg-main); border-bottom: 1px solid var(--border-color); }
         .form-group { margin-bottom: 8px; }
         .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--text-secondary); margin-bottom: 3px; }
@@ -227,13 +204,11 @@
             font-size: 12px; background: var(--surface-card); color: var(--text-primary);
         }
 
-        /* Orders Table & Cards */
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th { background: var(--bg-main); color: var(--text-secondary); padding: 10px; text-align: right; font-weight: 800; border-bottom: 1px solid var(--border-color); }
-        td { padding: 10px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        td { padding: 10px; border-bottom: 1px solid var(--border-color); vertical-align: middle; color: var(--text-primary); }
 
-        /* Bottom Nav Bar */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--surface-card); border-top: 1px solid var(--border-color);
@@ -246,7 +221,6 @@
         }
         .nav-item.active { color: var(--talabat-orange); }
 
-        /* Printable Area */
         @media print {
             body * { visibility: hidden; }
             #printableReceipt, #printableReceipt * { visibility: visible; }
@@ -256,24 +230,19 @@
 </head>
 <body>
 
-<!-- Top Branch Status Banner -->
 <div class="status-top-bar" id="statusBanner" onclick="toggleRestaurantStatus()">
     <span id="statusBannerText">أنت مغلق</span>
 </div>
 
-<!-- Main App Header -->
 <header class="app-header">
     <h2 style="font-size:18px; font-weight:900;" id="headerTitle">لوحة المعلومات</h2>
     <div class="app-header-icons">
         <div class="icon-btn" onclick="toggleDarkMode()" title="الوضع الداكن">🌙</div>
-        <div class="icon-btn" title="المتجر">🏪</div>
+        <a href="index.html" class="icon-btn" title="المتجر" target="_blank">🏪</a>
     </div>
 </header>
 
-<!-- CONTAINER TABS -->
 <main class="container">
-
-    <!-- TAB 1: DASHBOARD -->
     <section id="tab-dashboard" class="app-tab active">
         <div class="stats-grid">
             <div class="stat-card">
@@ -313,11 +282,10 @@
         </div>
     </section>
 
-    <!-- TAB 2: DIRECT ORDERS -->
     <section id="tab-orders" class="app-tab">
         <div class="card-box">
             <div class="card-header-flex">
-                <h3>🛍️ إدارة الطلبات المباشرة السجِل بالكامل</h3>
+                <h3>🛍️ إدارة الطلبات المباشرة السجل بالكامل</h3>
                 <button onclick="clearOrders()" style="background:#FEE2E2; color:#DC2626; border:none; padding:6px 12px; border-radius:6px; font-weight:800; cursor:pointer;">مسح السجل</button>
             </div>
             <div class="table-responsive">
@@ -337,7 +305,6 @@
         </div>
     </section>
 
-    <!-- TAB 3: ADVANCED MENU -->
     <section id="tab-menu" class="app-tab">
         <div class="menu-toolbar">
             <div class="search-box">
@@ -346,10 +313,8 @@
         </div>
         <div id="menuContainer"></div>
     </section>
-
 </main>
 
-<!-- Bottom Navigation Bar -->
 <nav class="bottom-nav">
     <div class="nav-item active" onclick="switchTab('dashboard', this)">
         <span style="font-size:18px;">📊</span>
@@ -369,30 +334,29 @@
     </div>
 </nav>
 
-<!-- Printable Receipt Hidden Container -->
 <div id="printableReceipt" style="display:none;"></div>
 
 <script>
     const presetImages = [
-        "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg",
+        "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg",
         "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/99f096e2-f829-4dfa-9990-27865dd5ac7b.jpg",
         "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg"
     ];
 
     const defaultMenu = [
         {
-            category: "الحواوشي",
+            category: "الوجبات (Meals) 🍗",
             collapsed: false,
             showAddForm: false,
             items: [
-                { id: 1, name: "حواوشي لحم بالموتزريلا", price: 145.00, tag: "🔥 الأكثر مبيعاً", desc: "حواوشي لحم طازج ممزوج بالموتزريلا...", img: presetImages[0], available: true },
-                { id: 2, name: "حواوشي لحم بقري مخصوص", price: 85.00, tag: "", desc: "حواوشي لحم اسبشيل مميزة محضرة...", img: presetImages[1], available: true }
+                { id: 1, name: "وجبة أرز وربع فرخة فرن", price: 185.00, tag: "", desc: "وجبة شهية من الأرز الأبيض", img: presetImages[0], available: true },
+                { id: 2, name: "مكرونة مع ربع فرخة فرن", price: 180.00, tag: "", desc: "مكرونة طازجة مع ربع دجاجة", img: presetImages[1], available: true }
             ]
         }
     ];
 
     let menu = JSON.parse(localStorage.getItem("pasta_advanced_menu_v2")) || defaultMenu;
-    let isRestaurantOpen = JSON.parse(localStorage.getItem("pasta_is_open")) || false;
+    let isRestaurantOpen = JSON.parse(localStorage.getItem("pasta_is_open")) ?? true;
     let salesChartInstance = null;
 
     function init() {
@@ -401,7 +365,7 @@
         renderOrdersTables();
         renderMenu();
         initChart();
-        setInterval(renderOrdersTables, 5000); // تحديث دوري للطلبات
+        setInterval(renderOrdersTables, 5000);
     }
 
     function switchTab(tabKey, element) {
@@ -441,11 +405,9 @@
         }
     }
 
-    // Dashboard Analytics & Charts
     function renderDashboard() {
         const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
         const totalSales = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-
         document.getElementById("dashSales").innerText = `${totalSales.toFixed(2)} ج.م`;
         document.getElementById("dashOrdersCount").innerText = orders.length;
     }
@@ -480,11 +442,9 @@
         }
     }
 
-    // Orders Management
     function renderOrdersTables() {
         const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]").reverse();
         let html = "";
-
         if(orders.length === 0) {
             html = "<tr><td colspan='5' style='text-align:center; padding:20px; color:#6B7280;'>لا توجد طلبات سابقة</td></tr>";
         } else {
@@ -509,7 +469,6 @@
                 `;
             });
         }
-
         document.getElementById("dashOrdersTable").innerHTML = html;
         document.getElementById("fullOrdersTable").innerHTML = html;
         renderDashboard();
@@ -536,7 +495,6 @@
         const orders = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
         const order = orders[index];
         if(!order) return;
-
         const html = `
             <div style="text-align:center; border-bottom:1px dashed #000; padding-bottom:6px; margin-bottom:6px;">
                 <h3 style="margin:0;">باستا فود 🍝</h3>
@@ -553,7 +511,6 @@
         container.style.display = "none";
     }
 
-    // Menu Management functions
     function toggleCategoryCollapse(catIdx) {
         menu[catIdx].collapsed = !menu[catIdx].collapsed;
         saveMenu();
@@ -585,14 +542,14 @@
     function updateItemName(catIdx, itemIdx, newName) {
         if(newName.trim()) {
             menu[catIdx].items[itemIdx].name = newName.trim();
-            localStorage.setItem("pasta_advanced_menu_v2", JSON.stringify(menu));
+            saveMenu();
         }
     }
 
     function updateCategoryName(catIdx, newCatName) {
         if(newCatName.trim()) {
             menu[catIdx].category = newCatName.trim();
-            localStorage.setItem("pasta_advanced_menu_v2", JSON.stringify(menu));
+            saveMenu();
         }
     }
 
@@ -600,7 +557,7 @@
         const price = parseFloat(newPrice);
         if(!isNaN(price) && price >= 0) {
             menu[catIdx].items[itemIdx].price = price;
-            localStorage.setItem("pasta_advanced_menu_v2", JSON.stringify(menu));
+            saveMenu();
         }
     }
 
@@ -628,7 +585,7 @@
         let html = "";
 
         menu.forEach((cat, catIdx) => {
-            const filtered = cat.items.filter(i => i.name.toLowerCase().includes(searchQuery) || i.desc.toLowerCase().includes(searchQuery));
+            const filtered = (cat.items || []).filter(i => i.name.toLowerCase().includes(searchQuery) || (i.desc && i.desc.toLowerCase().includes(searchQuery)));
             if(searchQuery && filtered.length === 0) return;
 
             html += `
@@ -667,16 +624,16 @@
                                 return `
                                     <div class="item-row">
                                         <label class="switch">
-                                            <input type="checkbox" ${item.available ? 'checked' : ''} onchange="toggleItemAvail(${catIdx}, ${realIdx})">
+                                            <input type="checkbox" ${item.available !== false ? 'checked' : ''} onchange="toggleItemAvail(${catIdx}, ${realIdx})">
                                             <span class="slider"></span>
                                         </label>
                                         <div class="item-details">
-                                            ${item.tag ? `<span class="item-tag-badge">${item.tag}</span>` : ''}
+                                            ${item.tag ? `<span style="font-size:10px; font-weight:800; padding:2px 8px; border-radius:10px; background:#FEF3C7; color:#D97706; display:inline-block; margin-bottom:4px;">${item.tag}</span>` : ''}
                                             <div class="editable-name-wrapper">
                                                 <input type="text" class="item-name-input" value="${item.name}" onchange="updateItemName(${catIdx}, ${realIdx}, this.value)">
                                                 <span class="pencil-icon">✏️</span>
                                             </div>
-                                            <div class="item-desc">${item.desc}</div>
+                                            <div style="font-size:11px; color:var(--text-secondary); margin-bottom:6px;">${item.desc || ''}</div>
                                             <div style="display:flex; align-items:center; gap:8px;">
                                                 <input type="number" class="price-input" value="${item.price}" onchange="updateItemPrice(${catIdx}, ${realIdx}, this.value)">
                                                 <span style="font-size:11px; font-weight:800;">ج.م</span>
