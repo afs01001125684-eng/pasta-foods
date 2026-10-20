@@ -64,7 +64,7 @@
         /* Modal styling */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; }
         .modal-content { background: white; width: 100%; max-width: 500px; margin: auto; height: 100vh; padding: 25px; overflow-y: auto; }
-        .form-group input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; background: var(--light-bg); }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; background: var(--light-bg); font-family: 'Cairo', sans-serif; }
         .submit-btn { background: var(--talabat-main); color: white; border: none; padding: 14px; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: 800; }
         
         /* عناصر الزيادة والنقصان داخل مودال السلة */
@@ -132,12 +132,16 @@
             <input type="text" id="name" placeholder="اسم العميل">
             <input type="tel" id="phone" placeholder="رقم الهاتف (مثال: 01012345678)" maxlength="11">
             <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للعميل">
-            <input type="text" id="address" placeholder="عنوان التوصيل بالتفصيل (شارع، رقم العمارة، الدور)">
             
             <!-- حالة تحديد الموقع التلقائي -->
-            <div id="locationStatus" style="font-size:13px; text-align:center; margin-bottom:10px; font-weight:700; color:#d84315;">📍 جاري تحديد موقعك تلقائياً...</div>
+            <div id="locationStatus" style="font-size:13px; text-align:center; margin-bottom:8px; font-weight:700; color:#d84315;">📍 جاري تحديد موقعك وعنوانك تلقائياً...</div>
             
-            <!-- حقل مخفي أو اختياري في حال أراد العميل تعديل اللوكيشن -->
+            <!-- حقل العنوان (يتم ملؤه تلقائياً وقابل للتعديل من قبل العميل) -->
+            <input type="text" id="address" placeholder="عنوان التوصيل (يتم كتابته تلقائياً أو يمكنك تعديله)">
+            
+            <!-- بند الملاحظات الفارغ -->
+            <textarea id="notes" placeholder="ملاحظات إضافية على الطلب (اختياري)..." rows="2"></textarea>
+            
             <input type="hidden" id="custLocationMap">
         </div>
         <button class="submit-btn" onclick="processOrder()">إتمام الطلب وإرسال الفاتورة</button>
@@ -341,7 +345,6 @@
         
         if (isOpening) {
             renderCartModal();
-            // تشغيل التقاط الموقع تلقائياً بمجرد فتح نافذة السلة
             autoGetGPSLocation();
         }
     }
@@ -393,10 +396,11 @@
         return (R * c) * 1.3; 
     }
 
-    // دالة التقاط الموقع تلقائياً في الخلفية
+    // دالة التقاط الموقع وجلب اسم العنوان تلقائياً وعرضه في حقل الإدخال
     function autoGetGPSLocation() {
         const status = document.getElementById("locationStatus");
         const mapInput = document.getElementById("custLocationMap");
+        const addressInput = document.getElementById("address");
 
         if (!navigator.geolocation) {
             status.innerText = "⚠️ متصفحك لا يدعم خاصية تحديد الموقع.";
@@ -404,7 +408,7 @@
             return;
         }
 
-        status.innerText = "⏳ جاري تحديد موقعك تلقائياً عبر الـ GPS...";
+        status.innerText = "⏳ جاري تحديد موقعك وعنوانك تلقائياً...";
         status.style.color = "#d84315";
 
         navigator.geolocation.getCurrentPosition(
@@ -415,13 +419,28 @@
                 currentDistance = calculateRoadDistance(RESTAURANT_LAT, RESTAURANT_LNG, lat, lng);
                 
                 deliveryFee = currentDistance <= 5 ? 50 : 50 + Math.ceil((currentDistance - 5) * 6);
-                status.innerHTML = `✅ تم تحديد موقعك بنجاح (المسافة: ${currentDistance.toFixed(1)} كم | التوصيل: ${deliveryFee} ج.م)`;
+                
+                // جلب اسم العنوان النصي من إحداثيات الـ GPS (Reverse Geocoding)
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.display_name) {
+                            addressInput.value = data.display_name;
+                        } else {
+                            addressInput.value = `إحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                        }
+                    })
+                    .catch(() => {
+                        addressInput.value = `إحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    });
+
+                status.innerHTML = `✅ تم جلب الموقع والعنوان بنجاح (التوصيل: ${deliveryFee} ج.م)`;
                 status.style.color = "green";
                 renderCartModal();
             },
             (error) => {
                 console.warn("Geolocation error:", error);
-                status.innerText = "⚠️ يرجى السماح للمتصفح بالوصول للموقع، أو كتابة عنوانك بالتفصيل.";
+                status.innerText = "⚠️ يرجى السماح للمتصفح بالوصول للموقع، أو كتابة عنوانك يدوياً.";
                 status.style.color = "#d84315";
             },
             { enableHighAccuracy: true, timeout: 10000 }
@@ -433,6 +452,7 @@
         const phone = document.getElementById("phone").value.trim();
         const address = document.getElementById("address").value.trim();
         const email = document.getElementById("customerEmail").value.trim();
+        const notes = document.getElementById("notes").value.trim();
         const mapUrl = document.getElementById("custLocationMap").value.trim();
         
         let keys = Object.keys(cart);
@@ -442,7 +462,7 @@
         }
 
         if(!name || !phone || !address) {
-            alert("من فضلك أدخل الاسم، رقم الهاتف، وعنوان التوصيل بالتفصيل.");
+            alert("من فضلك أدخل الاسم، رقم الهاتف، وعنوان التوصيل.");
             return;
         }
 
@@ -469,12 +489,13 @@
             orders: orderItems, 
             delivery_fee: deliveryFee,
             total_amount: total,
-            customer_location: mapUrl || "لم يتم تحديد الموقع"
+            customer_location: mapUrl || "لم يتم تحديد الموقع",
+            customer_notes: notes || "لا توجد ملاحظات"
         }).then(() => {}, (err) => {
             console.error("EmailJS Error:", err);
         });
 
-        let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان التفصيلي: ${address}\n🗺️ موقع الخريطة: ${mapUrl || 'لم يرسل رابط الخريطة'}\n\n🛒 الطلبات:\n` + cartListArray.map(i=>`• ${i.name} × ${i.qty} (${(i.price * i.qty).toFixed(2)} ج.م)`).join('\n') + `\n\n🛵 خدمة التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total.toFixed(2)} ج.م`;
+        let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان (قابل للتعديل): ${address}\n📝 ملاحظات: ${notes || 'لا توجد'}\n🗺️ رابط الخريطة: ${mapUrl || 'لم يرسل رابط الخريطة'}\n\n🛒 الطلبات:\n` + cartListArray.map(i=>`• ${i.name} × ${i.qty} (${(i.price * i.qty).toFixed(2)} ج.م)`).join('\n') + `\n\n🛵 خدمة التوصيل: ${deliveryFee} ج.م\n💰 الإجمالي: ${total.toFixed(2)} ج.م`;
         
         window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
         
