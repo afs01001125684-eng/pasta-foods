@@ -12,7 +12,6 @@
         .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         h1, h2 { text-align: center; margin-bottom: 20px; color: var(--talabat-main); }
         
-        /* تبيوبات التنقل */
         .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
         .tab-btn { background: #ddd; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
         .tab-btn.active { background: var(--talabat-main); color: #fff; }
@@ -22,7 +21,7 @@
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 700; font-size: 14px; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: var(--light-bg); }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: var(--light-bg); }
         
         .btn { background: var(--talabat-main); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; }
         .btn-danger { background: #e74c3c; }
@@ -31,107 +30,3 @@
         .item-card-admin { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; background: #fafafa; }
         .item-info-admin h4 { font-size: 16px; margin-bottom: 3px; }
         .item-info-admin p { font-size: 13px; color: #666; }
-        .action-btns { display: flex; gap: 5px; }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: #fff5ec; border: 1px solid #ffe3d1; padding: 15px; border-radius: 10px; text-align: center; }
-        .stat-card h3 { color: var(--talabat-main); font-size: 22px; margin-top: 5px; }
-
-        .back-link { display: block; text-align: center; margin-top: 25px; color: #666; text-decoration: none; font-weight: 600; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>مركز التحكم الرئيسي 🛠</h1>
-
-    <!-- أزرار التنقل بين الأقسام -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('menuTab', this)">إدارة الأصناف والأسعار</button>
-        <button class="tab-btn" onclick="switchTab('statsTab', this)">مستوى الطلبات والأكثر مبيعا</button>
-    </div>
-
-    <!-- قسم إدارة الأصناف -->
-    <div id="menuTab" class="section-box active">
-        <h2 id="formTitle">إضافة صنف جديد ➕</h2>
-        <input type="hidden" id="editIndex" value="-1">
-        
-        <div class="form-group">
-            <label>اسم الصنف:</label>
-            <input type="text" id="itemName" placeholder="مثال: مكرونة باللحم">
-        </div>
-        <div class="form-group">
-            <label>السعر الأساسي (ج.م):</label>
-            <input type="number" id="itemPrice" placeholder="مثال: 120">
-        </div>
-        <div class="form-group">
-            <label>سعر الخصم (اختياري - اتركه فارغاً إن لم يوجد خصم):</label>
-            <input type="number" id="itemDiscountPrice" placeholder="مثال: 99">
-        </div>
-        <div class="form-group">
-            <label>رابط الصورة (URL):</label>
-            <input type="text" id="itemImg" placeholder="رابط صورة الصنف">
-        </div>
-        
-        <button class="btn" id="saveBtn" onclick="saveItem()">حفظ الصنف 💾</button>
-        <button class="btn btn-danger" id="cancelBtn" onclick="resetForm()" style="display:none; margin-top:5px;">إلغاء التعديل ❌</button>
-
-        <hr style="margin: 25px 0;">
-
-        <h2>قائمة الأصناف الحالية</h2>
-        <div id="adminItemsList"></div>
-    </div>
-
-    <!-- قسم تقارير الطلبات والأكثر مبيعا -->
-    <div id="statsTab" class="section-box">
-        <h2>📊 تقارير ومستوى الطلبات</h2>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <p>إجمالي الطلبات المسجلة</p>
-                <h3 id="totalOrdersCount">0</h3>
-            </div>
-            <div class="stat-card">
-                <p>إجمالي المبيعات (ج.م)</p>
-                <h3 id="totalSalesAmount">0</h3>
-            </div>
-        </div>
-
-        <h3>🔥 الأصناف الأكثر مبيعا:</h3>
-        <div id="topSellingList" style="margin-top: 15px;">
-            <p style="color: #666; text-align: center;">لا توجد بيانات طلبات كافية حتى الآن.</p>
-        </div>
-    </div>
-
-    <a href="index.html" class="back-link">⬅ العودة إلى صفحة الموقع الرئيسية</a>
-</div>
-
-<script>
-    let defaultMenuItems = [
-        {"id": 1, "name": "وجبة أرز وربع فرخة فرن", "price": 185.00, "discountPrice": "", "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
-        {"id": 2, "name": "مكرونة مع ربع فرخة فرن", "price": 180.00, "discountPrice": "", "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"},
-        {"id": 3, "name": "أرز بالكبدة", "price": 85.00, "discountPrice": "", "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg"},
-        {"id": 4, "name": "وجبة أرز ولحم بالفرن مع البصل", "price": 300.00, "discountPrice": "", "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/1102296/product/3625125693/a0ff3dfa-fb27-42c4-918d-2466de908754.jpg"}
-    ];
-
-    function getItems() {
-        let saved = localStorage.getItem("pasta_menu_items");
-        return saved ? JSON.parse(saved) : defaultMenuItems;
-    }
-
-    function saveItems(items) {
-        localStorage.setItem("pasta_menu_items", JSON.stringify(items));
-    }
-
-    function switchTab(tabId, btn) {
-        document.querySelectorAll('.section-box').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        btn.classList.add('active');
-        if(tabId === 'statsTab') { loadStats(); }
-    }
-
-    function renderAdminList() {
-        let items = getItems();
-        let container = document.getElementById("adminItemsList");
-        container.innerHTML = items.map((item, index) => `
-            <div class
