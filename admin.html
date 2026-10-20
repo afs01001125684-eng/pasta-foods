@@ -3,233 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - إدارة القائمة والطلبات | Pasta Food Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>لوحة التحكم الاحترافية - باستا فود | Talabat Partner Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --talabat-orange: #FF5A00;
-            --talabat-bg: #f8f9fa;
-            --text-main: #1c1c1c;
-            --text-sub: #686b78;
-            --border-color: #e9ecef;
-            --card-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            --sidebar-width: 240px;
+            --talabat-orange-light: #FFF0E6;
+            --talabat-orange-hover: #E04F00;
+            --bg-main: #F4F6F8;
+            --surface-card: #FFFFFF;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --border-color: #E5E7EB;
+            --success-bg: #ECFDF5;
+            --success-text: #059669;
+            --danger-bg: #FEF2F2;
+            --danger-text: #DC2626;
+            --warning-bg: #FFFBEB;
+            --warning-text: #D97706;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
+            --sidebar-width: 260px;
         }
 
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background: var(--talabat-bg); color: var(--text-main); display: flex; min-height: 100vh; }
+        body { background: var(--bg-main); color: var(--text-primary); display: flex; min-height: 100vh; overflow-x: hidden; }
 
         /* Sidebar Navigation */
         .sidebar {
             width: var(--sidebar-width);
-            background: #fff;
+            background: var(--surface-card);
             border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             position: fixed;
             top: 0; bottom: 0; right: 0;
             z-index: 1000;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sidebar-header {
-            padding: 20px 15px;
+            padding: 24px 20px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .logo-tag {
             background: var(--talabat-orange);
             color: #fff;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 900;
             font-size: 14px;
+            letter-spacing: -0.5px;
+            box-shadow: 0 2px 8px rgba(255, 90, 0, 0.3);
         }
 
-        .sidebar-menu { list-style: none; padding: 15px 0; }
+        .brand-name { font-size: 16px; font-weight: 800; color: var(--text-primary); }
+
+        .sidebar-menu { list-style: none; padding: 20px 12px; flex-grow: 1; }
+        .sidebar-menu li { margin-bottom: 6px; }
         .sidebar-menu li a {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 20px;
-            color: var(--text-sub);
+            padding: 12px 16px;
+            color: var(--text-secondary);
             text-decoration: none;
             font-size: 14px;
             font-weight: 700;
-            border-right: 4px solid transparent;
-            transition: all 0.2s;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
         }
 
         .sidebar-menu li.active a, .sidebar-menu li a:hover {
             color: var(--talabat-orange);
-            background: #fff3ec;
-            border-right-color: var(--talabat-orange);
+            background: var(--talabat-orange-light);
         }
 
         /* Main Content Layout */
         .main-wrapper {
             margin-right: var(--sidebar-width);
             flex-grow: 1;
-            padding: 20px 25px;
+            padding: 24px 32px;
             width: calc(100% - var(--sidebar-width));
+            transition: all 0.3s ease;
         }
 
-        /* Top Bar Header */
+        /* Top Header Bar */
         .top-header {
-            background: #fff;
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: var(--card-shadow);
+            background: var(--surface-card);
+            padding: 16px 24px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 28px;
         }
+
+        .page-title { font-size: 20px; font-weight: 800; color: var(--text-primary); }
 
         .branch-status {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
-            border-radius: 20px;
+            gap: 10px;
+            padding: 8px 18px;
+            border-radius: 30px;
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
             user-select: none;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .branch-status.open { background: #e8f5e9; color: #2e7d32; }
-        .branch-status.closed { background: #ffebee; color: #c62828; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
-        .branch-status.open .status-dot { background: #2e7d32; }
-        .branch-status.closed .status-dot { background: #c62828; }
+        .branch-status:active { transform: scale(0.97); }
+        .branch-status.open { background: var(--success-bg); color: var(--success-text); border: 1px solid #A7F3D0; }
+        .branch-status.closed { background: var(--danger-bg); color: var(--danger-text); border: 1px solid #FECACA; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .branch-status.open .status-dot { background: var(--success-text); box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2); }
+        .branch-status.closed .status-dot { background: var(--danger-text); box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2); }
 
-        /* Stats Grid */
+        /* Stats Grid Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 18px;
+            margin-bottom: 28px;
         }
 
         .stat-card {
-            background: #fff;
-            padding: 18px;
-            border-radius: 12px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .stat-title { font-size: 12px; color: var(--text-sub); font-weight: 700; margin-bottom: 8px; }
-        .stat-value { font-size: 22px; font-weight: 800; color: var(--text-main); }
-
-        /* Section Cards & Tabs */
-        .content-tab { display: none; }
-        .content-tab.active { display: block; }
-
-        .card-box {
-            background: #fff;
-            border-radius: 12px;
+            background: var(--surface-card);
             padding: 20px;
-            box-shadow: var(--card-shadow);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
             border: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .stat-title { font-size: 13px; color: var(--text-secondary); font-weight: 700; margin-bottom: 8px; }
+        .stat-value { font-size: 24px; font-weight: 900; color: var(--text-primary); }
+
+        /* Card Section Component */
+        .card-box {
+            background: var(--surface-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
         }
 
-        .card-box h3 {
-            font-size: 16px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
-            color: var(--text-main);
+        }
+
+        .card-box h3 { font-size: 17px; font-weight: 800; color: var(--text-primary); }
+
+        /* Filter & Search Bar Area */
+        .menu-toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: var(--bg-main);
+            padding: 12px;
+            border-radius: var(--radius-md);
+        }
+
+        .search-box {
+            flex-grow: 1;
+            max-width: 320px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--surface-card);
+            outline: none;
+        }
+        .search-box input:focus { border-color: var(--talabat-orange); }
+
+        .category-pills { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+        .pill-btn {
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            background: var(--surface-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .pill-btn.active, .pill-btn:hover {
+            background: var(--talabat-orange);
+            color: #fff;
+            border-color: var(--talabat-orange);
         }
 
         /* Forms Styling */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 15px;
+            gap: 16px;
+            margin-bottom: 18px;
         }
 
-        .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 5px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 800; color: var(--text-secondary); margin-bottom: 6px; }
         input, select, textarea {
             width: 100%;
-            padding: 10px 12px;
+            padding: 11px 14px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-family: 'Cairo';
             font-size: 13px;
-            background: #fafafa;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            transition: border-color 0.2s;
         }
-        textarea { resize: vertical; height: 42px; }
+        input:focus, select:focus, textarea:focus { border-color: var(--talabat-orange); background: #fff; outline: none; }
 
-        .btn-primary {
-            background: var(--talabat-orange);
-            color: #fff;
-            border: none;
+        /* Buttons Component */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary { background: var(--talabat-orange); color: #fff; box-shadow: 0 2px 8px rgba(255, 90, 0, 0.25); }
+        .btn-primary:hover { background: var(--talabat-orange-hover); }
+        .btn-secondary { background: #E5E7EB; color: var(--text-primary); }
+        .btn-warning { background: #FEF3C7; color: var(--warning-text); }
+        .btn-warning:hover { background: #FDE68A; }
+        .btn-danger { background: var(--danger-bg); color: var(--danger-text); }
+        .btn-danger:hover { background: #FEE2E2; }
+
+        /* Tables Component */
+        .table-responsive { overflow-x: auto; border-radius: var(--radius-md); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #F9FAFB; color: var(--text-secondary); padding: 14px 16px; text-align: right; font-weight: 800; border-bottom: 1px solid var(--border-color); }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        .img-thumb { width: 54px; height: 54px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color); }
+        .item-title-cell { font-weight: 800; color: var(--text-primary); }
+        .desc-text { max-width: 240px; color: var(--text-secondary); font-size: 12px; line-height: 1.5; }
+
+        /* Badges Component */
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 800;
             cursor: pointer;
-            font-size: 13px;
-        }
-
-        .btn-warning {
-            background: #ffc107;
-            color: #000;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-left: 4px;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* Availability Badge */
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             user-select: none;
             transition: all 0.2s;
         }
-        .status-badge.available { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-        .status-badge.unavailable { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+        .status-badge.available { background: var(--success-bg); color: var(--success-text); border: 1px solid #A7F3D0; }
+        .status-badge.unavailable { background: var(--danger-bg); color: var(--danger-text); border: 1px solid #FECACA; }
 
-        /* Responsive Table */
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th { background: #f8f9fa; color: var(--text-sub); padding: 12px; text-align: right; border-bottom: 1px solid var(--border-color); }
-        td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        .img-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
-        .desc-text { max-width: 200px; color: var(--text-sub); font-size: 12px; line-height: 1.4; }
+        /* Tab Visibility Control */
+        .content-tab { display: none; }
+        .content-tab.active { display: block; animation: fadeIn 0.25s ease-in-out; }
 
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Modal Popup Component */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(17, 24, 39, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 520px;
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            animation: modalUp 0.2s ease-out;
+        }
+        @keyframes modalUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(100%); }
             .sidebar.open { transform: translateX(0); }
-            .main-wrapper { margin-right: 0; width: 100%; padding: 15px; }
+            .main-wrapper { margin-right: 0; width: 100%; padding: 16px; }
             .toggle-btn { display: block !important; }
         }
-        .toggle-btn { display: none; background: none; border: none; font-size: 22px; cursor: pointer; }
+        .toggle-btn { display: none; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-primary); }
     </style>
 </head>
 <body>
@@ -238,7 +336,7 @@
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <span class="logo-tag">talabat</span>
-        <strong style="font-size:14px;">باستا فود 🍝</strong>
+        <span class="brand-name">باستا فود 🍝</span>
     </div>
     <ul class="sidebar-menu">
         <li class="active"><a href="#" onclick="switchTab(event, 'tab-dashboard')">📊 لوحة المعلومات</a></li>
@@ -254,7 +352,7 @@
     <header class="top-header">
         <div style="display:flex; align-items:center; gap:12px;">
             <button class="toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-            <h2 style="font-size:18px; font-weight:800;" id="pageTitle">لوحة المعلومات</h2>
+            <h2 class="page-title" id="pageTitle">لوحة المعلومات</h2>
         </div>
         <div class="branch-status open" id="branchStatusBtn" onclick="toggleBranchStatus()">
             <span class="status-dot"></span>
@@ -284,7 +382,9 @@
         </div>
 
         <div class="card-box">
-            <h3>📈 أحدث الطلبات الواردة</h3>
+            <div class="card-header-flex">
+                <h3>📈 أحدث الطلبات الواردة</h3>
+            </div>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -303,23 +403,27 @@
         </div>
     </section>
 
-    <!-- TAB 2: Menu Management (إدارة المنيو، التعديل، والتوافر) -->
+    <!-- TAB 2: Menu Management -->
     <section id="tab-menu" class="content-tab">
-        <!-- Add New Category -->
+        <!-- Add New Category Form -->
         <div class="card-box">
-            <h3>📂 إضافة قسم جديد للقائمة</h3>
+            <div class="card-header-flex">
+                <h3>📂 إضافة قسم جديد للقائمة</h3>
+            </div>
             <div class="form-grid">
                 <div class="form-group">
                     <label>اسم القسم الجديد</label>
-                    <input type="text" id="newCatInput" placeholder="مثال: المشويات، المشروبات...">
+                    <input type="text" id="newCatInput" placeholder="مثال: طواجن، مشويات، مقبلات...">
                 </div>
             </div>
-            <button class="btn-primary" onclick="addNewCategory()">+ إضافة القسم</button>
+            <button class="btn btn-primary" onclick="addNewCategory()">+ إضافة القسم</button>
         </div>
 
-        <!-- Add New Product -->
+        <!-- Add New Product Form -->
         <div class="card-box">
-            <h3>🍲 إضافة وجبة جديدة للمنيو</h3>
+            <div class="card-header-flex">
+                <h3>🍲 إضافة وجبة جديدة للمنيو</h3>
+            </div>
             <div class="form-grid">
                 <div class="form-group">
                     <label>اختر القسم</label>
@@ -331,23 +435,33 @@
                 </div>
                 <div class="form-group">
                     <label>السعر (ج.م)</label>
-                    <input type="number" id="itemPriceInput" placeholder="السعر">
+                    <input type="number" id="itemPriceInput" placeholder="0.00">
                 </div>
                 <div class="form-group">
                     <label>وصف الوجبة / المكونات</label>
-                    <input type="text" id="itemDescInput" placeholder="مثال: مكرونة بالبشاميل مع قطع الدجاج والجبن">
+                    <input type="text" id="itemDescInput" placeholder="أدخل تفاصيل ومكونات الوجبة">
                 </div>
-                <div class="form-group" style="grid-column: span 2;">
+                <div class="form-group" style="grid-column: 1 / -1;">
                     <label>رابط الصورة (URL)</label>
                     <input type="text" id="itemImgInput" placeholder="https://example.com/image.jpg">
                 </div>
             </div>
-            <button class="btn-primary" onclick="addNewItem()">+ إضافة الوجبة للمنيو</button>
+            <button class="btn btn-primary" onclick="addNewItem()">+ إضافة الوجبة للمنيو</button>
         </div>
 
-        <!-- Menu Management Table -->
+        <!-- Menu Interactive Table & Toolbar -->
         <div class="card-box">
-            <h3>📋 تعديل وتوافر منتجات المنيو</h3>
+            <div class="card-header-flex">
+                <h3>📋 قائمة المنتجات والتوافر الفوري</h3>
+            </div>
+            
+            <div class="menu-toolbar">
+                <div class="search-box">
+                    <input type="text" id="menuSearchInput" oninput="filterMenuTable()" placeholder="🔍 ابحث بالاسم أو الوصف...">
+                </div>
+                <div class="category-pills" id="categoryPills"></div>
+            </div>
+
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -357,7 +471,7 @@
                             <th>الوصف</th>
                             <th>القسم</th>
                             <th>السعر</th>
-                            <th>التوافر (متاح/غير متاح)</th>
+                            <th>التوافر الفوري</th>
                             <th>خيارات التعديل</th>
                         </tr>
                     </thead>
@@ -370,7 +484,9 @@
     <!-- TAB 3: Delivery Settings -->
     <section id="tab-settings" class="content-tab">
         <div class="card-box">
-            <h3>⚙️ إعدادات التوصيل والحد الأدنى</h3>
+            <div class="card-header-flex">
+                <h3>⚙️ إعدادات التوصيل والحد الأدنى</h3>
+            </div>
             <div class="form-grid">
                 <div class="form-group">
                     <label>رسوم التوصيل الأساسية (ج.م)</label>
@@ -381,16 +497,16 @@
                     <input type="number" id="settingThresholdInput">
                 </div>
             </div>
-            <button class="btn-primary" onclick="saveSettings()">حفظ التعديلات</button>
+            <button class="btn btn-primary" onclick="saveSettings()">حفظ التعديلات</button>
         </div>
     </section>
 
     <!-- TAB 4: Orders History -->
     <section id="tab-orders" class="content-tab">
         <div class="card-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="margin:0; border:none;">🛍️ جميع الطلبات المسجلة</h3>
-                <button class="btn-danger" onclick="clearOrdersHistory()">مسح السجل</button>
+            <div class="card-header-flex">
+                <h3>🛍️ سجل جميع الطلبات</h3>
+                <button class="btn btn-danger" onclick="clearOrdersHistory()">مسح السجل</button>
             </div>
             <div class="table-responsive">
                 <table>
@@ -401,7 +517,7 @@
                             <th>طريقة الدفع</th>
                             <th>الإجمالي</th>
                             <th>حالة الطلب</th>
-                            <th>الطلبات والتفاصيل</th>
+                            <th>التفاصيل والعنوان</th>
                         </tr>
                     </thead>
                     <tbody id="fullOrdersTable"></tbody>
@@ -411,33 +527,118 @@
     </section>
 </div>
 
+<!-- Modal Dialog for Item Editing -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-card">
+        <h3 style="margin-bottom:18px; font-weight:800; font-size:16px;">✏️ تعديل بيانات الوجبة</h3>
+        <input type="hidden" id="editCatIdx">
+        <input type="hidden" id="editItemIdx">
+        
+        <div class="form-group" style="margin-bottom:12px;">
+            <label>اسم الوجبة</label>
+            <input type="text" id="editName">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+            <label>السعر (ج.م)</label>
+            <input type="number" id="editPrice">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+            <label>وصف الوجبة / المكونات</label>
+            <textarea id="editDesc" rows="3"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:20px;">
+            <label>رابط الصورة (URL)</label>
+            <input type="text" id="editImg">
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button class="btn btn-secondary" onclick="closeEditModal()">إلغاء</button>
+            <button class="btn btn-primary" onclick="saveItemEdit()">حفظ التعديلات 💾</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // قائمة المنيو الافتراضية مع دعم الوصف والإتاحة
-    const defaultMenu = [
+    // المنيو كاملاً من الملف
+    const excelMenu = [
         {
-            category: "الوجبات (Meals) 🍗",
+            category: "Meals",
             items: [
-                {id: 1, name: "وجبة أرز وربع فرخة فرن", price: 185.00, desc: "أرز بسمتي أصفر مع ربع فرخة مشوية بالفرن وسلطة", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg", available: true},
-                {id: 2, name: "مكرونة مع ربع فرخة فرن", price: 180.00, desc: "مكرونة بنة بصلصة الطماطم الحمراء مع ربع فرخة فرن", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg", available: true}
+                {id: 3236263188, name: "وجبة أرز وربع فرخة فرن", price: 185.00, desc: "وجبة شهية من الأرز الأبيض الفاخر مع ربع فرخة مشوية في الفرن بطريقة تقليدية وتقدم مع صوص فريد لذيذ يضيف نكهة مميزة للوجبة", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg", available: true},
+                {id: 3236297728, name: "مكرونة مع ربع فرخة فرن", price: 180.00, desc: "مكرونة طازجة مع ربع دجاجة مشوية في الفرن بنكهة البهارات الأصيلة تُقدم ساخنة وشهية", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg", available: true},
+                {id: 3237037525, name: "أرز بالكبدة", price: 85.00, desc: "أرز مصري شهي مطهو بالكبدة الطازجة مع البصل والثوم والتوابل العطرية يقدم ساخناً مع صلصة الطماطم اللذيذة وخضروات مشكلة", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg", available: true},
+                {id: 3625125693, name: "وجبة أرز ولحم بالفرن مع البصل", price: 300.00, desc: "وجبة شهية تجمع بين لحم البقر المسلوق الطري والبطاطس المطبوخة الناعمة والأرز بالشعرية الذهبية لتقدم لك تجربة طعم لا تنسى", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3625125693/a0ff3dfa-fb27-42c4-918d-2466de908754.jpg", available: true}
             ]
         },
         {
-            category: "المكرونة (Pasta) 🍝",
+            category: "Tagines and Stews",
             items: [
-                {id: 22, name: "إسباجيتي بالطماطم", price: 45.00, desc: "مكرونة إسباجيتي مع صلصة الطماطم الإيطالية والأعشاب", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg", available: true}
+                {id: 3625088841, name: "طاجن لحم بالبطاطس والبصل", price: 295.00, desc: "طاجن لحم مطهو ببطء حتى يصبح طرياً مع البطاطس الذهبية والبصل الحلو حتى تمتزج النكهات بشكل رائع يقدم ساخناً مع الخبز والطحينة والمخلل", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c96d49e1-6184-4140-8252-ac2207708705.jpg", available: true},
+                {id: 3625088842, name: "طاجن اللحم بالبصل", price: 270.56, desc: "طاجن لحم بلدى طازج شهي مطهو ببطء مع البصل الذهبي والتوابل العطرية حتى يصبح اللحم طريا وغنيا بالنكهة يُقدم ساخنا مع الخبز", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/a32473f6-69d1-46f4-a0a4-d1862d75af0e.jpg", available: true},
+                {id: 3625088843, name: "ملوخية ساده", price: 79.45, desc: "ملوخية طازجة مطهية ببطء في طاجن فخاري تقليدي مع الثوم والكمون لتحصلوا على طعم أصيل وقوام ناعم لذيذ يُقدم ساخناً مع الأرز الأبيض", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3b4b046a-8f37-454b-b1a5-172abc2aa0fc.jpg", available: true},
+                {id: 3625088844, name: "طاجن بشاميل باللحم المفروم", price: 82.75, desc: "طاجن شهي محضر بطبقات من اللحم المفروم الطازج مع صلصة البشاميل الكريمية الغنية والجبن المذاب فوقها يُطهى ببطء في الفخار حتى يصبح ذهبي اللون وشهي الطعم", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/fbd5481a-43e3-4b7b-b78f-b268851dd7d3.jpg", available: true},
+                {id: 3625088845, name: "شوربه لسان عصفور", price: 27.43, desc: "شوربة لسان عصفور شهية محضرة بمرق الدجاج الغني مع معكرونة لسان عصفور الناعمة وخضروات طازجة وبهارات عطرية تقدم ساخنة في طاجن فخاري تقليدي", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c3b2879a-e624-4a00-8f2e-c4ed404ad69d.jpg", available: true},
+                {id: 3625088846, name: "طبق رز بالشعرية لفرد واحد", price: 40.00, desc: "طبق رز بالشعرية الذهبية المحمصة بعناية مع أرز مصري فاخر مطهي على نار هادئة في طاجن فخاري تقليدي يحافظ على النكهة الأصيلة والرائحة العطرة", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/83cc602a-1ec0-4b71-b532-5205e8fc2b7d.jpg", available: true}
+            ]
+        },
+        {
+            category: "Special Offers",
+            items: [
+                {id: 3215656768, name: "3 سندوتشات كبدة طازجة", price: 73.50, desc: "ثلاثة سندوتشات لذيذة محشوة بالكبدة الطازج، مشوية بالطريقة التقليدية مع البصل والفلفل والتوابل الشرقية الأصيلة، تقدم في خبز ساخن.", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3215656768/5f3eb9a3-342b-4fc9-8a93-84cadc0e5496.jpg", available: true},
+                {id: 3215656789, name: "3 ساندوتش سجق مدخن", price: 73.60, desc: "ثلاثة ساندوتشات سجق شهية محضرة من أجود أنواع السجق المشوي مع الخضروات الطازجة والصلصات اللذيذة", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3215656789/6427d46f-7411-4a4f-a278-c5d05516410e.jpg", available: true},
+                {id: 3249145872, name: "3سندوتشات كفته", price: 75.00, desc: "ثلاث سندوتشات كفتة شهية محضرة من لحم مفروم طازج مع البهارات الأصيلة والخضروات المختارة بعناية مقدمة كعرض خاص بسعر مميز.", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/99d3e0f9-3317-4cec-a34b-b4553f1afad7.jpg", available: true},
+                {id: 3675841047, name: "3 ساندوتش سجق", price: 72.62, desc: "ثلاثة ساندوتشات شهية محضرة من السجق الطازج المشوي مع الخضروات الطازجة والصلصات اللذيذة", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/cde5a568-b749-4dc2-8274-50809a763770.jpg", available: true}
+            ]
+        },
+        {
+            category: "Sandwiches",
+            items: [
+                {id: 3177290167, name: "ساندوتش كبده فينو", price: 27.22, desc: "ساندوتش كبد لذيذ محضر من كبد طازج عالي الجودة، مطبوخ مع البصل والتوابل اللذيذة، ويقدم في خبز طري مع خضروات طازجة وصلصات شهية.", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg", available: true},
+                {id: 3177324841, name: "سندوتش سجق فينو", price: 27.23, desc: "ساندويتش سجق لذيذ محضر من أجود أنواع السجق الشرقي الطازج والبصل والفلفل والطماطم، تقدم في خبز طازج ومقرمش.", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/3177324841/6a56f610-33a9-46fa-bb68-2626d46a5f08.jpg", available: true},
+                {id: 3214580882, name: "سندوتش كفتة فينو", price: 25.00, desc: "سندوتش كفتة فينو شهي محضر من لحم مفروم طازج مع البهارات الشرقية الأصيلة يُقدم في خبز طري مع الخضروات الطازجة والصلصات اللذيذة", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/db3efc42-884d-4fe9-928a-fe4c8152d7eb.jpg", available: true},
+                {id: 3347055097, name: "مشروب السلطة الحارة ( ويسكى حلال )", price: 15.00, desc: "مشروب منعش يجمع بين نكهات السلطة الحارة مع التوابل الشرقية الأصيلة يقدم بارداً لتجربة فريدة وشهية", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/3c931050-3665-466b-85a6-7d6be0ad9540.jpg", available: true},
+                {id: 3675841046, name: "هوت دوج مدخن بحلقات", price: 24.33, desc: "هوت دوج مدخن شهي محضر من أفضل اللحوم المختارة بعناية مع نكهة دخان غنية وعميقة يُقدم في خبز طري محمص مع صلصات لذيذة وخضروات طازجة", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/dd9103fc-9254-4371-898b-a10bde6d0b5f.jpg", available: true}
+            ]
+        },
+        {
+            category: "Hawawshi",
+            items: [
+                {id: 2725716785, name: "حواوشي لحم بالموتزريلا", price: 145.00, desc: "حواوشي لحم طازج ممزوج بالموتزريلا الذائبة محضرة بعناية فائقة وتُقدَّم ساخنة مع الخضروات الطازجة والصلصات اللذيذة", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg", available: true},
+                {id: 2725716786, name: "حواوشي لحم بقري مخصوص", price: 85.00, desc: "حواوشي لحم اسبشيل مميزة محضرة بأجود قطع اللحم الطازج مع البهارات الشرقية الأصيلة وتُقدَّم ساخنة في خبز محمص مقرمش", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/99f096e2-f829-4dfa-9990-27865dd5ac7b.jpg", available: true}
+            ]
+        },
+        {
+            category: "Pasta",
+            items: [
+                {id: 2725498831, name: "إسباجيتي بالطماطم", price: 45.00, desc: "إسباجيتي طازجة مطهية بعناية مع صلصة طماطم غنية وعطرية مضافاً إليها الثوم والبصل والأعشاب العطرية تقدم ساخنة مع جبن بارميزان مبشور", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg", available: true},
+                {id: 2725498835, name: "مكرونة بينا بالصلصة الحمراء", price: 50.00, desc: "مكرونة بنية لذيذة مع صلصة حمراء غنية بنكهة توابل خفيفة ومميزة. طبق منزلي بلمسة شرقية دافئة ولذيذة تُرضي جميع الأذواق.", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg", available: true},
+                {id: 2718235410, name: "مكرونة بينا بالكبدة والصلصة الحمراء", price: 95.00, desc: "مكرونة بينا شهية محضرة مع شرائح كبدة طازجة مطهوة بعناية مع بصل وفلفل وصلصة حمراء غنية وطعم قوي ومميز لعشاق النكهات الأصيلة.", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235410/41677633-ab95-4bf4-be82-0920206f0892.jpg", available: true},
+                {id: 2725505867, name: "مكرونة بينا بالسجق والصلصة الحمراء", price: 95.00, desc: "مكرونة بنية مع سجق بلدي متبل مطبوخ مع الخضار وصلصة حمراء لذيذة، مما يمنحها نكهة حارة محبوبة ورائحة شرقية أصيلة.", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg", available: true},
+                {id: 2718235412, name: "معكرونة بينا مع الفراخ والصلصة الحمراء", price: 95.00, desc: "معكرونة بيني شهية مع قطع دجاج طرية مطهية في صلصة حمراء خفيفة غنية بالنكهات الطبيعية طعم متوازن يجمع بين البساطة والغنى", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235412/a356eea9-d7ad-4fbe-9dc3-69a08a75290e.jpg", available: true}
+            ]
+        },
+        {
+            category: "Drinks",
+            items: [
+                {id: 55261001, name: "كوكاكولا", price: 20.00, desc: "مشروب كوكاكولا الغازي المنعش بطعمه المميز والمحبوب عالميا، يقدم باردا مع الثلج ليمنحك انتعاشا فوريا في أي وقت من اليوم", img: "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg", available: true},
+                {id: 55261002, name: "بيبسي", price: 20.00, desc: "مشروب غازي منعش بنكهة الكولا الأصلية، يقدم بارداً مع الثلج ليمنحك إنتعاشاً مثالياً في أي وقت", img: "https://talabat.dhmedia.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg", available: true},
+                {id: 55261003, name: "مياه معدنية صغيرة", price: 12.00, desc: "مياه معدنية نقية وصحية مستخرجة من ينابيع طبيعية غنية بالمعادن الأساسية تروي عطشك وتنعش جسدك", img: "https://talabat.dhmedia.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg", available: true},
+                {id: 55261004, name: "مشروب ماء السلطة الحارة", price: 15.00, desc: "مشروب منعش محضر من ماء السلطة الحارة بنكهة طازجة وحارة تضيف لذة مميزة للفم", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/552610fa-4cf7-46ac-a34e-0854551a022b.jpg", available: true}
             ]
         }
     ];
 
-    let menu = JSON.parse(localStorage.getItem("pasta_menu")) || defaultMenu;
+    let menu = JSON.parse(localStorage.getItem("pasta_menu")) || excelMenu;
     let settings = JSON.parse(localStorage.getItem("pasta_settings")) || { deliveryFee: 50, freeThreshold: 250 };
     let isRestaurantOpen = JSON.parse(localStorage.getItem("pasta_is_open")) !== false;
     let lastOrdersCount = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]").length;
+    let activeCategoryFilter = "ALL";
 
     function init() {
         renderBranchStatusUI();
         renderDashboard();
         renderCategorySelect();
+        renderCategoryPills();
         renderMenuTable();
         renderOrdersTables();
         
@@ -499,7 +700,7 @@
         document.getElementById(tabId).classList.add('active');
 
         const titles = {
-            'tab-dashboard': 'لوحة المعلومات',
+            'tab-dashboard': 'لوحة المعلومات والتحليلات',
             'tab-menu': 'إدارة القائمة والتوافر',
             'tab-settings': 'إعدادات التوصيل',
             'tab-orders': 'الطلبات المباشرة'
@@ -521,6 +722,21 @@
     function renderCategorySelect() {
         const select = document.getElementById("itemCatSelect");
         select.innerHTML = menu.map((cat, i) => `<option value="${i}">${cat.category}</option>`).join('');
+    }
+
+    function renderCategoryPills() {
+        const container = document.getElementById("categoryPills");
+        let html = `<button class="pill-btn ${activeCategoryFilter==='ALL'?'active':''}" onclick="setCategoryFilter('ALL')">الكل</button>`;
+        menu.forEach((cat, idx) => {
+            html += `<button class="pill-btn ${activeCategoryFilter===cat.category?'active':''}" onclick="setCategoryFilter('${cat.category}')">${cat.category}</button>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function setCategoryFilter(catName) {
+        activeCategoryFilter = catName;
+        renderCategoryPills();
+        renderMenuTable();
     }
 
     function addNewCategory() {
@@ -551,39 +767,48 @@
         alert("✅ تمت إضافة الوجبة للمنيو!");
     }
 
-    // التبديل السريع بين (متاح / غير متاح)
+    // التبديل السريع للإتاحة
     function toggleItemAvailability(catIdx, itemIdx) {
         let current = menu[catIdx].items[itemIdx].available !== false;
         menu[catIdx].items[itemIdx].available = !current;
         saveMenu();
     }
 
-    // تعديل كامل بيانات الوجبة (اسم - سعر - وصف - صورة)
-    function editItem(catIdx, itemIdx) {
+    // فتح النافذة المنبثقة للتعديل
+    function openEditModal(catIdx, itemIdx) {
         const item = menu[catIdx].items[itemIdx];
-        
-        const newName = prompt("تعديل اسم الوجبة:", item.name);
-        if (newName === null) return;
+        document.getElementById("editCatIdx").value = catIdx;
+        document.getElementById("editItemIdx").value = itemIdx;
+        document.getElementById("editName").value = item.name;
+        document.getElementById("editPrice").value = item.price;
+        document.getElementById("editDesc").value = item.desc || "";
+        document.getElementById("editImg").value = item.img || "";
 
-        const newDesc = prompt("تعديل وصف الوجبة / المكونات:", item.desc || "");
-        if (newDesc === null) return;
+        document.getElementById("editModal").classList.add("active");
+    }
 
-        const newPrice = prompt("تعديل السعر (ج.م):", item.price);
-        if (newPrice === null) return;
+    function closeEditModal() {
+        document.getElementById("editModal").classList.remove("active");
+    }
 
-        const newImg = prompt("تعديل رابط الصورة (URL):", item.img);
-        if (newImg === null) return;
+    function saveItemEdit() {
+        const catIdx = document.getElementById("editCatIdx").value;
+        const itemIdx = document.getElementById("editItemIdx").value;
+        const newName = document.getElementById("editName").value.trim();
+        const newPrice = parseFloat(document.getElementById("editPrice").value);
+        const newDesc = document.getElementById("editDesc").value.trim();
+        const newImg = document.getElementById("editImg").value.trim();
 
-        if (newName.trim() !== "" && !isNaN(parseFloat(newPrice))) {
-            item.name = newName.trim();
-            item.desc = newDesc.trim() || "لا يوجد وصف";
-            item.price = parseFloat(newPrice);
-            item.img = newImg.trim() || item.img;
-            saveMenu();
-            alert("✅ تم تعديل الوجبة بنجاح!");
-        } else {
-            alert("⚠️ البيانات المدخلة غير صالحة!");
-        }
+        if(!newName || isNaN(newPrice)) return alert("يرجى التأكد من ادخال الاسم والسعر بشكل صحيح!");
+
+        menu[catIdx].items[itemIdx].name = newName;
+        menu[catIdx].items[itemIdx].price = newPrice;
+        menu[catIdx].items[itemIdx].desc = newDesc || "لا يوجد وصف";
+        menu[catIdx].items[itemIdx].img = newImg || menu[catIdx].items[itemIdx].img;
+
+        saveMenu();
+        closeEditModal();
+        alert("✅ تم حفظ التعديلات بنجاح!");
     }
 
     function deleteItem(catIdx, itemIdx) {
@@ -593,41 +818,54 @@
         }
     }
 
+    function filterMenuTable() {
+        renderMenuTable();
+    }
+
     function saveMenu() {
         localStorage.setItem("pasta_menu", JSON.stringify(menu));
         renderCategorySelect();
+        renderCategoryPills();
         renderMenuTable();
     }
 
     function renderMenuTable() {
         const tbody = document.getElementById("adminMenuTable");
+        const searchQuery = (document.getElementById("menuSearchInput")?.value || "").toLowerCase().trim();
         let html = "";
+
         menu.forEach((cat, catIdx) => {
+            if(activeCategoryFilter !== "ALL" && cat.category !== activeCategoryFilter) return;
+
             cat.items.forEach((item, itemIdx) => {
+                const matchSearch = item.name.toLowerCase().includes(searchQuery) || (item.desc || "").toLowerCase().includes(searchQuery);
+                if(!matchSearch) return;
+
                 const isAvail = item.available !== false;
                 html += `
                     <tr>
-                        <td><img src="${item.img}" class="img-thumb"></td>
-                        <td><b>${item.name}</b></td>
+                        <td><img src="${item.img}" class="img-thumb" alt="${item.name}"></td>
+                        <td class="item-title-cell">${item.name}</td>
                         <td class="desc-text">${item.desc || 'لا يوجد وصف'}</td>
-                        <td>${cat.category}</td>
+                        <td><span style="background:#F3F4F6; padding:4px 8px; border-radius:6px; font-weight:700;">${cat.category}</span></td>
                         <td><b>${item.price.toFixed(2)} ج.م</b></td>
                         <td>
                             <span class="status-badge ${isAvail ? 'available' : 'unavailable'}" 
                                   onclick="toggleItemAvailability(${catIdx}, ${itemIdx})" 
-                                  title="اضغط لتغيير الحالة فوراً">
+                                  title="اضغط للتبديل الفوري">
                                 ${isAvail ? '🟢 متاح' : '🔴 غير متاح'}
                             </span>
                         </td>
                         <td>
-                            <button class="btn-warning" onclick="editItem(${catIdx}, ${itemIdx})">تعديل ✏️</button>
-                            <button class="btn-danger" onclick="deleteItem(${catIdx}, ${itemIdx})">حذف 🗑️</button>
+                            <button class="btn btn-warning" onclick="openEditModal(${catIdx}, ${itemIdx})">تعديل ✏️</button>
+                            <button class="btn btn-danger" onclick="deleteItem(${catIdx}, ${itemIdx})">حذف 🗑️</button>
                         </td>
                     </tr>
                 `;
             });
         });
-        tbody.innerHTML = html || "<tr><td colspan='7' style='text-align:center;'>لا توجد وجبات في المنيو حالياً</td></tr>";
+
+        tbody.innerHTML = html || "<tr><td colspan='7' style='text-align:center; padding:30px; color:#9CA3AF;'>لا توجد وجبات تطابق البحث أو الفلتر المSelected</td></tr>";
     }
 
     function saveSettings() {
@@ -635,7 +873,7 @@
         settings.freeThreshold = parseFloat(document.getElementById("settingThresholdInput").value) || 0;
         localStorage.setItem("pasta_settings", JSON.stringify(settings));
         renderDashboard();
-        alert("✅ تم حفظ إعدادات التوصيل!");
+        alert("✅ تم حفظ إعدادات التوصيل والحد الأدنى!");
     }
 
     function updateOrderStatus(index, newStatus) {
@@ -661,7 +899,7 @@
                     <td>${o.payment || 'كاش'}</td>
                     <td><b>${o.total ? o.total.toFixed(2) : '0.00'} ج.م</b></td>
                     <td>
-                        <select onchange="updateOrderStatus(${idx}, this.value)" style="padding:4px; font-size:12px; font-weight:700;">
+                        <select onchange="updateOrderStatus(${idx}, this.value)" style="padding:6px 10px; font-weight:800; border-radius:8px;">
                             <option value="قيد المراجعة" ${currentStatus==='قيد المراجعة'?'selected':''}>⏳ قيد المراجعة</option>
                             <option value="قيد التحضير" ${currentStatus==='قيد التحضير'?'selected':''}>👨‍🍳 قيد التحضير</option>
                             <option value="جاري التوصيل" ${currentStatus==='جاري التوصيل'?'selected':''}>🛵 جاري التوصيل</option>
@@ -672,7 +910,7 @@
                     <td><small>${o.items ? o.items.map(i=>i.name+' ('+i.qty+')').join(', ') : ''} ${o.address ? ' | العنوان: '+o.address : ''}</small></td>
                 </tr>
             `;
-        }).join('') || "<tr><td colspan='6' style='text-align:center;'>لا توجد طلبات سابقة</td></tr>";
+        }).join('') || "<tr><td colspan='6' style='text-align:center; padding:30px; color:#9CA3AF;'>لا توجد طلبات سابقة في السجل</td></tr>";
 
         document.getElementById("dashOrdersTable").innerHTML = rows;
         document.getElementById("fullOrdersTable").innerHTML = rows;
