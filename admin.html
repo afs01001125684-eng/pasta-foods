@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة القائمة - باستا فود | Talabat Partner Style</title>
+    <title>إدارة القائمة المتقدمة - باستا فود | Enterprise POS Style</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --talabat-orange: #FF5A00;
@@ -32,9 +31,9 @@
         }
 
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background: var(--bg-main); color: var(--text-primary); padding-bottom: 70px; }
+        body { background: var(--bg-main); color: var(--text-primary); padding-bottom: 70px; transition: background 0.3s, color 0.3s; }
 
-        /* Top Header & Status Alert Bar */
+        /* Top Branch Status Banner */
         .status-top-bar {
             background: #FEE2E2;
             color: #DC2626;
@@ -42,10 +41,6 @@
             padding: 10px;
             font-weight: 800;
             font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
             cursor: pointer;
         }
         .status-top-bar.open { background: #D1FAE5; color: #059669; }
@@ -61,21 +56,28 @@
 
         .app-header-icons { display: flex; gap: 12px; align-items: center; }
         .icon-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--bg-main);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            cursor: pointer;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--bg-main); border: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; cursor: pointer; color: var(--text-primary);
         }
 
-        .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+        .container { max-width: 650px; margin: 0 auto; padding: 16px; }
 
-        /* Accordion Category Cards */
+        /* Search & Toolbar */
+        .menu-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .search-box { flex-grow: 1; }
+        .search-box input {
+            width: 100%; padding: 10px 16px; border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); font-size: 13px; background: var(--surface-card); color: var(--text-primary);
+        }
+
+        /* Category Card Accordion */
         .category-card {
             background: var(--surface-card);
             border-radius: var(--radius-lg);
@@ -97,16 +99,9 @@
         .category-title-group { display: flex; align-items: center; gap: 10px; }
         .category-title { font-size: 18px; font-weight: 800; }
         .count-badge {
-            background: #6B7280;
-            color: #fff;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 800;
+            background: #6B7280; color: #fff; width: 22px; height: 22px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 800;
         }
 
         .add-item-btn-bar {
@@ -116,15 +111,8 @@
             text-align: center;
         }
         .add-item-btn {
-            background: transparent;
-            border: 1px dashed var(--talabat-orange);
-            color: var(--talabat-orange);
-            width: 100%;
-            padding: 10px;
-            border-radius: var(--radius-md);
-            font-weight: 800;
-            font-size: 14px;
-            cursor: pointer;
+            background: transparent; border: 1px dashed var(--talabat-orange); color: var(--talabat-orange);
+            width: 100%; padding: 10px; border-radius: var(--radius-md); font-weight: 800; font-size: 14px; cursor: pointer;
             transition: background 0.2s;
         }
         .add-item-btn:hover { background: var(--talabat-orange-light); }
@@ -136,82 +124,75 @@
             display: flex;
             gap: 14px;
             align-items: flex-start;
-            position: relative;
         }
         .item-row:last-child { border-bottom: none; }
 
         .item-img {
-            width: 75px;
-            height: 75px;
-            border-radius: 12px;
-            object-fit: cover;
-            border: 1px solid var(--border-color);
+            width: 75px; height: 75px; border-radius: 12px;
+            object-fit: cover; border: 1px solid var(--border-color);
         }
 
         .item-details { flex-grow: 1; }
-        .item-name { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
-        .item-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .item-price { font-size: 15px; font-weight: 900; color: var(--text-primary); }
+        .item-name { font-size: 15px; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .item-desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.4; }
+        
+        .item-tag-badge {
+            font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px;
+            background: #FEF3C7; color: #D97706;
+        }
 
-        /* Promo Button */
+        /* Inline Price Input */
+        .price-input {
+            width: 90px; padding: 5px 8px; font-weight: 900; font-size: 14px;
+            border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-main); color: var(--text-primary); text-align: center;
+        }
+
         .promo-btn {
-            display: inline-block;
-            margin-top: 8px;
-            border: 1px solid var(--talabat-orange);
-            color: var(--talabat-orange);
-            background: transparent;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
+            display: inline-block; margin-top: 8px; border: 1px solid var(--talabat-orange);
+            color: var(--talabat-orange); background: transparent; padding: 3px 10px;
+            border-radius: 20px; font-size: 11px; font-weight: 800; cursor: pointer;
         }
 
         /* iOS Toggle Switch */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #D1D5DB;
-            transition: .3s;
-            border-radius: 24px;
+            background-color: #D1D5DB; transition: .3s; border-radius: 24px;
         }
         .slider:before {
             position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
+            background-color: white; transition: .3s; border-radius: 50%;
         }
         input:checked + .slider { background-color: var(--talabat-orange); }
         input:checked + .slider:before { transform: translateX(20px); }
 
+        /* Gallery Picker */
+        .gallery-picker { display: flex; gap: 8px; overflow-x: auto; padding: 6px 0; margin-top: 6px; }
+        .gallery-thumb { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; cursor: pointer; border: 2px solid transparent; }
+        .gallery-thumb:hover { border-color: var(--talabat-orange); }
+
+        /* Add Item Form Card Inside Accordion */
+        .add-form-container {
+            padding: 16px 20px; background: var(--bg-main); border-bottom: 1px solid var(--border-color);
+        }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--text-secondary); margin-bottom: 4px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 12px; background: var(--surface-card); color: var(--text-primary);
+        }
+
         /* Bottom Nav Bar */
         .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: var(--surface-card);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            z-index: 1000;
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--surface-card); border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-around; padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000;
         }
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-decoration: none;
-            cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            font-size: 11px; font-weight: 700; color: var(--text-secondary); text-decoration: none; cursor: pointer;
         }
         .nav-item.active { color: var(--talabat-orange); }
     </style>
@@ -225,17 +206,22 @@
 
 <!-- Main App Header -->
 <header class="app-header">
-    <h2 style="font-size:20px; font-weight:900;">إدارة القائمة</h2>
+    <h2 style="font-size:20px; font-weight:900;">إدارة القائمة المتقدمة</h2>
     <div class="app-header-icons">
-        <div class="icon-btn" onclick="toggleDarkMode()">🌙</div>
-        <div class="icon-btn">🏪</div>
-        <div class="icon-btn">❓</div>
-        <div class="icon-btn">🔔</div>
+        <div class="icon-btn" onclick="toggleDarkMode()" title="الوضع الداكن">🌙</div>
+        <div class="icon-btn" title="المتجر">🏪</div>
     </div>
 </header>
 
-<main class="container" id="menuContainer">
-    <!-- Menu categories will render dynamically here -->
+<main class="container">
+    <!-- Search Toolbar -->
+    <div class="menu-toolbar">
+        <div class="search-box">
+            <input type="text" id="menuSearchInput" oninput="renderMenu()" placeholder="🔍 ابحث عن أي وجبة في القائمة...">
+        </div>
+    </div>
+
+    <div id="menuContainer"></div>
 </main>
 
 <!-- Bottom Navigation Bar -->
@@ -252,40 +238,43 @@
         <span style="font-size:18px;">📖</span>
         <span>إدارة القائمة</span>
     </div>
-    <div class="nav-item">
-        <span style="font-size:18px;">☰</span>
-        <span>المزيد</span>
+    <div class="nav-item" onclick="addNewCategoryPrompt()">
+        <span style="font-size:18px;">➕</span>
+        <span>قسم جديد</span>
     </div>
 </nav>
 
 <script>
-    const excelMenu = [
+    const presetImages = [
+        "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg",
+        "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/99f096e2-f829-4dfa-9990-27865dd5ac7b.jpg",
+        "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg",
+        "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg",
+        "https://talabat.dhmedia.io/image/talabat/MenuItems/كولا639053129041558215.jpg"
+    ];
+
+    const defaultMenu = [
         {
             category: "الحواوشي",
             collapsed: false,
+            showAddForm: false,
             items: [
-                { id: 2725716785, name: "حواوشي لحم بالموتزريلا", price: 145.00, desc: "حواوشي لحم طازج ممزوج بالموتزريلا...", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg", available: true },
-                { id: 2725716786, name: "حواوشي لحم بقري مخصوص", price: 85.00, desc: "حواوشي لحم اسبشيل مميزة محضرة...", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/99f096e2-f829-4dfa-9990-27865dd5ac7b.jpg", available: true }
+                { id: 1, name: "حواوشي لحم بالموتزريلا", price: 145.00, tag: "🔥 الأكثر مبيعاً", desc: "حواوشي لحم طازج ممزوج بالموتزريلا...", img: presetImages[0], available: true },
+                { id: 2, name: "حواوشي لحم بقري مخصوص", price: 85.00, tag: "", desc: "حواوشي لحم اسبشيل مميزة محضرة...", img: presetImages[1], available: true }
             ]
         },
         {
             category: "مكرونة",
             collapsed: true,
+            showAddForm: false,
             items: [
-                { id: 2725498831, name: "إسباجيتي بالطماطم", price: 45.00, desc: "إسباجيتي طازجة مطهية بعناية...", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/891301a3-26a5-4f8c-92a6-480314e07bf1.jpg", available: true },
-                { id: 2725498835, name: "مكرونة بينا بالصلصة الحمراء", price: 50.00, desc: "مكرونة بنية لذيذة مع صلصة حمراء...", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg", available: true }
-            ]
-        },
-        {
-            category: "الطواجن المطهية على الفخار",
-            collapsed: true,
-            items: [
-                { id: 3625088841, name: "طاجن لحم بالبطاطس والبصل", price: 295.00, desc: "طاجن لحم مطهو ببطء...", img: "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c96d49e1-6184-4140-8252-ac2207708705.jpg", available: true }
+                { id: 3, name: "إسباجيتي بالطماطم", price: 45.00, tag: "🌟 جديد", desc: "إسباجيتي طازجة مطهية بعناية...", img: presetImages[2], available: true },
+                { id: 4, name: "مكرونة بينا بالصلصة الحمراء", price: 50.00, tag: "", desc: "مكرونة بنية لذيذة مع صلصة حمراء...", img: presetImages[3], available: true }
             ]
         }
     ];
 
-    let menu = JSON.parse(localStorage.getItem("pasta_menu_app")) || excelMenu;
+    let menu = JSON.parse(localStorage.getItem("pasta_advanced_menu")) || defaultMenu;
     let isRestaurantOpen = JSON.parse(localStorage.getItem("pasta_is_open")) || false;
 
     function init() {
@@ -320,6 +309,40 @@
         saveMenu();
     }
 
+    function toggleAddForm(catIdx) {
+        menu[catIdx].showAddForm = !menu[catIdx].showAddForm;
+        renderMenu();
+    }
+
+    function selectPresetImageForForm(catIdx, url) {
+        document.getElementById(`formImg_${catIdx}`).value = url;
+    }
+
+    function addNewItem(catIdx) {
+        const name = document.getElementById(`formName_${catIdx}`).value.trim();
+        const price = parseFloat(document.getElementById(`formPrice_${catIdx}`).value);
+        const tag = document.getElementById(`formTag_${catIdx}`).value;
+        const desc = document.getElementById(`formDesc_${catIdx}`).value.trim() || "وجبة مميزة";
+        const img = document.getElementById(`formImg_${catIdx}`).value.trim() || presetImages[0];
+
+        if(!name || isNaN(price)) {
+            alert("⚠️ يرجى إدخال اسم الوجبة والسعر بشكل صحيح!");
+            return;
+        }
+
+        menu[catIdx].items.push({ id: Date.now(), name, price, tag, desc, img, available: true });
+        menu[catIdx].showAddForm = false;
+        saveMenu();
+    }
+
+    function updateItemPrice(catIdx, itemIdx, newPrice) {
+        const price = parseFloat(newPrice);
+        if(!isNaN(price) && price >= 0) {
+            menu[catIdx].items[itemIdx].price = price;
+            localStorage.setItem("pasta_advanced_menu", JSON.stringify(menu));
+        }
+    }
+
     function toggleItemAvail(catIdx, itemIdx) {
         menu[catIdx].items[itemIdx].available = !menu[catIdx].items[itemIdx].available;
         saveMenu();
@@ -328,42 +351,41 @@
     function createPromo(catIdx, itemIdx) {
         const discount = prompt("أدخل نسبة الخصم للطلب الترويجي (%):", "10");
         if(discount) {
-            alert(`✅ تم إنشاء عرض ترويجي بنسبة ${discount}% للوجبة!`);
+            alert(`✅ تم تفعيل العرض الترويجي بنسبة ${discount}% للوجبة!`);
         }
     }
 
-    function addItemPrompt(catIdx) {
-        const name = prompt("أدخل اسم الوجبة الجديدة:");
-        const price = parseFloat(prompt("أدخل السعر (ج.م):"));
-        if(name && !isNaN(price)) {
-            menu[catIdx].items.push({
-                id: Date.now(),
-                name: name,
-                price: price,
-                desc: "وجبة جديدة مميزة",
-                img: "https://via.placeholder.com/150",
-                available: true
-            });
+    function addNewCategoryPrompt() {
+        const catName = prompt("أدخل اسم القسم الجديد:");
+        if(catName) {
+            menu.push({ category: catName, collapsed: false, showAddForm: false, items: [] });
             saveMenu();
         }
     }
 
     function saveMenu() {
-        localStorage.setItem("pasta_menu_app", JSON.stringify(menu));
+        localStorage.setItem("pasta_advanced_menu", JSON.stringify(menu));
         renderMenu();
     }
 
     function renderMenu() {
         const container = document.getElementById("menuContainer");
+        const searchQuery = (document.getElementById("menuSearchInput")?.value || "").toLowerCase().trim();
         let html = "";
 
         menu.forEach((cat, catIdx) => {
+            // فلترة الأصناف بناءً على البحث
+            const filteredItems = cat.items.filter(item => 
+                item.name.toLowerCase().includes(searchQuery) || item.desc.toLowerCase().includes(searchQuery)
+            );
+
+            if(searchQuery && filteredItems.length === 0) return; // تخطي القسم إذا لم تطابق نتائج البحث
+
             html += `
                 <div class="category-card">
                     <div class="category-header" onclick="toggleCategoryCollapse(${catIdx})">
                         <div class="category-title-group">
-                            <span style="font-size:12px;">✏️</span>
-                            <span class="count-badge">${cat.items.length}</span>
+                            <span class="count-badge">${filteredItems.length}</span>
                             <h3 class="category-title">${cat.category}</h3>
                         </div>
                         <span style="font-size:14px; font-weight:800;">${cat.collapsed ? '⌄' : '⌃'}</span>
@@ -371,31 +393,76 @@
 
                     ${!cat.collapsed ? `
                         <div class="add-item-btn-bar">
-                            <button class="add-item-btn" onclick="addItemPrompt(${catIdx})">+ إضافة</button>
+                            <button class="add-item-btn" onclick="toggleAddForm(${catIdx})">+ إضافة وجبة للقسم</button>
                         </div>
-                        <div>
-                            ${cat.items.map((item, itemIdx) => `
-                                <div class="item-row">
-                                    <label class="switch">
-                                        <input type="checkbox" ${item.available ? 'checked' : ''} onchange="toggleItemAvail(${catIdx}, ${itemIdx})">
-                                        <span class="slider"></span>
-                                    </label>
-                                    <div class="item-details">
-                                        <div class="item-name">${item.name}</div>
-                                        <div class="item-desc">${item.desc}</div>
-                                        <div class="item-price">${item.price.toFixed(2)} ج.م</div>
-                                        <button class="promo-btn" onclick="createPromo(${catIdx}, ${itemIdx})">إنشاء العرض الترويجي</button>
-                                    </div>
-                                    <img src="${item.img}" class="item-img" alt="${item.name}">
+
+                        ${cat.showAddForm ? `
+                            <div class="add-form-container">
+                                <h4 style="font-size:13px; font-weight:800; margin-bottom:8px;">إضافة وجبة جديدة</h4>
+                                <div class="form-group">
+                                    <label>اسم الوجبة</label>
+                                    <input type="text" id="formName_${catIdx}" placeholder="اسم الوجبة">
                                 </div>
-                            `).join('')}
+                                <div class="form-group">
+                                    <label>السعر (ج.م)</label>
+                                    <input type="number" id="formPrice_${catIdx}" placeholder="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label>الشارة المميزة</label>
+                                    <select id="formTag_${catIdx}">
+                                        <option value="">بدون شارة</option>
+                                        <option value="🔥 الأكثر مبيعاً">🔥 الأكثر مبيعاً</option>
+                                        <option value="🌟 جديد">🌟 جديد</option>
+                                        <option value="🌶️ حار">🌶️ حار</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>الوصف</label>
+                                    <input type="text" id="formDesc_${catIdx}" placeholder="مكونات الوجبة">
+                                </div>
+                                <div class="form-group">
+                                    <label>اختر صورة جاهزة أو أدخل رابط</label>
+                                    <input type="text" id="formImg_${catIdx}" placeholder="رابط الصورة">
+                                    <div class="gallery-picker">
+                                        ${presetImages.map(img => `<img src="${img}" class="gallery-thumb" onclick="selectPresetImageForForm(${catIdx}, '${img}')">`).join('')}
+                                    </div>
+                                </div>
+                                <button class="add-item-btn" style="background:var(--talabat-orange); color:#fff; border:none; margin-top:8px;" onclick="addNewItem(${catIdx})">حفظ وإضافة الوجبة</button>
+                            </div>
+                        ` : ''}
+
+                        <div>
+                            ${filteredItems.map((item, originalIdx) => {
+                                const realIdx = cat.items.indexOf(item);
+                                return `
+                                    <div class="item-row">
+                                        <label class="switch">
+                                            <input type="checkbox" ${item.available ? 'checked' : ''} onchange="toggleItemAvail(${catIdx}, ${realIdx})">
+                                            <span class="slider"></span>
+                                        </label>
+                                        <div class="item-details">
+                                            <div class="item-name">
+                                                ${item.name}
+                                                ${item.tag ? `<span class="item-tag-badge">${item.tag}</span>` : ''}
+                                            </div>
+                                            <div class="item-desc">${item.desc}</div>
+                                            <div style="display:flex; align-items:center; gap:8px;">
+                                                <input type="number" class="price-input" value="${item.price}" onchange="updateItemPrice(${catIdx}, ${realIdx}, this.value)">
+                                                <span style="font-size:12px; font-weight:800;">ج.م</span>
+                                            </div>
+                                            <button class="promo-btn" onclick="createPromo(${catIdx}, ${realIdx})">إنشاء العرض الترويجي</button>
+                                        </div>
+                                        <img src="${item.img}" class="item-img" alt="${item.name}">
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
                     ` : ''}
                 </div>
             `;
         });
 
-        container.innerHTML = html;
+        container.innerHTML = html || "<div style='text-align:center; padding:30px; color:#6B7280;'>لا توجد نتائج مطابقة للبحث</div>";
     }
 
     init();
