@@ -65,7 +65,6 @@
             <input type="email" id="customerEmail" placeholder="البريد الإلكتروني للعميل">
             <input type="text" id="address" placeholder="عنوان التوصيل بالتفصيل">
             
-            <!-- زر مشاركة الموقع وحساب خدمة التوصيل -->
             <button type="button" class="location-btn" onclick="getGPSLocation()">
                 📍 مشاركة موقعي لحساب التوصيل تلقائياً
             </button>
@@ -80,64 +79,45 @@
 <script>
     (function(){ emailjs.init("BV7OIpSk4gMWrTJCy"); })();
 
-    // إحداثيات المطعم المحدثة (بولاق الدكرور)
+    // إحداثيات موقع المطعم (بولاق الدكرور - ترعة عبد العال)
     const RESTAURANT_LAT = 30.0264; 
     const RESTAURANT_LNG = 31.1811; 
 
-    let deliveryFee = 50; // القيمة المبدئية لحين تحديد الموقع
+    let deliveryFee = 50; 
     let currentDistance = 0;
 
+    // المنيو المحدث بالكامل بناءً على الملف المرفق
     const menuItems = [
-        {"id": 1, "name": "ثلاثة سندويشات كبدة بالرده", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3215609888/9d1f8bc5-3466-4157-97a6-d190721280f3.jpg"},
-        {"id": 2, "name": "3 ساندوتش استربس", "price": 180, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/93c5d7af-05d1-4ab1-8d55-b7b7a8a08eb9.jpg"},
-        {"id": 3, "name": "3 سندوتشات كبدة طازجة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/7d932c55-7d1e-485e-a245-3b364d615ab5.jpg"},
-        {"id": 4, "name": "3 ساندوتش سجق", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/36f53f97-3773-4e19-a848-98d63ea4d416.jpg"},
-        {"id": 5, "name": "3 سندوتشات كفتة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/99d3e0f9-3317-4cec-a34b-b4553f1afad7.jpg"},
-        {"id": 6, "name": "وجبة أرز وربع فرخة", "price": 110, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
-        {"id": 7, "name": "مكرونة مع ربع فرخة", "price": 110, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"},
-        {"id": 8, "name": "فتة الأرز", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/25bb9ef8-bf7c-4adf-a16d-0bc98dae5fa8.jpg"},
-        {"id": 9, "name": "أرز بالكبدة", "price": 85, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg"},
-        {"id": 10, "name": "مكرونة بينا بالموتزاريلا", "price": 135, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فلفل_و_زيتو639053128470267368.jpg"},
-        {"id": 11, "name": "مكرونة بينا باللحم", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725480512/67863dc2-e7ef-4370-9f8b-c32cdc6176c3.jpg"},
-        {"id": 12, "name": "مكرونة دجاج بالموتزريلا", "price": 150, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/طاجن_موتزريلا_فراخ639053128158182016.jpg"},
-        {"id": 13, "name": "مكرونة بينا بالسجق", "price": 135, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725493690/9ae728ff-4090-447d-8ae4-a8bd4d8fce21.jpg"},
-        {"id": 14, "name": "مكرونة بينا بالصلصة", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg"},
-        {"id": 15, "name": "مكرونة باللحم المفروم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235409/97ae8f36-8e3b-43ee-974b-a1efbb3a5fcd.jpg"},
-        {"id": 16, "name": "مكرونة بالكبدة", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235410/41677633-ab95-4bf4-be82-0920206f0892.jpg"},
-        {"id": 17, "name": "مكرونة بالسجق", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"},
-        {"id": 18, "name": "مكرونة بالفراخ", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235412/a356eea9-d7ad-4fbe-9dc3-69a08a75290e.jpg"},
-        {"id": 19, "name": "سباغيتي باللحم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/aed08c0a-d598-43aa-9767-c5679084f0bf.jpg"},
-        {"id": 20, "name": "إسباجيتي الكفتة", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c40db92b-a73e-4709-be49-44680bdcf42f.jpg"},
-        {"id": 21, "name": "إسباجيتي استريبس", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/061b5fb6-c147-4a55-90c2-a7d5967a0464.jpg"},
-        {"id": 22, "name": "إسباجيتي بالصلصة", "price": 35, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235385/1536c687-26bf-486e-b489-38a6c2446c8c.jpg"},
-        {"id": 23, "name": "إسباجيتي كبدة", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235387/a251bd2a-29db-431d-9059-21c66ccf9281.jpg"},
-        {"id": 24, "name": "إسباجيتي سجق", "price": 65, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235389/f2222edb-e0a2-4ed3-8e24-dc801a6e8847.jpg"},
-        {"id": 25, "name": "إسباجيتي فراخ", "price": 80, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235390/36d122d6-3aae-4918-94b1-fd3d442da701.jpg"},
-        {"id": 26, "name": "ساندوتش بطاطس", "price": 25, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_بطاطس639053112346426101.jpg"},
-        {"id": 27, "name": "باكت بطاطس", "price": 30, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/باكت_بطاطس639053104690075705.jpg"},
-        {"id": 28, "name": "ساندوتش كبدة فينو", "price": 18, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg"},
-        {"id": 29, "name": "ساندوتش سجق فينو", "price": 18, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3177324841/6a56f610-33a9-46fa-bb68-2626d46a5f08.jpg"},
-        {"id": 30, "name": "ساندوتش كفتة لحم", "price": 70, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/509893df-a06e-41f1-861b-87906f86789b.jpg"},
-        {"id": 31, "name": "ساندوتش كبدة ردة", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3bf4865c-17b0-4632-95d6-c7b84c4208f9.jpg"},
-        {"id": 32, "name": "ساندوتش كفتة بلدي", "price": 45, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3204580839/87d3abac-fc30-426c-af0d-570e4b0e3596.jpg"},
-        {"id": 33, "name": "ساندوتش كفتة فينو", "price": 25, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/db3efc42-884d-4fe9-928a-fe4c8152d7eb.jpg"},
-        {"id": 34, "name": "ساندوتش كبدة فينا", "price": 55, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235396/e2babe46-cdf9-4ae8-8bd7-b04292077c7e.jpg"},
-        {"id": 35, "name": "ساندوتش سجق فينا", "price": 55, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_سجق639053112635804657.jpg"},
-        {"id": 36, "name": "هوت دوج فينا", "price": 95, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_هوت_دوج639053113101018706.jpg"},
-        {"id": 37, "name": "ساندوتش استربس", "price": 120, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_استربس639053112270881730.jpg"},
-        {"id": 38, "name": "بشاميل سجق", "price": 150, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725582068/987d1b05-74a2-499a-8503-d8f258c158e6.jpg"},
-        {"id": 39, "name": "بشاميل لحمه", "price": 120, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بشاميل_لحمه639053109004455805.jpg"},
-        {"id": 40, "name": "بشاميل فراخ", "price": 150, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بشاميل_فراخ639053108860071368.jpg"},
-        {"id": 41, "name": "برجر لحم كبير", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3232723780/6ccdfad1-164c-4f77-bb37-fcb567191fe7.jpg"},
-        {"id": 42, "name": "برجر لحم سنجل", "price": 100, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3232723813/bdbc0ae7-867b-4e20-a80a-5f08ac121ab1.jpg"},
-        {"id": 43, "name": "برجر دبل", "price": 190, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/9f0d8003-26f2-46cf-abc7-9c5510f9e330.jpg"},
-        {"id": 44, "name": "حواوشي موتزاريلا", "price": 120, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"},
-        {"id": 45, "name": "حواوشي لحم", "price": 75, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c0609a4a-7402-45bc-92e3-191c25bee038.jpg"},
-        {"id": 46, "name": "حواوشي سجق موتزاريلا", "price": 175, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/حواوشي_موتزريلا_سجق639053109998626753.jpg"},
-        {"id": 47, "name": "حواوشي سجق", "price": 95, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235386/ba4d9790-02f4-4794-9b0c-1fa19c5de994.jpg"},
-        {"id": 48, "name": "كوكاكولا", "price": 20, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/كولا639053129041558215.jpg"},
-        {"id": 49, "name": "بيبسي", "price": 20, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg"},
-        {"id": 50, "name": "مياه معدنية", "price": 7, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"}
+        {"id": 1, "name": "وجبة أرز وربع فرخة فرن", "price": 185.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/a0a41598-90a0-42ca-ba10-6dd46705a9b4.jpg"},
+        {"id": 2, "name": "مكرونة مع ربع فرخة فرن", "price": 180.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/027a9d71-523f-4190-8d7b-98c7cb4053e9.jpg"},
+        {"id": 3, "name": "أرز بالكبدة", "price": 85.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/787003/product/9fd2535b-b393-4a67-bb2d-d7807016803a.jpg"},
+        {"id": 4, "name": "وجبة أرز ولحم بالفرن مع البصل", "price": 300.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3625125693/a0ff3dfa-fb27-42c4-918d-2466de908754.jpg"},
+        {"id": 5, "name": "طاجن لحم بالبطاطس والبصل", "price": 295.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c96d49e1-6184-4140-8252-ac2207708705.jpg"},
+        {"id": 6, "name": "طاجن اللحم بالبصل", "price": 270.56, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/a32473f6-69d1-46f4-a0a4-d1862d75af0e.jpg"},
+        {"id": 7, "name": "ملوخية ساده", "price": 79.45, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/3b4b046a-8f37-454b-b1a5-172abc2aa0fc.jpg"},
+        {"id": 8, "name": "طاجن بشاميل باللحم المفروم", "price": 82.75, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/fbd5481a-43e3-4b7b-b78f-b268851dd7d3.jpg"},
+        {"id": 9, "name": "شوربه لسان عصفور", "price": 27.43, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/c3b2879a-e624-4a00-8f2e-c4ed404ad69d.jpg"},
+        {"id": 10, "name": "طبق رز بالشعرية لفرد واحد", "price": 40.00, "img": "https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/1102296/product/83cc602a-1ec0-4b71-b532-5205e8fc2b7d.jpg"},
+        {"id": 11, "name": "3 سندوتشات كبدة طازجة", "price": 73.50, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/7d932c55-7d1e-485e-a245-3b364d615ab5.jpg"},
+        {"id": 12, "name": "3 ساندوتش سجق مدخن", "price": 73.60, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/36f53f97-3773-4e19-a848-98d63ea4d416.jpg"},
+        {"id": 13, "name": "3سندوتشات كفنه", "price": 75.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/99d3e0f9-3317-4cec-a34b-b4553f1afad7.jpg"},
+        {"id": 14, "name": "3 ساندوتش سجق", "price": 72.62, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/36f53f97-3773-4e19-a848-98d63ea4d416.jpg"},
+        {"id": 15, "name": "ساندوتش كبده فينو", "price": 27.22, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/efc5fa09-8ea2-4537-b3f5-43a39bfdb458.jpg"},
+        {"id": 16, "name": "سندوتش سجق فينو", "price": 27.23, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/3177324841/6a56f610-33a9-46fa-bb68-2626d46a5f08.jpg"},
+        {"id": 17, "name": "سندوتش كفتة فينو", "price": 25.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/db3efc42-884d-4fe9-928a-fe4c8152d7eb.jpg"},
+        {"id": 18, "name": "مشروب السلطة الحارة ( ويسكى حلال )", "price": 15.00, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/كولا639053129041558215.jpg"},
+        {"id": 19, "name": "هوت دوج مدخن بحلقات", "price": 24.33, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/ساندوتش_هوت_دوج639053113101018706.jpg"},
+        {"id": 20, "name": "حواوشي لحم بالموتزريلا", "price": 145.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725716785/5ee3b87e-051a-4ce4-b147-e4a134171d80.jpg"},
+        {"id": 21, "name": "حواوشي لحم بقري مخصوص", "price": 85.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/c0609a4a-7402-45bc-92e3-191c25bee038.jpg"},
+        {"id": 22, "name": "إسباجيتي بالطماطم", "price": 45.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235385/1536c687-26bf-486e-b489-38a6c2446c8c.jpg"},
+        {"id": 23, "name": "مكرونة بينا بالصلصة الحمراء", "price": 50.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725498835/47989d96-40b9-4995-9f99-b2d61f0bd5bf.jpg"},
+        {"id": 24, "name": "مكرونة بينا بالكبدة والصلصة الحمراء", "price": 95.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235410/41677633-ab95-4bf4-be82-0920206f0892.jpg"},
+        {"id": 25, "name": "مكرونة بينا بالسجق والصلصة الحمراء", "price": 95.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2725505867/c9d30231-ab07-42fb-980e-0af543945428.jpg"},
+        {"id": 26, "name": "معكرونة بينا مع الفراخ والصلصة الحمراء", "price": 95.00, "img": "https://images.deliveryhero.io/image/global-menu-service/HF_EG/vendor/787003/product/2718235412/a356eea9-d7ad-4fbe-9dc3-69a08a75290e.jpg"},
+        {"id": 27, "name": "كوكاكولا", "price": 20.00, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/كولا639053129041558215.jpg"},
+        {"id": 28, "name": "بيبسي", "price": 20.00, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/بيبسي639053109132004868.jpg"},
+        {"id": 29, "name": "مياه معدنية صغيرة", "price": 12.00, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"},
+        {"id": 30, "name": "مشروب ماء السلطة الحارة", "price": 15.00, "img": "https://images.deliveryhero.io/image/talabat/MenuItems/مياه_معدنيه639053129396132874.jpg"}
     ];
 
     let cart = [];
@@ -165,7 +145,6 @@
 
     function toggleCart() {
         const modal = document.getElementById("modal");
-        const cartItemsList = document.getElementById("cart-items-list");
         if (modal.style.display === "block") { modal.style.display = "none"; } 
         else {
             modal.style.display = "block";
@@ -178,7 +157,7 @@
         const subtotal = cart.reduce((sum, i) => sum + i.price, 0);
         const total = subtotal + deliveryFee;
         
-        let distanceText = currentDistance > 0 ? `<p style="font-size:0.9rem; color:#666;">المسافة المحسوبة: ${currentDistance.toFixed(1)} كم</p>` : '';
+        let distanceText = currentDistance > 0 ? `<p style="font-size:0.9rem; color:#666;">مسافة الطرق التقريبية: ${currentDistance.toFixed(1)} كم</p>` : '';
 
         cartItemsList.innerHTML = cart.map((i, index) => `<p>• ${i.name} - ${i.price} ج.م <button onclick="removeFromCart(${index})" style="color:red; cursor:pointer; border:none; background:none;">(حذف)</button></p>`).join('') + 
                                  `<hr style="margin:15px 0;">` +
@@ -194,8 +173,8 @@
         renderCartModal();
     }
 
-    // معادلة حساب المسافة بالكيلومترات
-    function calculateDistance(lat1, lon1, lat2, lon2) {
+    // حساب مسافة الشوارع الفعلية (ضرب المسافة الجوية في 1.3)
+    function calculateRoadDistance(lat1, lon1, lat2, lon2) {
         const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -203,10 +182,11 @@
                   Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                   Math.sin(dLon/2) * Math.sin(dLon/2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c; 
+        
+        const straightDistance = R * c; 
+        return straightDistance * 1.3; 
     }
 
-    // دالة تحديد الموقع وحساب خدمة التوصيل
     function getGPSLocation() {
         const status = document.getElementById("locationStatus");
         const mapInput = document.getElementById("custLocationMap");
@@ -216,7 +196,7 @@
             return;
         }
 
-        status.innerText = "⏳ جاري تحديد موقعك وحساب التوصيل...";
+        status.innerText = "⏳ جاري تحديد موقعك وحساب مسافة التوصيل...";
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -226,10 +206,9 @@
                 
                 mapInput.value = googleLink;
 
-                // حساب المسافة بين المطعم وموقع العميل
-                currentDistance = calculateDistance(RESTAURANT_LAT, RESTAURANT_LNG, lat, lng);
+                currentDistance = calculateRoadDistance(RESTAURANT_LAT, RESTAURANT_LNG, lat, lng);
                 
-                // حساب خدمة التوصيل: أول 5 كم بـ 50 ج، وكل كيلو زيادة بـ 6 ج
+                // حساب التوصيل: أول 5 كم بـ 50 ج، وكل كيلو زيادة بـ 6 ج
                 if (currentDistance <= 5) {
                     deliveryFee = 50;
                 } else {
@@ -237,7 +216,7 @@
                     deliveryFee = 50 + Math.ceil(extraKm * 6);
                 }
 
-                status.innerHTML = `✅ تم تحديد الموقع! المسافة: ${currentDistance.toFixed(1)} كم | خدمة التوصيل: ${deliveryFee} ج.م`;
+                status.innerHTML = `✅ تم تحديد الموقع! المسافة التقريبية: ${currentDistance.toFixed(1)} كم | خدمة التوصيل: ${deliveryFee} ج.م`;
                 status.style.color = "green";
 
                 updateTotal();
@@ -246,7 +225,8 @@
             (error) => {
                 status.innerText = "❌ تعذر تحديد الموقع. تأكد من تفعيل الـ GPS بالهاتف والموافقة على الصلاحية.";
                 status.style.color = "red";
-            }
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
         );
     }
 
