@@ -340,7 +340,8 @@
     </div>
     <ul class="sidebar-menu">
         <li class="active"><a href="#" onclick="switchTab(event, 'tab-dashboard')">📊 لوحة المعلومات</a></li>
-        <li><a href="#" onclick="switchTab(event, 'tab-menu')">🍔 إدارة القائمة والتوافر</a></li>
+        <li><a href="#" onclick="switchTab(event, 'tab-menu')">🍔 إدارة القائمة (المنيو)</a></li>
+        <li><a href="#" onclick="switchTab(event, 'tab-availability')">🟢 إدارة التوافر</a></li>
         <li><a href="#" onclick="switchTab(event, 'tab-settings')">⚙️ إعدادات التوصيل</a></li>
         <li><a href="#" onclick="switchTab(event, 'tab-orders')">🛍️ الطلبات المباشرة</a></li>
     </ul>
@@ -403,7 +404,7 @@
         </div>
     </section>
 
-    <!-- TAB 2: Menu Management -->
+    <!-- TAB 2: Menu Management (إدارة القائمة فقط) -->
     <section id="tab-menu" class="content-tab">
         <!-- Add New Category Form -->
         <div class="card-box">
@@ -449,15 +450,39 @@
             <button class="btn btn-primary" onclick="addNewItem()">+ إضافة الوجبة للمنيو</button>
         </div>
 
-        <!-- Menu Interactive Table & Toolbar -->
+        <!-- Menu Edit Table -->
         <div class="card-box">
             <div class="card-header-flex">
-                <h3>📋 قائمة المنتجات والتوافر الفوري</h3>
+                <h3>📋 قائمة الوجبات والأصناف الحالية</h3>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الصورة</th>
+                            <th>اسم الوجبة</th>
+                            <th>الوصف</th>
+                            <th>القسم</th>
+                            <th>السعر</th>
+                            <th>خيارات التعديل</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminMenuEditTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- TAB 3: Availability Management (إدارة التوافر) -->
+    <section id="tab-availability" class="content-tab">
+        <div class="card-box">
+            <div class="card-header-flex">
+                <h3>🟢 التحكم الفوري في توفر الأصناف</h3>
             </div>
             
             <div class="menu-toolbar">
                 <div class="search-box">
-                    <input type="text" id="menuSearchInput" oninput="filterMenuTable()" placeholder="🔍 ابحث بالاسم أو الوصف...">
+                    <input type="text" id="availSearchInput" oninput="filterAvailTable()" placeholder="🔍 ابحث بالاسم أو الوصف...">
                 </div>
                 <div class="category-pills" id="categoryPills"></div>
             </div>
@@ -468,20 +493,18 @@
                         <tr>
                             <th>الصورة</th>
                             <th>اسم الوجبة</th>
-                            <th>الوصف</th>
                             <th>القسم</th>
                             <th>السعر</th>
-                            <th>التوافر الفوري</th>
-                            <th>خيارات التعديل</th>
+                            <th>حالة التوافر الفوري</th>
                         </tr>
                     </thead>
-                    <tbody id="adminMenuTable"></tbody>
+                    <tbody id="adminAvailTable"></tbody>
                 </table>
             </div>
         </div>
     </section>
 
-    <!-- TAB 3: Delivery Settings -->
+    <!-- TAB 4: Delivery Settings -->
     <section id="tab-settings" class="content-tab">
         <div class="card-box">
             <div class="card-header-flex">
@@ -501,7 +524,7 @@
         </div>
     </section>
 
-    <!-- TAB 4: Orders History -->
+    <!-- TAB 5: Orders History -->
     <section id="tab-orders" class="content-tab">
         <div class="card-box">
             <div class="card-header-flex">
@@ -559,7 +582,6 @@
 </div>
 
 <script>
-    // المنيو كاملاً من الملف
     const excelMenu = [
         {
             category: "Meals",
@@ -639,7 +661,8 @@
         renderDashboard();
         renderCategorySelect();
         renderCategoryPills();
-        renderMenuTable();
+        renderMenuEditTable();
+        renderAvailTable();
         renderOrdersTables();
         
         document.getElementById("settingFeeInput").value = settings.deliveryFee;
@@ -701,7 +724,8 @@
 
         const titles = {
             'tab-dashboard': 'لوحة المعلومات والتحليلات',
-            'tab-menu': 'إدارة القائمة والتوافر',
+            'tab-menu': 'إدارة القائمة (المنيو)',
+            'tab-availability': 'إدارة التوافر الفوري',
             'tab-settings': 'إعدادات التوصيل',
             'tab-orders': 'الطلبات المباشرة'
         };
@@ -736,7 +760,7 @@
     function setCategoryFilter(catName) {
         activeCategoryFilter = catName;
         renderCategoryPills();
-        renderMenuTable();
+        renderAvailTable();
     }
 
     function addNewCategory() {
@@ -767,14 +791,12 @@
         alert("✅ تمت إضافة الوجبة للمنيو!");
     }
 
-    // التبديل السريع للإتاحة
     function toggleItemAvailability(catIdx, itemIdx) {
         let current = menu[catIdx].items[itemIdx].available !== false;
         menu[catIdx].items[itemIdx].available = !current;
         saveMenu();
     }
 
-    // فتح النافذة المنبثقة للتعديل
     function openEditModal(catIdx, itemIdx) {
         const item = menu[catIdx].items[itemIdx];
         document.getElementById("editCatIdx").value = catIdx;
@@ -818,20 +840,48 @@
         }
     }
 
-    function filterMenuTable() {
-        renderMenuTable();
+    function filterAvailTable() {
+        renderAvailTable();
     }
 
     function saveMenu() {
         localStorage.setItem("pasta_menu", JSON.stringify(menu));
         renderCategorySelect();
         renderCategoryPills();
-        renderMenuTable();
+        renderMenuEditTable();
+        renderAvailTable();
     }
 
-    function renderMenuTable() {
-        const tbody = document.getElementById("adminMenuTable");
-        const searchQuery = (document.getElementById("menuSearchInput")?.value || "").toLowerCase().trim();
+    // جدول تبويب إدارة القائمة (التعديل والحذف فقط)
+    function renderMenuEditTable() {
+        const tbody = document.getElementById("adminMenuEditTable");
+        let html = "";
+
+        menu.forEach((cat, catIdx) => {
+            cat.items.forEach((item, itemIdx) => {
+                html += `
+                    <tr>
+                        <td><img src="${item.img}" class="img-thumb" alt="${item.name}"></td>
+                        <td class="item-title-cell">${item.name}</td>
+                        <td class="desc-text">${item.desc || 'لا يوجد وصف'}</td>
+                        <td><span style="background:#F3F4F6; padding:4px 8px; border-radius:6px; font-weight:700;">${cat.category}</span></td>
+                        <td><b>${item.price.toFixed(2)} ج.م</b></td>
+                        <td>
+                            <button class="btn btn-warning" onclick="openEditModal(${catIdx}, ${itemIdx})">تعديل ✏️</button>
+                            <button class="btn btn-danger" onclick="deleteItem(${catIdx}, ${itemIdx})">حذف 🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+
+        tbody.innerHTML = html || "<tr><td colspan='6' style='text-align:center; padding:30px; color:#9CA3AF;'>لا توجد وجبات في القائمة حالياً</td></tr>";
+    }
+
+    // جدول تبويب إدارة التوافر (التبديل الفوري متاح/غير متاح فقط)
+    function renderAvailTable() {
+        const tbody = document.getElementById("adminAvailTable");
+        const searchQuery = (document.getElementById("availSearchInput")?.value || "").toLowerCase().trim();
         let html = "";
 
         menu.forEach((cat, catIdx) => {
@@ -846,7 +896,6 @@
                     <tr>
                         <td><img src="${item.img}" class="img-thumb" alt="${item.name}"></td>
                         <td class="item-title-cell">${item.name}</td>
-                        <td class="desc-text">${item.desc || 'لا يوجد وصف'}</td>
                         <td><span style="background:#F3F4F6; padding:4px 8px; border-radius:6px; font-weight:700;">${cat.category}</span></td>
                         <td><b>${item.price.toFixed(2)} ج.م</b></td>
                         <td>
@@ -856,16 +905,12 @@
                                 ${isAvail ? '🟢 متاح' : '🔴 غير متاح'}
                             </span>
                         </td>
-                        <td>
-                            <button class="btn btn-warning" onclick="openEditModal(${catIdx}, ${itemIdx})">تعديل ✏️</button>
-                            <button class="btn btn-danger" onclick="deleteItem(${catIdx}, ${itemIdx})">حذف 🗑️</button>
-                        </td>
                     </tr>
                 `;
             });
         });
 
-        tbody.innerHTML = html || "<tr><td colspan='7' style='text-align:center; padding:30px; color:#9CA3AF;'>لا توجد وجبات تطابق البحث أو الفلتر المSelected</td></tr>";
+        tbody.innerHTML = html || "<tr><td colspan='5' style='text-align:center; padding:30px; color:#9CA3AF;'>لا توجد وجبات تطابق البحث أو الفلتر</td></tr>";
     }
 
     function saveSettings() {
