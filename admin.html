@@ -6,7 +6,6 @@
     <title>لوحة التحكم الشاملة - باستا فود | Enterprise POS Style</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- مكتبة قراءة وتصدير ملفات الإكسل (SheetJS) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -35,7 +34,6 @@
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
         body { background: var(--bg-main); color: var(--text-primary); padding-bottom: 80px; transition: background 0.3s, color 0.3s; }
 
-        /* Top Branch Status Banner */
         .status-top-bar {
             background: #FEE2E2;
             color: #DC2626;
@@ -117,6 +115,13 @@
             transition: background 0.2s; text-decoration: none;
         }
         .excel-btn:hover { background: var(--talabat-orange-hover); }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 800; color: var(--text-secondary); margin-bottom: 5px; }
+        .form-group input {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md);
+            font-size: 14px; background: var(--bg-main); color: var(--text-primary);
+        }
 
         .category-card {
             background: var(--surface-card);
@@ -203,14 +208,6 @@
         .gallery-picker { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0; margin-top: 4px; }
         .gallery-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; cursor: pointer; border: 2px solid transparent; }
         .gallery-thumb:hover { border-color: var(--talabat-orange); }
-
-        .add-form-container { padding: 14px 20px; background: var(--bg-main); border-bottom: 1px solid var(--border-color); }
-        .form-group { margin-bottom: 8px; }
-        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--text-secondary); margin-bottom: 3px; }
-        .form-group input, .form-group select {
-            width: 100%; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 8px;
-            font-size: 12px; background: var(--surface-card); color: var(--text-primary);
-        }
 
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -314,23 +311,23 @@
         </div>
     </section>
 
-    <!-- تبويب إعدادات التوصيل والحد الأدنى الجديد -->
+    <!-- تبويب إعدادات التوصيل والحد الأدنى المرتبط بالمتجر -->
     <section id="tab-settings" class="app-tab">
         <div class="card-box">
             <h3>⚙️ إعدادات التوصيل والأسعار والحد الأدنى</h3>
-            <div class="form-group" style="margin-bottom: 12px;">
+            <div class="form-group">
                 <label>رسوم التوصيل الأساسية (ج.م):</label>
                 <input type="number" id="settingFee" placeholder="50">
             </div>
-            <div class="form-group" style="margin-bottom: 12px;">
+            <div class="form-group">
                 <label>مبلغ التوصيل المجاني يبدأ من (ج.م):</label>
                 <input type="number" id="settingFreeThreshold" placeholder="250">
             </div>
-            <div class="form-group" style="margin-bottom: 16px;">
+            <div class="form-group">
                 <label>الحد الأدنى للطلب (ج.م):</label>
                 <input type="number" id="settingMinOrder" placeholder="50">
             </div>
-            <button class="excel-btn" style="background:#059669; width:100%; justify-content:center; padding:12px;" onclick="saveSettings()">💾 حفظ إعدادات التوصيل والأسعار</button>
+            <button class="excel-btn" style="background:#059669; width:100%; justify-content:center; padding:12px; margin-top:10px;" onclick="saveSettings()">💾 حفظ إعدادات التوصيل والأسعار</button>
         </div>
     </section>
 
@@ -441,7 +438,7 @@
         let minOrder = parseFloat(document.getElementById("settingMinOrder").value) || 50;
         
         localStorage.setItem("pasta_settings", JSON.stringify({ fee, freeThreshold, minOrder }));
-        alert("✅ تم حفظ إعدادات التوصيل والأسعار بنجاح!");
+        alert("✅ تم حفظ إعدادات التوصيل والأسعار بنجاح وتم ربطها بالمتجر!");
     }
 
     function toggleDarkMode() {
@@ -752,17 +749,17 @@
                         </div>
 
                         ${cat.showAddForm ? `
-                            <div class="add-form-container">
+                            <div class="add-form-container" style="padding:14px 20px; background:var(--bg-main); border-bottom:1px solid var(--border-color);">
                                 <div class="form-group"><label>اسم الوجبة</label><input type="text" id="formName_${catIdx}"></div>
                                 <div class="form-group"><label>السعر (ج.م)</label><input type="number" id="formPrice_${catIdx}"></div>
-                                <div class="form-group"><label>الشارة</label><select id="formTag_${catIdx}"><option value="">بدون</option><option value="🔥 الأكثر مبيعاً">🔥 الأكثر مبيعاً</option></select></div>
+                                <div class="form-group"><label>الشارة</label><select id="formTag_${catIdx}" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); border-radius:8px; background:var(--surface-card); color:var(--text-primary);"><option value="">بدون</option><option value="🔥 الأكثر مبيعاً">🔥 الأكثر مبيعاً</option></select></div>
                                 <div class="form-group"><label>الوصف</label><input type="text" id="formDesc_${catIdx}"></div>
                                 <div class="form-group"><label>رابط أو اختر صورة</label><input type="text" id="formImg_${catIdx}">
                                     <div class="gallery-picker">
                                         ${presetImages.map(img => `<img src="${img}" class="gallery-thumb" onclick="selectPresetImageForForm(${catIdx}, '${img}')">`).join('')}
                                     </div>
                                 </div>
-                                <button class="add-item-btn" style="background:var(--talabat-orange); color:#fff; border:none;" onclick="addNewItem(${catIdx})">حفظ وإضافة</button>
+                                <button class="add-item-btn" style="background:var(--talabat-orange); color:#fff; border:none; margin-top:8px;" onclick="addNewItem(${catIdx})">حفظ وإضافة</button>
                             </div>
                         ` : ''}
 
