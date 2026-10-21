@@ -290,6 +290,7 @@
         </div>
     </section>
 
+    <!-- تبويب الطلبات المباشرة -->
     <section id="tab-orders" class="app-tab">
         <div class="card-box">
             <div class="card-header-flex">
@@ -313,17 +314,36 @@
         </div>
     </section>
 
+    <!-- تبويب إعدادات التوصيل والحد الأدنى الجديد -->
+    <section id="tab-settings" class="app-tab">
+        <div class="card-box">
+            <h3>⚙️ إعدادات التوصيل والأسعار والحد الأدنى</h3>
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label>رسوم التوصيل الأساسية (ج.م):</label>
+                <input type="number" id="settingFee" placeholder="50">
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label>مبلغ التوصيل المجاني يبدأ من (ج.م):</label>
+                <input type="number" id="settingFreeThreshold" placeholder="250">
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label>الحد الأدنى للطلب (ج.م):</label>
+                <input type="number" id="settingMinOrder" placeholder="50">
+            </div>
+            <button class="excel-btn" style="background:#059669; width:100%; justify-content:center; padding:12px;" onclick="saveSettings()">💾 حفظ إعدادات التوصيل والأسعار</button>
+        </div>
+    </section>
+
+    <!-- تبويب إدارة القائمة -->
     <section id="tab-menu" class="app-tab">
         <div class="menu-toolbar">
             <div class="search-box">
                 <input type="text" id="menuSearchInput" oninput="renderMenu()" placeholder="🔍 ابحث عن أي وجبة في القائمة...">
             </div>
-            <!-- زر رفع الإكسل -->
             <label class="excel-btn">
                 📂 رفع منيو إكسل
                 <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" onchange="handleExcelUpload(event)" style="display: none;">
             </label>
-            <!-- زر تحميل/تصدير الإكسل -->
             <button class="excel-btn" style="background: #059669;" onclick="exportMenuToExcel()">
                 📥 تحميل المنيو إكسل
             </button>
@@ -339,11 +359,15 @@
     </div>
     <div class="nav-item" onclick="switchTab('orders', this)">
         <span style="font-size:18px;">🛍️</span>
-        <span>الطلبات المباشرة</span>
+        <span>الطلبات</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('settings', this)">
+        <span style="font-size:18px;">⚙️</span>
+        <span>الإعدادات</span>
     </div>
     <div class="nav-item" onclick="switchTab('menu', this)">
         <span style="font-size:18px;">📖</span>
-        <span>إدارة القائمة</span>
+        <span>القائمة</span>
     </div>
     <div class="nav-item" onclick="addNewCategoryPrompt()">
         <span style="font-size:18px;">➕</span>
@@ -382,6 +406,7 @@
         renderOrdersTables();
         renderMenu();
         initChart();
+        loadSettingsToInputs();
         setInterval(renderOrdersTables, 5000);
     }
 
@@ -390,14 +415,33 @@
         document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
 
         document.getElementById(`tab-${tabKey}`).classList.add('active');
-        element.classList.add('active');
+        if(element) element.classList.add('active');
 
         const titles = {
             'dashboard': 'لوحة المعلومات والتحليلات',
             'orders': 'سجل الطلبات المباشرة',
+            'settings': 'إعدادات التوصيل والأسعار',
             'menu': 'إدارة القائمة المتقدمة'
         };
         document.getElementById('headerTitle').innerText = titles[tabKey];
+    }
+
+    function loadSettingsToInputs() {
+        let settings = JSON.parse(localStorage.getItem("pasta_settings")) || { fee: 50, freeThreshold: 250, minOrder: 50 };
+        if(document.getElementById("settingFee")) {
+            document.getElementById("settingFee").value = settings.fee;
+            document.getElementById("settingFreeThreshold").value = settings.freeThreshold;
+            document.getElementById("settingMinOrder").value = settings.minOrder;
+        }
+    }
+
+    function saveSettings() {
+        let fee = parseFloat(document.getElementById("settingFee").value) || 50;
+        let freeThreshold = parseFloat(document.getElementById("settingFreeThreshold").value) || 250;
+        let minOrder = parseFloat(document.getElementById("settingMinOrder").value) || 50;
+        
+        localStorage.setItem("pasta_settings", JSON.stringify({ fee, freeThreshold, minOrder }));
+        alert("✅ تم حفظ إعدادات التوصيل والأسعار بنجاح!");
     }
 
     function toggleDarkMode() {
@@ -486,8 +530,8 @@
                 `;
             });
         }
-        document.getElementById("dashOrdersTable").innerHTML = html;
-        document.getElementById("fullOrdersTable").innerHTML = html;
+        if(document.getElementById("dashOrdersTable")) document.getElementById("dashOrdersTable").innerHTML = html;
+        if(document.getElementById("fullOrdersTable")) document.getElementById("fullOrdersTable").innerHTML = html;
         renderDashboard();
         updateChartData();
     }
@@ -528,7 +572,6 @@
         container.style.display = "none";
     }
 
-    /* ميزة رفع ملف الإكسل وتحديث المنيو */
     function handleExcelUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -589,7 +632,6 @@
         reader.readAsArrayBuffer(file);
     }
 
-    /* ميزة تحميل/تصدير المنيو الحالي إلى ملف إكسل */
     function exportMenuToExcel() {
         let flatData = [];
         menu.forEach(cat => {
@@ -686,6 +728,7 @@
 
     function renderMenu() {
         const container = document.getElementById("menuContainer");
+        if(!container) return;
         const searchQuery = (document.getElementById("menuSearchInput")?.value || "").toLowerCase().trim();
         let html = "";
 
