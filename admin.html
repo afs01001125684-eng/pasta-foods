@@ -112,15 +112,15 @@
         .excel-btn {
             background: var(--talabat-orange); color: white; padding: 10px 14px; border-radius: var(--radius-md);
             font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; border: none;
-            transition: background 0.2s; text-decoration: none;
+            transition: background 0.2s; text-decoration: none; justify-content: center;
         }
         .excel-btn:hover { background: var(--talabat-orange-hover); }
 
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 800; color: var(--text-secondary); margin-bottom: 5px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 800; color: var(--text-secondary); margin-bottom: 6px; }
         .form-group input {
-            width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md);
-            font-size: 14px; background: var(--bg-main); color: var(--text-primary);
+            width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md);
+            font-size: 15px; font-weight: 700; background: var(--bg-main); color: var(--text-primary);
         }
 
         .category-card {
@@ -311,7 +311,7 @@
         </div>
     </section>
 
-    <!-- تبويب إعدادات التوصيل والحد الأدنى المرتبط بالمتجر -->
+    <!-- تبويب إعدادات التوصيل والحد الأدنى -->
     <section id="tab-settings" class="app-tab">
         <div class="card-box">
             <h3>⚙️ إعدادات التوصيل والأسعار والحد الأدنى</h3>
@@ -321,13 +321,13 @@
             </div>
             <div class="form-group">
                 <label>مبلغ التوصيل المجاني يبدأ من (ج.م):</label>
-                <input type="number" id="settingFreeThreshold" placeholder="250">
+                <input type="number" id="settingFreeThreshold" placeholder="950">
             </div>
             <div class="form-group">
                 <label>الحد الأدنى للطلب (ج.م):</label>
-                <input type="number" id="settingMinOrder" placeholder="50">
+                <input type="number" id="settingMinOrder" placeholder="100">
             </div>
-            <button class="excel-btn" style="background:#059669; width:100%; justify-content:center; padding:12px; margin-top:10px;" onclick="saveSettings()">💾 حفظ إعدادات التوصيل والأسعار</button>
+            <button class="excel-btn" style="background:#059669; width:100%; padding:14px; margin-top:6px; font-size:15px;" onclick="saveSettings()">💾 حفظ إعدادات التوصيل والأسعار</button>
         </div>
     </section>
 
@@ -424,7 +424,7 @@
     }
 
     function loadSettingsToInputs() {
-        let settings = JSON.parse(localStorage.getItem("pasta_settings")) || { fee: 50, freeThreshold: 250, minOrder: 50 };
+        let settings = JSON.parse(localStorage.getItem("pasta_settings")) || { fee: 50, freeThreshold: 950, minOrder: 100 };
         if(document.getElementById("settingFee")) {
             document.getElementById("settingFee").value = settings.fee;
             document.getElementById("settingFreeThreshold").value = settings.freeThreshold;
@@ -434,11 +434,12 @@
 
     function saveSettings() {
         let fee = parseFloat(document.getElementById("settingFee").value) || 50;
-        let freeThreshold = parseFloat(document.getElementById("settingFreeThreshold").value) || 250;
-        let minOrder = parseFloat(document.getElementById("settingMinOrder").value) || 50;
+        let freeThreshold = parseFloat(document.getElementById("settingFreeThreshold").value) || 950;
+        let minOrder = parseFloat(document.getElementById("settingMinOrder").value) || 100;
         
-        localStorage.setItem("pasta_settings", JSON.stringify({ fee, freeThreshold, minOrder }));
-        alert("✅ تم حفظ إعدادات التوصيل والأسعار بنجاح وتم ربطها بالمتجر!");
+        let settings = { fee, freeThreshold, minOrder };
+        localStorage.setItem("pasta_settings", JSON.stringify(settings));
+        alert("✅ تم حفظ إعدادات التوصيل والأسعار بنجاح وتم ربطها بالمتجر فوراً!");
     }
 
     function toggleDarkMode() {
