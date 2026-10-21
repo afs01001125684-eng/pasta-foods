@@ -306,7 +306,7 @@
                                 <button class="qty-btn-card" onclick="changeQty('${item.name}',${item.price}, -1)">-</button>
                             </div>
                         ` : `
-                            <button class="add-badge" onclick="${isOpen ? `changeQty('${item.name}',${item.price}, 1)` : `alert('عذراً، المطعم مغلق حالياً')`}">+</button>
+                            <button class="add-badge" onclick="${isOpen ? `changeQty('${item.name}', ${item.price}, 1)` : `alert('عذراً، المطعم مغلق حالياً')`}">+</button>
                         `;
                         return `
                             <div class="product-card">
@@ -388,9 +388,116 @@
             <div class="modal-cart-item">
                 <div><b>${cart[k].name}</b><br><small>${cart[k].price} ج.م × ${cart[k].qty}</small></div>
                 <div style="display:flex; gap:6px; align-items:center;">
-                    <button class="modal-qty-btn" onclick="changeQty('${k}',${cart[k].price}, 1)">+</button>
+                    <button class="modal-qty-btn" onclick="changeQty('${k}', ${cart[k].price}, 1)">+</button>
                     <b>${cart[k].qty}</b>
-                    <button class="modal-qty-btn" onclick="changeQty('${k}',${cart[k].price}, -1)">-</button>
+                    <button class="modal-qty-btn" onclick="changeQty('${k}', ${cart[k].price}, -1)">-</button>
                 </div>
             </div>
-        `).join('') + `<div style="margin-top:10px; border-top:1px solid
+        `).join('') + `<div style="margin-top:10px; border-top:1px solid #ddd; padding-top:6px; font-weight:800; color:var(--talabat-main);">الإجمالي النهائي: ${total.toFixed(2)} ج.م</div>`;
+    }
+
+    function calculateRoadDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return (R * c) * 1.3; 
+    }
+
+    function autoGetGPSLocation() {
+        const status = document.getElementById("locationStatus");
+        const mapInput = document.getElementById("custLocationMap");
+        const addressInput = document.getElementById("address");
+
+        if (!navigator.geolocation) return;
+
+        status.innerText = "⏳ جاري تحديد موقعك وعنوانك تلقائياً...";
+        status.style.color = "#d84315";
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                mapInput.value = `https://www.google.com/maps?q=${lat},${lng}`;
+                currentDistance = calculateRoadDistance(RESTAURANT_LAT, RESTAURANT_LNG, lat, lng);
+                deliveryFee = currentDistance <= 5 ? 50 : 50 + Math.ceil((currentDistance - 5) * 6);
+                
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.display_name) {
+                            addressInput.value = data.display_name;
+                        } else {
+                            addressInput.value = `إحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                        }
+                    })
+                    .catch(() => {
+                        addressInput.value = `إحداثيات: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    });
+
+                status.innerHTML = `✅ تم جلب الموقع والعنوان بنجاح`;
+                status.style.color = "green";
+                renderCartModal();
+            },
+            () => {
+                status.innerText = "⚠️ يرجى كتابة عنوانك يدوياً.";
+                status.style.color = "#d84315";
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }
+
+    function processOrder() {
+        const name = document.getElementById("name").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const address = document.getElementById("address").value.trim();
+        const email = document.getElementById("customerEmail").value.trim();
+        const notes = document.getElementById("notes").value.trim();
+        const mapUrl = document.getElementById("custLocationMap").value.trim();
+        
+        let keys = Object.keys(cart);
+        if(keys.length === 0 || !name || !phone || !address) { alert("يرجى إكمال بيانات الطلب!"); return; }
+
+        const phoneRegex = /^01[0125][0-9]{8}$/;
+        if (!phoneRegex.test(phone)) {
+            alert("رقم الهاتف غير صحيح! يرجى إدخال رقم هاتف محمول مصري صحيح (11 رقماً).");
+            return;
+        }
+
+        let subtotal = keys.reduce((sum, k) => sum + (cart[k].price * cart[k].qty), 0);
+        let actualFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : deliveryFee;
+        let total = subtotal + actualFee;
+        let cartListArray = keys.map(k => cart[k]);
+
+        let ordersHistory = JSON.parse(localStorage.getItem("pasta_orders_history") || "[]");
+        ordersHistory.push({ customer_name: name, phone: phone, total: total, items: cartListArray, payment: selectedPaymentMethod, status: "قيد المراجعة" });
+        localStorage.setItem("pasta_orders_history", JSON.stringify(ordersHistory));
+
+        const orderItems = cartListArray.map(item => ({ name: `${item.name} (عدد: ${item.qty})`, price: item.price * item.qty }));
+        
+        emailjs.send('service_a1b2c3d', 'template_8yhqwxa', {
+            customer_name: name,
+            customer_email: email,
+            orders: orderItems, 
+            delivery_fee: actualFee,
+            total_amount: total,
+            customer_location: mapUrl || "لم يتم تحديد الموقع",
+            payment_method: selectedPaymentMethod,
+            customer_notes: notes || "لا توجد ملاحظات"
+        }).then(() => {}, (err) => { console.error("EmailJS Error:", err); });
+
+        let whatsAppMsg = `طلب جديد من باستا فود 🍝\n\n👤 العميل: ${name}\n📞 الهاتف: ${phone}\n📍 العنوان: ${address}\n💳 الدفع: ${selectedPaymentMethod}\n📝 ملاحظات: ${notes || 'لا توجد'}\n🗺️ الخريطة: ${mapUrl || 'لم يرسل'}\n\n🛒 الطلبات:\n` + cartListArray.map(i=>`• ${i.name} × ${i.qty} (${(i.price * i.qty).toFixed(2)} ج.م)`).join('\n') + `\n\n🛵 التوصيل: ${actualFee === 0 ? 'مجاناً 🎉' : actualFee + ' ج.م'}\n💰 الإجمالي: ${total.toFixed(2)} ج.م`;
+        
+        window.open(`https://wa.me/201001125684?text=${encodeURIComponent(whatsAppMsg)}`, '_blank');
+        localStorage.removeItem("pasta_cart");
+        setTimeout(() => window.location.reload(), 1000);
+    }
+
+    renderPage();
+    updateCartBar();
+</script>
+</body>
+</html>
